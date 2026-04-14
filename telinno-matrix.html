@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Telinno — Competency Matrix & T&D Planner</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#0c1018;--ink-2:#131924;--ink-3:#1a2235;--surface:#1e293b;
+  --border:rgba(255,255,255,0.07);--border-mid:rgba(255,255,255,0.12);
+  --text:#e2ddd5;--text-muted:#7a7570;--text-dim:#3d3a36;
+  --gold:#c9ab47;--gold-bg:rgba(201,171,71,0.09);--gold-border:rgba(201,171,71,0.22);
+  --red:#e05555;--red-bg:rgba(224,85,85,0.09);--red-border:rgba(224,85,85,0.2);
+  --amber:#d4922a;--amber-bg:rgba(212,146,42,0.09);--amber-border:rgba(212,146,42,0.22);
+  --green:#4d9e82;--green-bg:rgba(77,158,130,0.09);--green-border:rgba(77,158,130,0.22);
+  --blue:#4a85c8;--blue-bg:rgba(74,133,200,0.09);
+  --l1:#e05555;--l2:#d4922a;--l3:#c9ab47;--l4:#4d9e82;--l5:#4a85c8;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'DM Sans',sans-serif;background:var(--ink);color:var(--text);min-height:100vh;display:flex;flex-direction:column;}
+
+#topbar{background:var(--ink-2);border-bottom:1px solid var(--border);padding:0 24px;height:50px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;flex-shrink:0;}
+.brand-name{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:var(--gold);}
+.brand-title{font-size:11.5px;color:var(--text-muted);margin-left:8px;}
+.topbar-right{display:flex;gap:8px;align-items:center;}
+.btn{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:0.08em;text-transform:uppercase;padding:6px 12px;border-radius:4px;cursor:pointer;border:1px solid var(--border-mid);background:var(--ink-3);color:var(--text-muted);transition:all 0.15s;}
+.btn:hover{color:var(--text);border-color:var(--text-dim);}
+.btn.primary{background:var(--gold-bg);border-color:var(--gold-border);color:var(--gold);}
+.btn.primary:hover{background:rgba(201,171,71,0.16);}
+
+#layout{display:flex;flex:1;overflow:hidden;height:calc(100vh - 88px);}
+
+/* LEFT — Employee list */
+#emp-panel{width:240px;min-width:240px;background:var(--ink-2);border-right:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden;}
+#emp-header{padding:12px 14px;border-bottom:1px solid var(--border);flex-shrink:0;}
+.ep-label{font-family:'DM Mono',monospace;font-size:8.5px;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-dim);margin-bottom:8px;}
+#emp-search{width:100%;background:var(--ink-3);border:1px solid var(--border-mid);border-radius:4px;padding:6px 8px;font-size:11.5px;color:var(--text);outline:none;}
+#emp-search::placeholder{color:var(--text-dim);}
+#emp-search:focus{border-color:var(--gold-border);}
+#add-emp-btn{width:100%;margin-top:6px;padding:7px;background:transparent;border:1px dashed var(--border-mid);border-radius:4px;color:var(--text-dim);font-size:11px;cursor:pointer;text-align:center;transition:all 0.15s;}
+#add-emp-btn:hover{border-color:var(--gold-border);color:var(--gold);}
+#emp-list{flex:1;overflow-y:auto;}
+#emp-list::-webkit-scrollbar{width:3px;} #emp-list::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px;}
+.emp-row{padding:10px 14px;cursor:pointer;border-bottom:1px solid var(--border);transition:background 0.12s;border-left:2px solid transparent;}
+.emp-row:hover{background:rgba(255,255,255,0.03);}
+.emp-row.active{background:var(--gold-bg);border-left-color:var(--gold);}
+.emp-name{font-size:12px;font-weight:500;color:var(--text);margin-bottom:2px;}
+.emp-role{font-size:10px;color:var(--text-muted);}
+.emp-gap-badge{font-family:'DM Mono',monospace;font-size:8px;padding:1px 5px;border-radius:2px;margin-top:3px;display:inline-block;}
+
+/* CENTRE — Matrix */
+#matrix-panel{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0;}
+#matrix-header{padding:16px 24px 12px;border-bottom:1px solid var(--border);flex-shrink:0;}
+.mh-name{font-family:'Playfair Display',serif;font-size:20px;font-weight:700;margin-bottom:4px;}
+.mh-meta{display:flex;gap:8px;flex-wrap:wrap;}
+.meta-chip{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:0.05em;padding:3px 8px;border-radius:2px;border:1px solid var(--border-mid);color:var(--text-muted);}
+
+#matrix-body{flex:1;overflow-y:auto;padding:16px 24px 40px;}
+#matrix-body::-webkit-scrollbar{width:4px;} #matrix-body::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px;}
+
+/* Role setup */
+.role-setup{background:var(--ink-2);border:1px solid var(--border);border-radius:8px;padding:16px 18px;margin-bottom:20px;}
+.rs-title{font-size:12px;font-weight:600;color:var(--text);margin-bottom:10px;}
+.rs-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;}
+.rs-field{display:flex;flex-direction:column;gap:4px;}
+.rs-label{font-family:'DM Mono',monospace;font-size:8px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-dim);}
+.rs-input{background:var(--ink-3);border:1px solid var(--border-mid);border-radius:4px;padding:6px 8px;font-size:11.5px;color:var(--text);outline:none;width:100%;}
+.rs-input:focus{border-color:var(--gold-border);}
+.rs-input::placeholder{color:var(--text-dim);}
+.rs-select{background:var(--ink-3);border:1px solid var(--border-mid);border-radius:4px;padding:6px 8px;font-size:11px;color:var(--text);outline:none;width:100%;cursor:pointer;}
+
+/* Competency section */
+.comp-section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;margin-top:18px;}
+.csh-title{font-size:12px;font-weight:600;color:var(--text);}
+.csh-btn{font-size:11px;color:var(--gold);cursor:pointer;background:none;border:none;font-family:'DM Sans',sans-serif;opacity:0.7;transition:opacity 0.15s;}
+.csh-btn:hover{opacity:1;}
+
+/* Competency rows */
+.comp-row{background:var(--ink-2);border:1px solid var(--border);border-radius:6px;padding:12px 14px;margin-bottom:8px;}
+.comp-row-header{display:flex;align-items:center;gap:10px;margin-bottom:8px;}
+.comp-name-input{flex:1;background:transparent;border:none;font-size:12.5px;font-weight:500;color:var(--text);outline:none;padding:0;}
+.comp-name-input:focus{background:var(--ink-3);padding:2px 6px;border-radius:3px;}
+.comp-name-input::placeholder{color:var(--text-dim);}
+.comp-delete{font-size:10px;color:var(--text-dim);cursor:pointer;background:none;border:none;transition:color 0.12s;}
+.comp-delete:hover{color:var(--red);}
+
+.levels-row{display:flex;gap:6px;align-items:center;flex-wrap:wrap;}
+.level-label{font-family:'DM Mono',monospace;font-size:8px;letter-spacing:0.04em;color:var(--text-dim);flex-shrink:0;width:52px;}
+
+.level-dots{display:flex;gap:4px;}
+.ldot{width:22px;height:22px;border-radius:50%;border:2px solid var(--border-mid);cursor:pointer;transition:all 0.15s;display:flex;align-items:center;justify-content:center;font-family:'DM Mono',monospace;font-size:8px;color:var(--text-dim);}
+.ldot:hover{border-color:var(--text-dim);}
+.ldot.required{border-color:var(--gold)!important;color:var(--gold)!important;background:var(--gold-bg);}
+.ldot.current-l1{border-color:var(--l1)!important;color:var(--l1)!important;background:rgba(224,85,85,0.12);}
+.ldot.current-l2{border-color:var(--l2)!important;color:var(--l2)!important;background:rgba(212,146,42,0.12);}
+.ldot.current-l3{border-color:var(--l3)!important;color:var(--l3)!important;background:rgba(201,171,71,0.12);}
+.ldot.current-l4{border-color:var(--l4)!important;color:var(--l4)!important;background:rgba(77,158,130,0.12);}
+.ldot.current-l5{border-color:var(--l5)!important;color:var(--l5)!important;background:rgba(74,133,200,0.12);}
+
+.gap-indicator{font-size:10px;padding:2px 7px;border-radius:2px;font-family:'DM Mono',monospace;letter-spacing:0.04em;flex-shrink:0;}
+.gap-none{background:var(--green-bg);color:var(--green);border:1px solid var(--green-border);}
+.gap-small{background:var(--amber-bg);color:var(--amber);border:1px solid var(--amber-border);}
+.gap-large{background:var(--red-bg);color:var(--red);border:1px solid var(--red-border);}
+
+/* T&D Plan */
+.td-section{margin-top:20px;}
+.td-title{font-size:13px;font-weight:600;color:var(--text);margin-bottom:12px;display:flex;align-items:center;gap:8px;}
+.td-tag{font-family:'DM Mono',monospace;font-size:8px;letter-spacing:0.08em;padding:3px 7px;border-radius:2px;background:var(--gold-bg);border:1px solid var(--gold-border);color:var(--gold);}
+
+.td-gap-item{background:var(--ink-2);border:1px solid var(--border);border-radius:6px;padding:12px 14px;margin-bottom:8px;}
+.tdgi-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;}
+.tdgi-comp{font-size:12px;font-weight:500;color:var(--text);}
+.tdgi-gap{font-family:'DM Mono',monospace;font-size:9px;padding:2px 7px;border-radius:2px;}
+.tdgi-body{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;}
+.tdgi-field{display:flex;flex-direction:column;gap:3px;}
+.tdgi-label{font-family:'DM Mono',monospace;font-size:8px;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-dim);}
+.tdgi-input{background:var(--ink-3);border:1px solid var(--border);border-radius:3px;padding:5px 7px;font-size:11px;color:var(--text);outline:none;width:100%;resize:none;}
+.tdgi-input:focus{border-color:var(--gold-border);}
+.tdgi-input::placeholder{color:var(--text-dim);}
+.tdgi-select{background:var(--ink-3);border:1px solid var(--border);border-radius:3px;padding:5px 7px;font-size:11px;color:var(--text);outline:none;width:100%;cursor:pointer;}
+
+/* Legend */
+.legend{display:flex;gap:10px;flex-wrap:wrap;padding:10px 0;margin-bottom:12px;}
+.leg-item{display:flex;align-items:center;gap:5px;font-size:10px;color:var(--text-muted);}
+.leg-dot{width:10px;height:10px;border-radius:50%;}
+
+/* Empty state */
+.empty-state{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;color:var(--text-dim);gap:8px;text-align:center;padding:28px;}
+.empty-icon{font-size:28px;opacity:0.4;}
+.empty-text{font-size:12px;line-height:1.6;}
+
+/* Right panel — summary */
+#summary-panel{width:220px;min-width:220px;background:var(--ink-2);border-left:1px solid var(--border);overflow-y:auto;padding:14px;}
+#summary-panel::-webkit-scrollbar{width:3px;} #summary-panel::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px;}
+.sp-label{font-family:'DM Mono',monospace;font-size:8.5px;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-dim);margin-bottom:8px;}
+
+.score-ring{display:flex;justify-content:center;padding:12px 0 8px;position:relative;}
+.ring-outer{position:relative;display:flex;align-items:center;justify-content:center;}
+.ring-num{font-family:'DM Mono',monospace;font-size:22px;position:absolute;text-align:center;line-height:1;}
+.ring-sub{font-size:8px;color:var(--text-muted);position:absolute;bottom:8px;text-align:center;letter-spacing:0.04em;}
+
+.sp-stat{display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid var(--border);font-size:10.5px;}
+.sp-stat:last-child{border-bottom:none;}
+.sp-stat-label{color:var(--text-muted);}
+.sp-stat-val{font-family:'DM Mono',monospace;font-size:11px;color:var(--text);}
+.sp-stat-val.red{color:var(--red);}
+.sp-stat-val.amber{color:var(--amber);}
+.sp-stat-val.green{color:var(--green);}
+
+::-webkit-scrollbar{width:4px;} ::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.08);border-radius:2px;}
+@keyframes fadeIn{from{opacity:0;transform:translateX(6px)}to{opacity:1;transform:translateX(0)}}
+
+/* ── PHASE NAV ── */
+.phase-nav-bar{background:rgba(0,0,0,0.3);border-bottom:1px solid rgba(255,255,255,0.06);padding:0 32px;display:flex;align-items:center;justify-content:space-between;height:38px;}
+.pnb-back{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:0.06em;color:rgba(255,255,255,0.25);text-decoration:none;padding-right:14px;border-right:1px solid rgba(255,255,255,0.07);margin-right:14px;transition:color 0.15s;}
+.pnb-back:hover{color:rgba(255,255,255,0.55);}
+.pnb-left{display:flex;align-items:center;}
+.pnb-steps{display:flex;align-items:center;gap:0;}
+.pnb-step{display:flex;align-items:center;gap:5px;padding:0 10px 0 0;font-size:10px;color:rgba(255,255,255,0.22);white-space:nowrap;}
+.pnb-step-dot{width:15px;height:15px;border-radius:50%;border:1.5px solid;display:flex;align-items:center;justify-content:center;font-family:'DM Mono',monospace;font-size:6.5px;font-weight:600;flex-shrink:0;}
+.pnb-step.done{color:rgba(255,255,255,0.38);}
+.pnb-step.active{color:rgba(255,255,255,0.85);}
+.pnb-step-sep{color:rgba(255,255,255,0.1);font-size:9px;margin-right:10px;}
+.pnb-right{display:flex;gap:6px;align-items:center;}
+.pnb-right a{font-family:'DM Mono',monospace;font-size:8.5px;letter-spacing:0.05em;text-transform:uppercase;text-decoration:none;padding:4px 10px;border-radius:4px;border:1px solid;transition:all 0.15s;}
+</style>
+</head>
+<body>
+
+<!-- PORTAL NAV -->
+<div id="portal-nav" style="background:#0b0f18;border-bottom:1px solid rgba(255,255,255,0.06);padding:0 20px;height:38px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:9999;flex-shrink:0;">
+  <a href="index.html" style="font-family:'DM Mono',monospace;font-size:9.5px;letter-spacing:0.12em;text-transform:uppercase;color:#c9ab47;text-decoration:none;display:flex;align-items:center;gap:6px;">
+    <span style="font-size:11px;">←</span> Telinno Portal
+  </a>
+  <div style="display:flex;gap:2px;align-items:center;">
+    <a href="telinno-audit-v2.html" style="font-family:'DM Mono',monospace;font-size:8.5px;letter-spacing:0.06em;text-transform:uppercase;padding:4px 10px;border-radius:3px;color:#6b6660;text-decoration:none;transition:color 0.15s;" onmouseover="this.style.color='#e4dfd7'" onmouseout="this.style.color='#6b6660'">Audit</a>
+    <a href="telinno-jsp.html" style="font-family:'DM Mono',monospace;font-size:8.5px;letter-spacing:0.06em;text-transform:uppercase;padding:4px 10px;border-radius:3px;color:#6b6660;text-decoration:none;" onmouseover="this.style.color='#e4dfd7'" onmouseout="this.style.color='#6b6660'">JSP</a>
+    <a href="telinno-matrix.html" style="font-family:'DM Mono',monospace;font-size:8.5px;letter-spacing:0.06em;text-transform:uppercase;padding:4px 10px;border-radius:3px;color:#6b6660;text-decoration:none;" onmouseover="this.style.color='#e4dfd7'" onmouseout="this.style.color='#6b6660'">Matrix</a>
+    <a href="telinno-hr-plan.html" style="font-family:'DM Mono',monospace;font-size:8.5px;letter-spacing:0.06em;text-transform:uppercase;padding:4px 10px;border-radius:3px;color:#6b6660;text-decoration:none;" onmouseover="this.style.color='#e4dfd7'" onmouseout="this.style.color='#6b6660'">Plan</a>
+    <a href="pvc-v2.html" style="font-family:'DM Mono',monospace;font-size:8.5px;letter-spacing:0.06em;text-transform:uppercase;padding:4px 10px;border-radius:3px;color:#6b6660;text-decoration:none;" onmouseover="this.style.color='#e4dfd7'" onmouseout="this.style.color='#6b6660'">PVC</a>
+  </div>
+</div>
+
+
+<div id="topbar">
+  <div style="display:flex;align-items:center;gap:8px;">
+    <span class="brand-name">Telinno</span>
+    <span style="color:var(--text-dim)">·</span>
+    <span class="brand-title">Competency Matrix & T&D Planner</span>
+  </div>
+  <div class="topbar-right">
+    <button class="btn" onclick="importEmployees()">Load from Audit CSV</button>
+    <button class="btn primary" onclick="exportAllCSV()">↓ Export All T&D Plans</button>
+  </div>
+</div>
+
+
+<div class="phase-nav-bar">
+  <div class="pnb-left">
+    <a href="index.html" class="pnb-back">&#x2190; Portal</a>
+    <div class="pnb-steps">
+      <div class="pnb-step done"><div class="pnb-step-dot" style="border-color:rgba(224,112,96,0.4);color:rgba(224,112,96,0.4);">&#x2713;</div><span>System</span></div>
+      <span class="pnb-step-sep">&#x203A;</span>
+      <div class="pnb-step done"><div class="pnb-step-dot" style="border-color:rgba(201,171,71,0.4);color:rgba(201,171,71,0.4);">&#x2713;</div><span>People</span></div>
+      <span class="pnb-step-sep">&#x203A;</span>
+      <div class="pnb-step done"><div class="pnb-step-dot" style="border-color:rgba(77,158,130,0.4);color:rgba(77,158,130,0.4);">&#x2713;</div><span>Target</span></div>
+      <span class="pnb-step-sep">&#x203A;</span>
+      <div class="pnb-step active" style="color:#4a85c8;"><div class="pnb-step-dot" style="border-color:#4a85c8;color:#4a85c8;background:rgba(74,133,200,0.1);">4</div><span style="font-weight:600;">Fix It</span></div>
+      <span class="pnb-step-sep" style="color:rgba(255,255,255,0.06);">|</span>
+      <div class="pnb-step done"><div class="pnb-step-dot" style="border-color:rgba(77,158,130,0.5);color:rgba(77,158,130,0.5);">&#x2713;</div><span style="">Role Definitions</span></div><span class="pnb-step-sep">&#x203A;</span><div class="pnb-step active"><div class="pnb-step-dot" style="border-color:#4a85c8;color:#4a85c8;">4b</div><span style="color:#4a85c8;font-weight:600;">Competencies</span></div><span class="pnb-step-sep">&#x203A;</span><div class="pnb-step "><div class="pnb-step-dot" style="border-color:rgba(255,255,255,0.14);color:rgba(255,255,255,0.18);">4c</div><span style="">Culture</span></div><span class="pnb-step-sep">&#x203A;</span><div class="pnb-step "><div class="pnb-step-dot" style="border-color:rgba(255,255,255,0.14);color:rgba(255,255,255,0.18);">4d</div><span style="">Timeline</span></div>
+    </div>
+  </div>
+  <div class="pnb-right"><a href="telinno-jsp.html" style="background:rgba(255,255,255,0.04);border-color:rgba(255,255,255,0.1);color:rgba(255,255,255,0.4);">&#x2190; Role Definitions</a><a href="telinno-hr-plan.html" style="background:rgba(74,133,200,0.1);border-color:rgba(74,133,200,0.25);color:#4a85c8;">Timeline &#x2192;</a></div>
+</div>
+
+<div id="layout">
+
+  <!-- EMPLOYEE LIST -->
+  <div id="emp-panel">
+    <div id="emp-header">
+      <div class="ep-label">Employees</div>
+      <input id="emp-search" type="text" placeholder="Search…">
+      <div id="add-emp-btn" onclick="addEmployee()">+ Add employee manually</div>
+    </div>
+    <div id="emp-list"></div>
+  </div>
+
+  <!-- MATRIX PANEL -->
+  <div id="matrix-panel">
+    <div id="matrix-header" style="display:none;">
+      <div class="mh-name" id="mh-name"></div>
+      <div class="mh-meta" id="mh-meta"></div>
+    </div>
+    <div id="matrix-body">
+      <div class="empty-state" id="empty-state">
+        <div class="empty-icon">◎</div>
+        <div class="empty-text">Select an employee to view<br>their competency matrix</div>
+      </div>
+      <div id="matrix-content" style="display:none;"></div>
+    </div>
+  </div>
+
+  <!-- SUMMARY PANEL -->
+  <div id="summary-panel">
+    <div class="sp-label">Competency Summary</div>
+    <div class="score-ring">
+      <div class="ring-outer">
+        <svg width="80" height="80" viewBox="0 0 80 80" style="transform:rotate(-90deg)">
+          <circle cx="40" cy="40" r="34" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="6"/>
+          <circle id="sum-ring" cx="40" cy="40" r="34" fill="none" stroke="#4d9e82" stroke-width="6"
+            stroke-dasharray="213.6" stroke-dashoffset="213.6" stroke-linecap="round" style="transition:stroke-dashoffset 0.5s ease"/>
+        </svg>
+        <span class="ring-num" id="sum-pct" style="color:var(--green)">—</span>
+      </div>
+    </div>
+    <div id="sum-stats">
+      <div class="sp-stat"><span class="sp-stat-label">Competencies</span><span class="sp-stat-val" id="s-total">—</span></div>
+      <div class="sp-stat"><span class="sp-stat-label">At/above target</span><span class="sp-stat-val green" id="s-met">—</span></div>
+      <div class="sp-stat"><span class="sp-stat-label">Below target</span><span class="sp-stat-val amber" id="s-gap">—</span></div>
+      <div class="sp-stat"><span class="sp-stat-label">Critical gaps</span><span class="sp-stat-val red" id="s-crit">—</span></div>
+      <div class="sp-stat"><span class="sp-stat-label">Not yet assessed</span><span class="sp-stat-val" id="s-unset">—</span></div>
+    </div>
+    <div style="height:1px;background:var(--border);margin:12px 0;"></div>
+    <div class="sp-label">Priority Gaps</div>
+    <div id="sum-gaps" style="font-size:10.5px;color:var(--text-muted);line-height:1.7;"></div>
+    <div style="height:1px;background:var(--border);margin:12px 0;"></div>
+    <div class="sp-label">Level Scale</div>
+    <div style="display:flex;flex-direction:column;gap:4px;margin-top:4px;">
+      <div style="display:flex;align-items:center;gap:6px;font-size:10px;color:var(--text-muted);"><div style="width:10px;height:10px;border-radius:50%;background:var(--l1);"></div>1 — Awareness</div>
+      <div style="display:flex;align-items:center;gap:6px;font-size:10px;color:var(--text-muted);"><div style="width:10px;height:10px;border-radius:50%;background:var(--l2);"></div>2 — Basic</div>
+      <div style="display:flex;align-items:center;gap:6px;font-size:10px;color:var(--text-muted);"><div style="width:10px;height:10px;border-radius:50%;background:var(--l3);"></div>3 — Proficient (support)</div>
+      <div style="display:flex;align-items:center;gap:6px;font-size:10px;color:var(--text-muted);"><div style="width:10px;height:10px;border-radius:50%;background:var(--l4);"></div>4 — Proficient (solo)</div>
+      <div style="display:flex;align-items:center;gap:6px;font-size:10px;color:var(--text-muted);"><div style="width:10px;height:10px;border-radius:50%;background:var(--l5);"></div>5 — Expert / Trains others</div>
+      <div style="display:flex;align-items:center;gap:6px;font-size:10px;color:var(--gold);margin-top:4px;"><div style="width:10px;height:10px;border-radius:50%;border:2px solid var(--gold);background:var(--gold-bg);"></div>⬡ = Required level</div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── STATE ──
+const KEY = 'telinno_matrix_v2';
+let employees = [];
+let currentIdx = null;
+
+const TELINNO_COMPETENCIES = {
+  technical: [
+    'RAN Installation & Commissioning','Radio Network Optimisation (RNO)','Drive Testing & Post-Processing',
+    'Fibre Survey, Civil Works & Installation','Fibre Managed Services','Tower Build & Infrastructure',
+    'Electrical & Automation (E&A)','Microwave / Transmission Engineering','Network Monitoring & NOC Operations'
+  ],
+  commercial: ['Account Management','Client Relationship Management','Proposal & Commercial Writing','Contract Management','Revenue Forecasting'],
+  project: ['Project Planning & Scheduling','Site Supervision & Execution','Stakeholder Reporting','Risk Management','Resource Allocation'],
+  finance: ['Budget Preparation & Tracking','Variance Analysis & Reporting','Cost Control','Procurement & Vendor Management'],
+  people: ['Team Leadership','Performance Management','Coaching & Mentoring','Communication (Written)','Communication (Verbal)'],
+  qhse: ['QHSE Compliance & Auditing','Incident Reporting & Investigation','HSE Induction & Training','Environmental Management']
+};
+
+function loadData(){try{const r=localStorage.getItem(KEY);if(r){employees=JSON.parse(r);}}catch(e){}}
+function saveData(){try{localStorage.setItem(KEY,JSON.stringify(employees));}catch(e){}}
+
+function getCurrent(){return employees[currentIdx]||null;}
+
+// ── EMPLOYEE LIST ──
+function renderEmpList(filter=''){
+  const list=document.getElementById('emp-list');
+  const filtered=employees.filter(e=>!filter||e.name.toLowerCase().includes(filter.toLowerCase())||e.role.toLowerCase().includes(filter.toLowerCase()));
+  list.innerHTML=filtered.map((e,fi)=>{
+    const realIdx=employees.indexOf(e);
+    const gaps=countGaps(e);
+    const gapColor=gaps.crit>0?'red':gaps.below>0?'amber':'green';
+    const gapText=gaps.crit>0?`${gaps.crit} critical`:gaps.below>0?`${gaps.below} gaps`:'on track';
+    return `<div class="emp-row${currentIdx===realIdx?' active':''}" onclick="selectEmployee(${realIdx})">
+      <div class="emp-name">${e.name}</div>
+      <div class="emp-role">${e.role||'—'} · ${e.kad||'—'}</div>
+      <span class="emp-gap-badge" style="background:var(--${gapColor}-bg);color:var(--${gapColor});border:1px solid var(--${gapColor}-border)">${gapText}</span>
+    </div>`;
+  }).join('')||'<div style="padding:14px;font-size:11px;color:var(--text-dim);">No employees found</div>';
+}
+
+function countGaps(emp){
+  let crit=0,below=0,unset=0;
+  (emp.competencies||[]).forEach(c=>{
+    if(!c.current){unset++;return;}
+    const diff=parseInt(c.required||0)-parseInt(c.current||0);
+    if(diff>=2)crit++;
+    else if(diff>0)below++;
+  });
+  return{crit,below,unset};
+}
+
+function addEmployee(){
+  const name=prompt('Employee full name:');
+  if(!name||!name.trim())return;
+  const emp={
+    name:name.trim(),role:'',kad:'',location:'',assessed_by:'',assessed_date:'',
+    competencies:[]
+  };
+  employees.push(emp);
+  saveData();
+  renderEmpList();
+  selectEmployee(employees.length-1);
+}
+
+function selectEmployee(idx){
+  currentIdx=idx;
+  renderEmpList();
+  renderMatrix();
+}
+
+// ── MATRIX ──
+function renderMatrix(){
+  const emp=getCurrent();
+  if(!emp)return;
+  
+  document.getElementById('empty-state').style.display='none';
+  const content=document.getElementById('matrix-content');
+  content.style.display='block';
+  content.style.animation='fadeIn 0.2s ease both';
+  document.getElementById('matrix-header').style.display='block';
+  document.getElementById('mh-name').textContent=emp.name;
+  
+  const meta=document.getElementById('mh-meta');
+  meta.innerHTML=`
+    <span class="meta-chip">${emp.role||'No role set'}</span>
+    <span class="meta-chip">${emp.kad||'No KAD'}</span>
+    <span class="meta-chip">${emp.location||'No location'}</span>
+    ${emp.assessed_by?`<span class="meta-chip">HRBP: ${emp.assessed_by}</span>`:''}
+  `;
+
+  content.innerHTML = `
+    <!-- Setup -->
+    <div class="role-setup">
+      <div class="rs-title">Employee Details</div>
+      <div class="rs-grid">
+        <div class="rs-field"><label class="rs-label">Full Name</label><input class="rs-input" value="${emp.name}" onchange="updateEmp('name',this.value)"></div>
+        <div class="rs-field"><label class="rs-label">KAD Role / Title</label><input class="rs-input" value="${emp.role||''}" placeholder="e.g. Project Manager" onchange="updateEmp('role',this.value)"></div>
+        <div class="rs-field"><label class="rs-label">KAD</label>
+          <select class="rs-select" onchange="updateEmp('kad',this.value)">
+            <option ${!emp.kad?'selected':''}>— Select KAD —</option>
+            <option ${emp.kad==='KAD1'?'selected':''}>KAD1</option>
+            <option ${emp.kad==='KAD2'?'selected':''}>KAD2</option>
+            <option ${emp.kad==='KAD3'?'selected':''}>KAD3</option>
+            <option ${emp.kad==='KAD4'?'selected':''}>KAD4</option>
+            <option ${emp.kad==='SS'?'selected':''}>SS</option>
+          </select>
+        </div>
+        <div class="rs-field"><label class="rs-label">Location</label><input class="rs-input" value="${emp.location||''}" placeholder="e.g. Nigeria, Mali" onchange="updateEmp('location',this.value)"></div>
+        <div class="rs-field"><label class="rs-label">Assessed By (HRBP)</label><input class="rs-input" value="${emp.assessed_by||''}" onchange="updateEmp('assessed_by',this.value)"></div>
+        <div class="rs-field"><label class="rs-label">Assessment Date</label><input class="rs-input" value="${emp.assessed_date||''}" placeholder="MM/YYYY" onchange="updateEmp('assessed_date',this.value)"></div>
+      </div>
+    </div>
+
+    <!-- Add competency from library -->
+    <div class="comp-section-header" style="margin-top:4px;">
+      <div class="csh-title">Competency Assessment</div>
+      <div style="display:flex;gap:6px;">
+        <select id="lib-select" class="rs-select" style="width:200px;font-size:10px;">
+          <option value="">+ Add from library…</option>
+          ${Object.entries(TELINNO_COMPETENCIES).map(([cat,items])=>`<optgroup label="${cat.toUpperCase()}">${items.map(i=>`<option value="${i}">${i}</option>`).join('')}</optgroup>`).join('')}
+        </select>
+        <button class="csh-btn" onclick="addCompFromLib()">Add</button>
+        <button class="csh-btn" onclick="addBlankComp()">+ Custom</button>
+      </div>
+    </div>
+
+    <div style="margin-bottom:10px;">
+      <div class="legend">
+        <span class="leg-item"><span class="leg-dot" style="background:var(--gold);opacity:0.6;"></span> Required level (⬡ click top row)</span>
+        <span class="leg-item"><span class="leg-dot" style="background:var(--green);"></span> Current level (◉ click bottom row)</span>
+      </div>
+    </div>
+
+    <div id="comp-rows">
+      ${(emp.competencies||[]).map((c,i)=>renderCompRow(c,i)).join('')}
+    </div>
+
+    <!-- T&D Plan -->
+    <div class="td-section">
+      <div class="td-title">Training & Development Plan <span class="td-tag">Auto-generated from gaps</span></div>
+      <div id="td-plan">${renderTDPlan()}</div>
+    </div>
+  `;
+
+  updateSummary();
+}
+
+function renderCompRow(comp, idx){
+  const levels=[1,2,3,4,5];
+  const reqDots = levels.map(l=>`
+    <div class="ldot${comp.required==l?' required':''}" 
+      onclick="setLevel(${idx},'required',${l})" 
+      title="Set required: ${l}">${l}</div>`).join('');
+  const curDots = levels.map(l=>`
+    <div class="ldot${comp.current==l?' current-l'+l:''}" 
+      onclick="setLevel(${idx},'current',${l})" 
+      title="Set current: ${l}">${l}</div>`).join('');
+  
+  let gapHtml='';
+  if(comp.required&&comp.current){
+    const diff=parseInt(comp.required)-parseInt(comp.current);
+    if(diff<=0)gapHtml=`<span class="gap-indicator gap-none">On target</span>`;
+    else if(diff===1)gapHtml=`<span class="gap-indicator gap-small">Gap: ${diff}</span>`;
+    else gapHtml=`<span class="gap-indicator gap-large">Gap: ${diff} ⚠</span>`;
+  }else if(comp.required&&!comp.current){
+    gapHtml=`<span class="gap-indicator gap-large">Not assessed</span>`;
+  }
+  
+  return `
+    <div class="comp-row" id="comp-row-${idx}">
+      <div class="comp-row-header">
+        <input class="comp-name-input" value="${comp.name||''}" placeholder="Competency name…" onchange="updateComp(${idx},'name',this.value)">
+        ${gapHtml}
+        <button class="comp-delete" onclick="deleteComp(${idx})">✕</button>
+      </div>
+      <div class="levels-row">
+        <span class="level-label">Required:</span>
+        <div class="level-dots">${reqDots}</div>
+      </div>
+      <div class="levels-row" style="margin-top:5px;">
+        <span class="level-label">Current:</span>
+        <div class="level-dots">${curDots}</div>
+      </div>
+    </div>`;
+}
+
+function renderTDPlan(){
+  const emp=getCurrent();
+  if(!emp||!emp.competencies||emp.competencies.length===0) return '<div style="font-size:11.5px;color:var(--text-dim);">Add competencies above to generate a T&D plan.</div>';
+  
+  const gaps=emp.competencies.filter(c=>c.required&&c.current&&parseInt(c.required)>parseInt(c.current));
+  const unassessed=emp.competencies.filter(c=>c.required&&!c.current);
+  
+  if(gaps.length===0&&unassessed.length===0) return `<div style="background:var(--green-bg);border:1px solid var(--green-border);border-radius:6px;padding:12px 14px;font-size:12px;color:var(--green);">✓ No competency gaps identified. This person is at or above required level in all assessed competencies.</div>`;
+  
+  const items=[...gaps.sort((a,b)=>(parseInt(b.required)-parseInt(b.current))-(parseInt(a.required)-parseInt(a.current))), ...unassessed];
+  
+  return items.map((c,i)=>{
+    const diff=c.current?parseInt(c.required)-parseInt(c.current):parseInt(c.required)||'?';
+    const isUnassessed=!c.current;
+    const priority=isUnassessed?'assess first':diff>=2?'High':'Medium';
+    const prColor=diff>=2||isUnassessed?'red':'amber';
+    const td=emp.td_plans?.[c.name]||{};
+    
+    return `<div class="td-gap-item">
+      <div class="tdgi-header">
+        <span class="tdgi-comp">${c.name}</span>
+        <span class="tdgi-gap gap-indicator gap-${diff>=2||isUnassessed?'large':'small'}">${isUnassessed?'Assess first':'Gap of '+diff} · Priority: ${priority}</span>
+      </div>
+      <div class="tdgi-body">
+        <div class="tdgi-field">
+          <label class="tdgi-label">Learning Method</label>
+          <select class="tdgi-select" onchange="updateTD('${c.name.replace(/'/g,"\\'")}','method',this.value)">
+            <option ${(td.method||'')==='?'?'selected':''}>— Select —</option>
+            <option ${td.method==='Formal training / course'?'selected':''}>Formal training / course</option>
+            <option ${td.method==='On-the-job coaching'?'selected':''}>On-the-job coaching</option>
+            <option ${td.method==='Mentoring / shadowing'?'selected':''}>Mentoring / shadowing</option>
+            <option ${td.method==='Stretch assignment'?'selected':''}>Stretch assignment</option>
+            <option ${td.method==='Self-directed learning'?'selected':''}>Self-directed learning</option>
+            <option ${td.method==='External certification'?'selected':''}>External certification</option>
+          </select>
+        </div>
+        <div class="tdgi-field">
+          <label class="tdgi-label">Specific Action / Resource</label>
+          <input class="tdgi-input" value="${td.action||''}" placeholder="e.g. Nokia NRS II certification" onchange="updateTD('${c.name.replace(/'/g,"\\'")}','action',this.value)">
+        </div>
+        <div class="tdgi-field">
+          <label class="tdgi-label">Target Completion</label>
+          <input class="tdgi-input" value="${td.timeline||''}" placeholder="e.g. Q3 2026" onchange="updateTD('${c.name.replace(/'/g,"\\'")}','timeline',this.value)">
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function updateSummary(){
+  const emp=getCurrent();
+  if(!emp){return;}
+  const comps=emp.competencies||[];
+  const total=comps.length;
+  let met=0,gap=0,crit=0,unset=0;
+  comps.forEach(c=>{
+    if(!c.required)return;
+    if(!c.current){unset++;return;}
+    const diff=parseInt(c.required)-parseInt(c.current);
+    if(diff<=0)met++;
+    else if(diff===1)gap++;
+    else crit++;
+  });
+  const pct=total>0?Math.round((met/total)*100):0;
+  const circ=213.6;
+  document.getElementById('sum-ring').style.strokeDashoffset=circ-(circ*pct/100);
+  document.getElementById('sum-pct').textContent=pct+'%';
+  document.getElementById('s-total').textContent=total;
+  document.getElementById('s-met').textContent=met;
+  document.getElementById('s-gap').textContent=gap;
+  document.getElementById('s-crit').textContent=crit;
+  document.getElementById('s-unset').textContent=unset;
+  
+  const gapComps=comps.filter(c=>c.required&&c.current&&parseInt(c.required)>parseInt(c.current))
+    .sort((a,b)=>(parseInt(b.required)-parseInt(b.current))-(parseInt(a.required)-parseInt(a.current)))
+    .slice(0,5);
+  
+  document.getElementById('sum-gaps').innerHTML=gapComps.length?
+    gapComps.map(c=>`<div style="padding:3px 0;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;"><span>${c.name}</span><span style="color:var(--red);font-family:'DM Mono',monospace;font-size:9px;">-${parseInt(c.required)-parseInt(c.current)}</span></div>`).join(''):
+    '<div style="color:var(--green);font-size:11px;">No gaps identified</div>';
+}
+
+// ── ACTIONS ──
+function updateEmp(key,val){
+  const emp=getCurrent();if(!emp)return;
+  emp[key]=val;saveData();
+  document.getElementById('mh-name').textContent=emp.name;
+  renderEmpList();
+}
+
+function updateComp(idx,key,val){
+  const emp=getCurrent();if(!emp)return;
+  if(!emp.competencies[idx])return;
+  emp.competencies[idx][key]=val;
+  saveData();updateSummary();
+  document.getElementById('td-plan').innerHTML=renderTDPlan();
+}
+
+function setLevel(idx,type,val){
+  const emp=getCurrent();if(!emp)return;
+  if(!emp.competencies[idx])return;
+  emp.competencies[idx][type]=val;
+  saveData();
+  // Re-render just the row
+  const row=document.getElementById('comp-row-'+idx);
+  if(row)row.outerHTML=renderCompRow(emp.competencies[idx],idx);
+  updateSummary();
+  document.getElementById('td-plan').innerHTML=renderTDPlan();
+  renderEmpList();
+}
+
+function updateTD(compName,key,val){
+  const emp=getCurrent();if(!emp)return;
+  if(!emp.td_plans)emp.td_plans={};
+  if(!emp.td_plans[compName])emp.td_plans[compName]={};
+  emp.td_plans[compName][key]=val;
+  saveData();
+}
+
+function addCompFromLib(){
+  const sel=document.getElementById('lib-select');
+  const val=sel.value;if(!val)return;
+  const emp=getCurrent();if(!emp)return;
+  if(!emp.competencies)emp.competencies=[];
+  if(emp.competencies.find(c=>c.name===val)){sel.value='';return;}
+  emp.competencies.push({name:val,required:null,current:null});
+  sel.value='';saveData();renderMatrix();
+}
+
+function addBlankComp(){
+  const emp=getCurrent();if(!emp)return;
+  if(!emp.competencies)emp.competencies=[];
+  emp.competencies.push({name:'',required:null,current:null});
+  saveData();renderMatrix();
+  setTimeout(()=>{
+    const inputs=document.querySelectorAll('.comp-name-input');
+    if(inputs.length)inputs[inputs.length-1].focus();
+  },50);
+}
+
+function deleteComp(idx){
+  const emp=getCurrent();if(!emp)return;
+  emp.competencies.splice(idx,1);
+  saveData();renderMatrix();
+}
+
+function addEmployee(){
+  const name=prompt('Employee full name:');
+  if(!name||!name.trim())return;
+  employees.push({name:name.trim(),role:'',kad:'',location:'',assessed_by:'',assessed_date:'',competencies:[],td_plans:{}});
+  saveData();renderEmpList();selectEmployee(employees.length-1);
+}
+
+function importEmployees(){
+  alert('To load from Audit CSV:\n1. Export your audit CSV from the Audit tool\n2. This will pre-populate the employee list with all names, KADs, and roles.\n\nFor now, add employees manually or paste a name list.');
+}
+
+// ── EXPORT ──
+function exportAllCSV(){
+  const rows=[['Name','KAD','Role','Location','HRBP','Assessment Date','Competency','Required Level','Current Level','Gap','Priority','Learning Method','Action / Resource','Target Date']];
+  employees.forEach(emp=>{
+    (emp.competencies||[]).forEach(c=>{
+      const diff=c.required&&c.current?parseInt(c.required)-parseInt(c.current):'';
+      const priority=!c.current?'Assess first':diff>=2?'High':diff===1?'Medium':'None';
+      const td=(emp.td_plans||{})[c.name]||{};
+      rows.push([emp.name,emp.kad,emp.role,emp.location,emp.assessed_by,emp.assessed_date,c.name,c.required||'',c.current||'',diff,priority,td.method||'',td.action||'',td.timeline||'']);
+    });
+    if(!emp.competencies||!emp.competencies.length){
+      rows.push([emp.name,emp.kad,emp.role,emp.location,emp.assessed_by,emp.assessed_date,'(no competencies yet)','','','','','','','']);
+    }
+  });
+  const csv=rows.map(r=>r.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
+  const blob=new Blob([csv],{type:'text/csv'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;a.download=`telinno_TD_plans_${new Date().toISOString().slice(0,10)}.csv`;
+  a.click();URL.revokeObjectURL(url);
+}
+
+// ── INIT ──
+loadData();
+renderEmpList();
+document.getElementById('emp-search').addEventListener('input',e=>renderEmpList(e.target.value));
+</script>
+</body>
+</html>

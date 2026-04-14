@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Telinno — People Audit v2</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#0c1018;--ink-2:#131924;--ink-3:#1a2235;--surface:#1e293b;
+  --border:rgba(255,255,255,0.07);--border-mid:rgba(255,255,255,0.12);
+  --text:#e2ddd5;--text-muted:#7a7570;--text-dim:#3d3a36;
+  --gold:#c9ab47;--gold-bg:rgba(201,171,71,0.09);--gold-border:rgba(201,171,71,0.22);
+  --red:#e05555;--red-bg:rgba(224,85,85,0.09);--red-border:rgba(224,85,85,0.2);
+  --amber:#d4922a;--amber-bg:rgba(212,146,42,0.09);--amber-border:rgba(212,146,42,0.22);
+  --green:#4d9e82;--green-bg:rgba(77,158,130,0.09);--green-border:rgba(77,158,130,0.22);
+  --blue:#4a85c8;--blue-bg:rgba(74,133,200,0.09);--blue-border:rgba(74,133,200,0.22);
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'DM Sans',sans-serif;background:var(--ink);color:var(--text);min-height:100vh;display:flex;flex-direction:column;}
+
+/* ── HRBP LOGIN SCREEN ── */
+#login-screen{position:fixed;inset:0;background:var(--ink);z-index:999;display:flex;align-items:center;justify-content:center;}
+.login-box{background:var(--ink-2);border:1px solid var(--border-mid);border-radius:12px;padding:40px 44px;width:420px;text-align:center;}
+.login-logo{font-family:'DM Mono',monospace;font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:var(--gold);margin-bottom:6px;}
+.login-title{font-family:'Playfair Display',serif;font-size:24px;font-weight:700;margin-bottom:6px;}
+.login-sub{font-size:12px;color:var(--text-muted);margin-bottom:28px;line-height:1.6;}
+.login-field{text-align:left;margin-bottom:14px;}
+.login-label{font-family:'DM Mono',monospace;font-size:8.5px;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-dim);display:block;margin-bottom:5px;}
+.login-input{width:100%;background:var(--ink-3);border:1px solid var(--border-mid);border-radius:5px;padding:9px 11px;font-size:12.5px;color:var(--text);outline:none;transition:border-color 0.15s;}
+.login-input:focus{border-color:var(--gold-border);}
+.login-input::placeholder{color:var(--text-dim);}
+.login-select{width:100%;background:var(--ink-3);border:1px solid var(--border-mid);border-radius:5px;padding:9px 11px;font-size:12.5px;color:var(--text);outline:none;cursor:pointer;}
+.login-btn{width:100%;background:var(--gold-bg);border:1px solid var(--gold-border);color:var(--gold);font-family:'DM Mono',monospace;font-size:10px;letter-spacing:0.08em;text-transform:uppercase;padding:11px;border-radius:5px;cursor:pointer;margin-top:6px;transition:all 0.15s;}
+.login-btn:hover{background:rgba(201,171,71,0.16);}
+.login-note{font-size:10.5px;color:var(--text-dim);margin-top:14px;line-height:1.6;}
+
+/* ── TOPBAR ── */
+#topbar{background:var(--ink-2);border-bottom:1px solid var(--border);padding:0 20px;height:50px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;flex-shrink:0;}
+.topbar-left{display:flex;align-items:center;gap:10px;}
+.brand-name{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:var(--gold);}
+.hrbp-badge{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:0.06em;padding:3px 9px;border-radius:3px;background:var(--gold-bg);border:1px solid var(--gold-border);color:var(--gold);}
+.topbar-stats{display:flex;gap:16px;align-items:center;}
+.ts-stat{display:flex;align-items:baseline;gap:4px;}
+.ts-num{font-family:'DM Mono',monospace;font-size:14px;}
+.ts-label{font-size:9.5px;color:var(--text-dim);}
+.ts-num.red{color:var(--red);} .ts-num.amber{color:var(--amber);} .ts-num.green{color:var(--green);}
+.topbar-actions{display:flex;gap:6px;}
+.btn{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:0.06em;text-transform:uppercase;padding:6px 12px;border-radius:4px;cursor:pointer;border:1px solid var(--border-mid);background:var(--ink-3);color:var(--text-muted);transition:all 0.15s;}
+.btn:hover{color:var(--text);border-color:var(--text-dim);}
+.btn.primary{background:var(--gold-bg);border-color:var(--gold-border);color:var(--gold);}
+.btn.primary:hover{background:rgba(201,171,71,0.16);}
+
+/* ── LAYOUT ── */
+#layout{display:flex;flex:1;overflow:hidden;height:calc(100vh - 88px);}
+
+/* ── ROSTER ── */
+#roster-panel{width:300px;min-width:300px;background:var(--ink-2);border-right:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden;}
+#roster-header{padding:12px 14px 10px;border-bottom:1px solid var(--border);flex-shrink:0;}
+#search-input{width:100%;background:var(--ink-3);border:1px solid var(--border-mid);border-radius:4px;padding:7px 9px;font-size:11.5px;color:var(--text);outline:none;margin-bottom:6px;}
+#search-input:focus{border-color:var(--gold-border);}
+#search-input::placeholder{color:var(--text-dim);}
+.roster-filters{display:flex;gap:5px;}
+.r-filter{flex:1;background:var(--ink-3);border:1px solid var(--border-mid);border-radius:4px;padding:5px 6px;font-family:'DM Mono',monospace;font-size:9px;color:var(--text-muted);outline:none;cursor:pointer;}
+.roster-count{font-family:'DM Mono',monospace;font-size:9px;color:var(--text-dim);margin-top:6px;}
+#roster-list{flex:1;overflow-y:auto;}
+#roster-list::-webkit-scrollbar{width:3px;} #roster-list::-webkit-scrollbar-thumb{background:var(--border);}
+.person-row{display:flex;align-items:center;gap:9px;padding:10px 14px;cursor:pointer;border-bottom:1px solid var(--border);transition:background 0.12s;border-left:2px solid transparent;}
+.person-row:hover{background:rgba(255,255,255,0.03);}
+.person-row.active{background:var(--gold-bg);border-left-color:var(--gold);}
+.person-completion{width:28px;height:28px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-family:'DM Mono',monospace;font-size:8.5px;font-weight:500;}
+.person-info{flex:1;min-width:0;}
+.person-name{font-size:11.5px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.person-meta{font-size:9.5px;color:var(--text-muted);margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.kad-badge{font-family:'DM Mono',monospace;font-size:7.5px;letter-spacing:0.04em;padding:2px 5px;border-radius:2px;flex-shrink:0;}
+.kad-KAD1{background:rgba(201,171,71,0.12);color:#c9ab47;}
+.kad-KAD2{background:rgba(74,133,200,0.12);color:#4a85c8;}
+.kad-KAD3{background:rgba(224,112,96,0.12);color:#e07060;}
+.kad-KAD4{background:rgba(77,158,130,0.12);color:#4d9e82;}
+.kad-SS{background:rgba(139,127,212,0.12);color:#8b7fd4;}
+
+/* ── AUDIT PANEL ── */
+#audit-panel{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0;}
+#audit-header{padding:16px 24px 12px;border-bottom:1px solid var(--border);flex-shrink:0;}
+.audit-name{font-family:'Playfair Display',serif;font-size:20px;font-weight:700;margin-bottom:5px;}
+.audit-meta{display:flex;gap:7px;flex-wrap:wrap;}
+.meta-chip{font-family:'DM Mono',monospace;font-size:8.5px;letter-spacing:0.05em;padding:3px 8px;border-radius:2px;border:1px solid var(--border-mid);color:var(--text-muted);}
+#audit-body{flex:1;overflow-y:auto;padding:16px 24px 48px;}
+#audit-body::-webkit-scrollbar{width:4px;} #audit-body::-webkit-scrollbar-thumb{background:var(--border);}
+
+/* Audit sections */
+.audit-section{margin-bottom:24px;}
+.as-header{display:flex;align-items:center;gap:8px;margin-bottom:10px;padding-bottom:7px;border-bottom:1px solid var(--border);}
+.as-phase-tag{font-family:'DM Mono',monospace;font-size:8px;letter-spacing:0.08em;text-transform:uppercase;padding:2px 7px;border-radius:2px;}
+.as-title{font-size:12.5px;font-weight:600;color:var(--text);}
+.as-crit{font-family:'DM Mono',monospace;font-size:8px;letter-spacing:0.05em;margin-left:auto;padding:2px 7px;border-radius:2px;}
+.crit-critical{background:var(--red-bg);color:var(--red);border:1px solid var(--red-border);}
+.crit-important{background:var(--amber-bg);color:var(--amber);border:1px solid var(--amber-border);}
+.crit-building{background:var(--green-bg);color:var(--green);border:1px solid var(--green-border);}
+
+.as-intro{font-size:11px;color:var(--text-muted);line-height:1.6;margin-bottom:10px;padding:8px 11px;background:var(--ink-2);border-radius:5px;}
+
+.audit-fields{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.audit-fields.single{grid-template-columns:1fr;}
+.audit-field{background:var(--ink-2);border:1px solid var(--border);border-radius:6px;padding:11px 13px;}
+.field-top{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:5px;}
+.field-label{font-size:11.5px;font-weight:500;color:var(--text);flex:1;line-height:1.4;}
+.toggle-group{display:flex;border-radius:4px;overflow:hidden;flex-shrink:0;}
+.tg-btn{font-family:'DM Mono',monospace;font-size:8px;letter-spacing:0.04em;padding:4px 8px;cursor:pointer;border:1px solid var(--border-mid);background:var(--ink-3);color:var(--text-dim);transition:all 0.12s;user-select:none;}
+.tg-btn:not(:first-child){border-left:none;}
+.tg-btn:first-child{border-radius:3px 0 0 3px;} .tg-btn:last-child{border-radius:0 3px 3px 0;}
+.tg-btn.ay{background:var(--green-bg);color:var(--green);border-color:var(--green-border);}
+.tg-btn.ap{background:var(--amber-bg);color:var(--amber);border-color:var(--amber-border);}
+.tg-btn.an{background:var(--red-bg);color:var(--red);border-color:var(--red-border);}
+.field-hint{font-size:10px;color:var(--text-muted);line-height:1.5;margin-bottom:5px;}
+.field-note{width:100%;background:var(--ink-3);border:1px solid var(--border);border-radius:3px;padding:5px 7px;font-size:10.5px;color:var(--text);outline:none;resize:none;min-height:28px;line-height:1.5;}
+.field-note:focus{border-color:var(--gold-border);}
+.field-note::placeholder{color:var(--text-dim);}
+
+/* Text fields for documentation */
+.text-field{width:100%;background:var(--ink-3);border:1px solid var(--border-mid);border-radius:4px;padding:7px 9px;font-size:11.5px;color:var(--text);outline:none;transition:border-color 0.15s;}
+.text-field:focus{border-color:var(--gold-border);}
+.text-field::placeholder{color:var(--text-dim);}
+.text-area-field{width:100%;background:var(--ink-3);border:1px solid var(--border-mid);border-radius:4px;padding:7px 9px;font-size:11.5px;color:var(--text);outline:none;resize:vertical;min-height:60px;line-height:1.55;transition:border-color 0.15s;}
+.text-area-field:focus{border-color:var(--gold-border);}
+.text-area-field::placeholder{color:var(--text-dim);}
+
+/* ── RIGHT PANEL ── */
+#right-panel{width:210px;min-width:210px;background:var(--ink-2);border-left:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden;}
+#rp-header{padding:12px 14px 10px;border-bottom:1px solid var(--border);flex-shrink:0;}
+.rp-label{font-family:'DM Mono',monospace;font-size:8.5px;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-dim);margin-bottom:10px;}
+#rp-body{flex:1;overflow-y:auto;padding:12px 14px;}
+#rp-body::-webkit-scrollbar{width:3px;} #rp-body::-webkit-scrollbar-thumb{background:var(--border);}
+
+.ring-wrap{display:flex;justify-content:center;padding:10px 0 8px;position:relative;}
+.ring-center{position:absolute;text-align:center;top:50%;left:50%;transform:translate(-50%,-50%);}
+.ring-pct{font-family:'DM Mono',monospace;font-size:20px;line-height:1;}
+.ring-sub{font-size:8px;color:var(--text-muted);margin-top:2px;}
+
+.phase-bar{margin-bottom:9px;}
+.pb-header{display:flex;justify-content:space-between;margin-bottom:3px;}
+.pb-label{font-size:9.5px;color:var(--text-muted);}
+.pb-pct{font-family:'DM Mono',monospace;font-size:9.5px;color:var(--text-dim);}
+.pb-track{height:3px;background:var(--border-mid);border-radius:2px;overflow:hidden;}
+.pb-fill{height:100%;border-radius:2px;transition:width 0.4s ease;}
+
+.gap-flags{background:var(--ink-3);border-radius:6px;padding:9px 11px;margin-top:10px;}
+.gf-title{font-family:'DM Mono',monospace;font-size:8px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-dim);margin-bottom:7px;}
+.gf-row{display:flex;justify-content:space-between;align-items:center;padding:3.5px 0;border-bottom:1px solid var(--border);}
+.gf-row:last-child{border-bottom:none;}
+.gf-label{font-size:9.5px;color:var(--text-muted);}
+.gf-val{font-family:'DM Mono',monospace;font-size:10px;}
+.gf-val.red{color:var(--red);} .gf-val.amber{color:var(--amber);} .gf-val.green{color:var(--green);}
+
+#export-btn{margin:10px 14px;padding:9px;background:var(--gold-bg);border:1px solid var(--gold-border);border-radius:5px;color:var(--gold);font-family:'DM Mono',monospace;font-size:8.5px;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;text-align:center;transition:all 0.15s;flex-shrink:0;}
+#export-btn:hover{background:rgba(201,171,71,0.16);}
+
+/* Empty state */
+.empty-state{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;color:var(--text-dim);gap:8px;text-align:center;padding:28px;}
+.ei{font-size:28px;opacity:0.4;}
+
+#save-ind{position:fixed;bottom:16px;right:20px;font-family:'DM Mono',monospace;font-size:9px;letter-spacing:0.08em;color:var(--green);opacity:0;transition:opacity 0.3s;z-index:200;}
+#save-ind.v{opacity:1;}
+
+::-webkit-scrollbar{width:4px;} ::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.08);}
+@keyframes fadeIn{from{opacity:0;transform:translateX(6px)}to{opacity:1;transform:translateX(0)}}
+
+/* ── PHASE NAV ── */
+.phase-nav-bar{background:rgba(0,0,0,0.3);border-bottom:1px solid rgba(255,255,255,0.06);padding:0 20px;display:flex;align-items:center;justify-content:space-between;height:38px;flex-shrink:0;}
+.pnb-left{display:flex;align-items:center;gap:0;}
+.pnb-back{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:0.06em;color:rgba(255,255,255,0.25);text-decoration:none;padding-right:14px;border-right:1px solid rgba(255,255,255,0.07);margin-right:14px;transition:color 0.15s;}
+.pnb-back:hover{color:rgba(255,255,255,0.55);}
+.pnb-steps{display:flex;align-items:center;gap:0;}
+.pnb-step{display:flex;align-items:center;gap:5px;padding:0 10px 0 0;font-size:10px;color:rgba(255,255,255,0.22);white-space:nowrap;}
+.pnb-step-dot{width:15px;height:15px;border-radius:50%;border:1.5px solid;display:flex;align-items:center;justify-content:center;font-family:'DM Mono',monospace;font-size:6.5px;font-weight:600;flex-shrink:0;}
+.pnb-step.done{color:rgba(255,255,255,0.38);}
+.pnb-step.active{color:rgba(255,255,255,0.85);}
+.pnb-step-sep{color:rgba(255,255,255,0.1);font-size:9px;margin-right:10px;}
+.pnb-right a{font-family:'DM Mono',monospace;font-size:8.5px;letter-spacing:0.06em;text-transform:uppercase;text-decoration:none;padding:5px 11px;border-radius:4px;border:1px solid;transition:all 0.15s;}
+</style>
+</head>
+<body>
+
+<!-- PORTAL NAV -->
+<div id="portal-nav" style="background:#0b0f18;border-bottom:1px solid rgba(255,255,255,0.06);padding:0 20px;height:38px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:9999;flex-shrink:0;">
+  <a href="index.html" style="font-family:'DM Mono',monospace;font-size:9.5px;letter-spacing:0.12em;text-transform:uppercase;color:#c9ab47;text-decoration:none;display:flex;align-items:center;gap:6px;">
+    <span style="font-size:11px;">←</span> Telinno Portal
+  </a>
+  <div style="display:flex;gap:2px;align-items:center;">
+    <a href="telinno-audit-v2.html" style="font-family:'DM Mono',monospace;font-size:8.5px;letter-spacing:0.06em;text-transform:uppercase;padding:4px 10px;border-radius:3px;color:#6b6660;text-decoration:none;transition:color 0.15s;" onmouseover="this.style.color='#e4dfd7'" onmouseout="this.style.color='#6b6660'">Audit</a>
+    <a href="telinno-jsp.html" style="font-family:'DM Mono',monospace;font-size:8.5px;letter-spacing:0.06em;text-transform:uppercase;padding:4px 10px;border-radius:3px;color:#6b6660;text-decoration:none;" onmouseover="this.style.color='#e4dfd7'" onmouseout="this.style.color='#6b6660'">JSP</a>
+    <a href="telinno-matrix.html" style="font-family:'DM Mono',monospace;font-size:8.5px;letter-spacing:0.06em;text-transform:uppercase;padding:4px 10px;border-radius:3px;color:#6b6660;text-decoration:none;" onmouseover="this.style.color='#e4dfd7'" onmouseout="this.style.color='#6b6660'">Matrix</a>
+    <a href="telinno-hr-plan.html" style="font-family:'DM Mono',monospace;font-size:8.5px;letter-spacing:0.06em;text-transform:uppercase;padding:4px 10px;border-radius:3px;color:#6b6660;text-decoration:none;" onmouseover="this.style.color='#e4dfd7'" onmouseout="this.style.color='#6b6660'">Plan</a>
+    <a href="pvc-v2.html" style="font-family:'DM Mono',monospace;font-size:8.5px;letter-spacing:0.06em;text-transform:uppercase;padding:4px 10px;border-radius:3px;color:#6b6660;text-decoration:none;" onmouseover="this.style.color='#e4dfd7'" onmouseout="this.style.color='#6b6660'">PVC</a>
+  </div>
+</div>
+
+
+<!-- LOGIN SCREEN -->
+<div id="login-screen">
+  <div class="login-box">
+    <div class="login-logo">Telinno Consulting</div>
+    <div class="login-title">People Audit System</div>
+    <div class="login-sub">Each HRBP logs in to fill audit records for their KAD. All data is saved locally and exportable as a CSV for the HR lead to consolidate.</div>
+    <div class="login-field">
+      <label class="login-label">Your Name (HRBP)</label>
+      <input class="login-input" id="login-name" placeholder="e.g. Amadou Guindo">
+    </div>
+    <div class="login-field">
+      <label class="login-label">Your KAD</label>
+      <select class="login-select" id="login-kad">
+        <option value="">— Select your KAD —</option>
+        <option value="KAD1">KAD 1 — Equipment Vendors (ZTE, Nokia)</option>
+        <option value="KAD2">KAD 2 — Huawei, Regulators & Government</option>
+        <option value="KAD3">KAD 3 — Tower Infrastructure (GICL, IHS, ATC)</option>
+        <option value="KAD4">KAD 4 — Telecom Operators (MTN, Airtel, Orange)</option>
+        <option value="SS">Shared Services</option>
+        <option value="ALL">HR Lead — View All KADs</option>
+      </select>
+    </div>
+    <button class="login-btn" onclick="doLogin()">Enter Audit System →</button>
+    <div class="login-note">Data is saved in your browser. Export to CSV at any time to share with the HR lead. The HR lead can merge all four HRBP exports for the full organisational view.</div>
+  </div>
+</div>
+
+<!-- TOPBAR -->
+<div id="topbar" style="display:none;">
+  <div class="topbar-left">
+    <span class="brand-name">Telinno</span>
+    <span style="color:var(--text-dim);margin:0 4px;">·</span>
+    <span style="font-size:11.5px;color:var(--text-muted);">People Audit</span>
+    <span class="hrbp-badge" id="hrbp-badge"></span>
+  </div>
+  <div class="topbar-stats">
+    <div class="ts-stat"><span class="ts-num" id="stat-total">—</span><span class="ts-label">people</span></div>
+    <div class="ts-stat"><span class="ts-num red" id="stat-ns">—</span><span class="ts-label">not started</span></div>
+    <div class="ts-stat"><span class="ts-num amber" id="stat-ip">—</span><span class="ts-label">in progress</span></div>
+    <div class="ts-stat"><span class="ts-num green" id="stat-done">—</span><span class="ts-label">complete</span></div>
+  </div>
+  <div class="topbar-actions">
+    <button class="btn" onclick="switchUser()">Switch HRBP</button>
+    <button class="btn primary" onclick="exportCSV()">↓ Export CSV</button>
+  </div>
+</div>
+
+<!-- LAYOUT -->
+<div id="layout" style="display:none;">
+
+  <!-- ROSTER -->
+  <div id="roster-panel">
+    <div id="roster-header">
+      <input type="text" id="search-input" placeholder="Search name or role…">
+      <div class="roster-filters">
+        <select class="r-filter" id="f-kad">
+          <option value="">All KADs</option>
+          <option value="KAD1">KAD 1</option><option value="KAD2">KAD 2</option>
+          <option value="KAD3">KAD 3</option><option value="KAD4">KAD 4</option>
+          <option value="SS">Shared Svcs</option>
+        </select>
+        <select class="r-filter" id="f-status">
+          <option value="">All statuses</option>
+          <option value="0">Not started</option>
+          <option value="partial">In progress</option>
+          <option value="100">Complete</option>
+        </select>
+      </div>
+      <div class="roster-count" id="roster-count"></div>
+    </div>
+    <div id="roster-list"></div>
+  </div>
+
+  <!-- AUDIT PANEL -->
+  <div id="audit-panel">
+    <div class="empty-state" id="empty-state">
+      <div class="ei">◎</div>
+      <div style="font-size:12px;line-height:1.6;color:var(--text-dim);">Select a person from the<br>roster to begin their audit</div>
+    </div>
+    <div id="audit-content" style="display:none;flex:1;flex-direction:column;overflow:hidden;">
+      <div id="audit-header">
+        <div class="audit-name" id="a-name"></div>
+        <div class="audit-meta" id="a-meta"></div>
+      </div>
+      <div id="audit-body"></div>
+    </div>
+  </div>
+
+  <!-- RIGHT PANEL -->
+  <div id="right-panel">
+    <div id="rp-header">
+      <div class="rp-label">Audit Progress</div>
+      <div class="ring-wrap">
+        <svg width="78" height="78" viewBox="0 0 78 78" style="transform:rotate(-90deg)">
+          <circle cx="39" cy="39" r="32" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="5.5"/>
+          <circle id="ring-fill" cx="39" cy="39" r="32" fill="none" stroke="#4d9e82" stroke-width="5.5"
+            stroke-dasharray="201.06" stroke-dashoffset="201.06" stroke-linecap="round" style="transition:stroke-dashoffset 0.5s ease"/>
+        </svg>
+        <div class="ring-center">
+          <div class="ring-pct" id="ring-pct" style="color:var(--green)">0%</div>
+          <div class="ring-sub">done</div>
+        </div>
+      </div>
+    </div>
+    <div id="rp-body">
+      <div style="margin-bottom:14px;">
+        <div class="phase-bar"><div class="pb-header"><span class="pb-label">P1 Legal</span><span class="pb-pct" id="pct-p1">0%</span></div><div class="pb-track"><div class="pb-fill" id="bar-p1" style="width:0%;background:var(--red)"></div></div></div>
+        <div class="phase-bar"><div class="pb-header"><span class="pb-label">P2 Documentation</span><span class="pb-pct" id="pct-p2">0%</span></div><div class="pb-track"><div class="pb-fill" id="bar-p2" style="width:0%;background:var(--amber)"></div></div></div>
+        <div class="phase-bar"><div class="pb-header"><span class="pb-label">P3 Role Clarity</span><span class="pb-pct" id="pct-p3">0%</span></div><div class="pb-track"><div class="pb-fill" id="bar-p3" style="width:0%;background:var(--gold)"></div></div></div>
+        <div class="phase-bar"><div class="pb-header"><span class="pb-label">P4 Performance</span><span class="pb-pct" id="pct-p4">0%</span></div><div class="pb-track"><div class="pb-fill" id="bar-p4" style="width:0%;background:var(--blue)"></div></div></div>
+        <div class="phase-bar"><div class="pb-header"><span class="pb-label">P5 Pay & Grade</span><span class="pb-pct" id="pct-p5">0%</span></div><div class="pb-track"><div class="pb-fill" id="bar-p5" style="width:0%;background:var(--green)"></div></div></div>
+        <div class="phase-bar"><div class="pb-header"><span class="pb-label">P6 Experience</span><span class="pb-pct" id="pct-p6">0%</span></div><div class="pb-track"><div class="pb-fill" id="bar-p6" style="width:0%;background:#8b7fd4"></div></div></div>
+      </div>
+      <div class="gap-flags">
+        <div class="gf-title">Org-Wide Flags</div>
+        <div class="gf-row"><span class="gf-label">No contract</span><span class="gf-val red" id="f-contract">—</span></div>
+        <div class="gf-row"><span class="gf-label">No JD</span><span class="gf-val red" id="f-jd">—</span></div>
+        <div class="gf-row"><span class="gf-label">No success profile</span><span class="gf-val red" id="f-sp">—</span></div>
+        <div class="gf-row"><span class="gf-label">No payslip</span><span class="gf-val red" id="f-pay">—</span></div>
+        <div class="gf-row"><span class="gf-label">No goals</span><span class="gf-val red" id="f-goals">—</span></div>
+        <div class="gf-row"><span class="gf-label">Grade unknown</span><span class="gf-val amber" id="f-grade">—</span></div>
+        <div class="gf-row"><span class="gf-label">Flight risk</span><span class="gf-val amber" id="f-flight">—</span></div>
+      </div>
+    </div>
+    <div id="export-btn" onclick="exportCSV()">↓ Export CSV</div>
+  </div>
+</div>
+
+<div id="save-ind">✓ Saved</div>
+
+<script>
+// ── PEOPLE DATA ──
+const PEOPLE = [{"kad":"KAD1","name":"Kingsley Okougha","kad_role":"KAD Leader","location":"Nigeria","client1":"Huawei"},{"kad":"KAD1","name":"Amadou Guindo","kad_role":"HRBP","location":"Mali","client1":""},{"kad":"KAD1","name":"Sadio Sissoko","kad_role":"Account Manager","location":"Mali","client1":""},{"kad":"KAD1","name":"Yamoussa Traore","kad_role":"SME-RAN","location":"Mali","client1":"Nokia"},{"kad":"KAD1","name":"Djenebou SOW","kad_role":"Finance Manager","location":"Mali","client1":"Nokia"},{"kad":"KAD1","name":"Mohammed Abubakar","kad_role":"Procurement Manager","location":"Nigeria","client1":"Nokia"},{"kad":"KAD1","name":"Ahmed Olaitan","kad_role":"Project Coordinator (Intern)","location":"Nigeria","client1":""},{"kad":"KAD1","name":"Abang Juvert Ebotashu","kad_role":"Project Manager","location":"Cameroon","client1":"ZTE"},{"kad":"KAD1","name":"Ali Samuel Ojodomo","kad_role":"Account Manager","location":"Nigeria","client1":"Huawei"},{"kad":"KAD1","name":"Kouadio Yoa Theophile","kad_role":"Account Manager","location":"CIV","client1":"ZTE"},{"kad":"KAD1","name":"Janet Akwi","kad_role":"Account Manager","location":"Cameroon","client1":"ZTE"},{"kad":"KAD1","name":"Kevin Bissong Bissong","kad_role":"Project Coordinator","location":"Cameroon","client1":"ZTE"},{"kad":"KAD1","name":"Njirinze Ebuka Frankyn","kad_role":"I&C Technician","location":"Cameroon","client1":"ZTE"},{"kad":"KAD1","name":"Fanta Fomba","kad_role":"RNO Engineer","location":"Mali","client1":"Nokia"},{"kad":"KAD1","name":"Djeneba Ba","kad_role":"RNO Engineer","location":"Mali","client1":"Nokia"},{"kad":"KAD1","name":"Kadidia Coulibaly","kad_role":"RNO Engineer","location":"Mali","client1":"Nokia"},{"kad":"KAD1","name":"Oumou Diallo","kad_role":"RNO Engineer","location":"Mali","client1":"Nokia"},{"kad":"KAD1","name":"Bassiaka Guindo","kad_role":"Project Manager","location":"Mali","client1":"Nokia"},{"kad":"KAD1","name":"N'Zi Jose Marc Devine","kad_role":"I&C Engineer","location":"CIV","client1":"Nokia"},{"kad":"KAD1","name":"Kafando Youssouf","kad_role":"I&C Technician","location":"CIV","client1":"Nokia"},{"kad":"KAD1","name":"EFE Nomouja","kad_role":"Project Manager","location":"CIV","client1":"Nokia"},{"kad":"KAD1","name":"Guy Marcel Mondoleba Mouili","kad_role":"Project Coordinator","location":"CIV","client1":"Nokia"},{"kad":"KAD1","name":"MONNET AHOU ERIC FRANCIS","kad_role":"I&C Engineer","location":"CIV","client1":"Nokia"},{"kad":"KAD1","name":"Andoh Lokoko","kad_role":"Driver","location":"CIV","client1":"Nokia"},{"kad":"KAD1","name":"Koffitolat Joseph","kad_role":"Driver","location":"CIV","client1":"Nokia"},{"kad":"KAD1","name":"Korahi Didier","kad_role":"Driver","location":"CIV","client1":"Nokia"},{"kad":"KAD1","name":"Kindo Boureima","kad_role":"Driver","location":"CIV","client1":"Nokia"},{"kad":"KAD1","name":"Mamadou BAH","kad_role":"I&C Technician","location":"Mali","client1":"Nokia"},{"kad":"KAD1","name":"Bima Coulibaly","kad_role":"I&C Engineer","location":"Mali","client1":"Nokia"},{"kad":"KAD1","name":"Jean Apporte Kounan Koffi","kad_role":"QHSE Officer","location":"Mali","client1":"Nokia"},{"kad":"KAD2","name":"Dayo Oyeniyi","kad_role":"KAD Leader","location":"SA","client1":"Huawei"},{"kad":"KAD2","name":"Luvie Mafotsang","kad_role":"HRBP","location":"Cameroon","client1":""},{"kad":"KAD2","name":"Umar Masud","kad_role":"SME-RNO","location":"Niger","client1":"Moov"},{"kad":"KAD2","name":"Mohammed Ibrahim","kad_role":"Senior Account Manager","location":"Nigeria","client1":"Huawei (Airtel)"},{"kad":"KAD2","name":"Ojebuovboh Frederick Ailohi","kad_role":"QHSE Manager","location":"Nigeria","client1":""},{"kad":"KAD2","name":"Adedayo Adeyemi","kad_role":"Project Manager","location":"SA","client1":"Huawei"},{"kad":"KAD2","name":"Nwonkwo Donald","kad_role":"Procurement Manager","location":"Nigeria","client1":"Huawei"},{"kad":"KAD2","name":"Samuel Mauyon","kad_role":"Project Coordinator (Intern)","location":"Nigeria","client1":""},{"kad":"KAD2","name":"Haastrup Adeniyi .D.","kad_role":"Finance Manager","location":"Nigeria","client1":""},{"kad":"KAD2","name":"Adegboye Adeola","kad_role":"Account Officer (Intern)","location":"Nigeria","client1":""},{"kad":"KAD2","name":"Yakubu Isyaku Success","kad_role":"Project Manager","location":"Nigeria","client1":"Huawei (MTN)"},{"kad":"KAD2","name":"Joel Abuganto","kad_role":"Project Coordinator","location":"Nigeria","client1":"Huawei (MTN)"},{"kad":"KAD2","name":"Komolafe Adedamola Elkanah","kad_role":"Project Coordinator","location":"Nigeria","client1":"Huawei (MTN)"},{"kad":"KAD2","name":"Oguntona Ibukun","kad_role":"Account Manager","location":"Nigeria","client1":""},{"kad":"KAD2","name":"NNANNA MARTINS","kad_role":"RNO Technician","location":"Nigeria","client1":"NCC"},{"kad":"KAD2","name":"Samuel Amogu","kad_role":"RNO Technician","location":"Nigeria","client1":"NCC"},{"kad":"KAD2","name":"Oye Reuben Ojo","kad_role":"RNO Technician","location":"Nigeria","client1":"NCC"},{"kad":"KAD2","name":"Jacob Ezekiel","kad_role":"RNO Technician","location":"Nigeria","client1":"NCC"},{"kad":"KAD2","name":"Oyewale Babatunde Simon","kad_role":"RNO Technician","location":"Nigeria","client1":"NCC"},{"kad":"KAD2","name":"Akinrinade Emmanuel Adeyinka","kad_role":"RNO Technician","location":"Nigeria","client1":"NCC"},{"kad":"KAD2","name":"Micheal Akindehin","kad_role":"Project Manager","location":"Nigeria","client1":"NCC"},{"kad":"KAD3","name":"Chikezie Nwogu","kad_role":"KAD Leader","location":"Nigeria","client1":"Huawei"},{"kad":"KAD3","name":"Adeniyi Oluwadimimu","kad_role":"HRBP","location":"Nigeria","client1":""},{"kad":"KAD3","name":"Shuaibu Mohammed","kad_role":"SME-Fiber","location":"Nigeria","client1":"GICL"},{"kad":"KAD3","name":"Ebube Peace","kad_role":"Procurement Officer (Intern)","location":"Nigeria","client1":""},{"kad":"KAD3","name":"Yunus Salim Ayotomiwa","kad_role":"Account Officer (Intern)","location":"Nigeria","client1":"ATC"},{"kad":"KAD3","name":"Bashiru isah","kad_role":"Fiber Engineer","location":"Nigeria","client1":"GICL"},{"kad":"KAD3","name":"Usman Abubakar","kad_role":"Fiber Engineer","location":"Nigeria","client1":"GICL"},{"kad":"KAD3","name":"Ibrahim Babatunde","kad_role":"Fiber Engineer","location":"Nigeria","client1":"GICL"},{"kad":"KAD3","name":"Nazing Garba","kad_role":"Fiber Technician","location":"Nigeria","client1":"GICL"},{"kad":"KAD3","name":"Balogun Francis Onimisi","kad_role":"Fiber Engineer","location":"Nigeria","client1":"GICL"},{"kad":"KAD3","name":"Shuaibu Abdulrasak","kad_role":"Fiber Technician","location":"Nigeria","client1":"GICL"},{"kad":"KAD3","name":"Ekeoha Christopher Chukwuemeka","kad_role":"Project Manager","location":"Nigeria","client1":"IHS"},{"kad":"KAD3","name":"Enyiorji Chinonso","kad_role":"Fiber Technician","location":"Nigeria","client1":"GICL"},{"kad":"KAD3","name":"Onyeaku Okechukwu Henry","kad_role":"Fiber Technician","location":"Nigeria","client1":"GICL"},{"kad":"KAD3","name":"Lukas Daniel","kad_role":"Fiber Engineer","location":"Nigeria","client1":"GICL"},{"kad":"KAD3","name":"Agunbiade Sulaimon","kad_role":"Project Support Officer","location":"Nigeria","client1":"GICL"},{"kad":"KAD3","name":"Adeoye Oladele Adesola","kad_role":"Project Manager","location":"Nigeria","client1":"GICL"},{"kad":"KAD3","name":"Obateru Tosin Mary","kad_role":"Account Manager","location":"Nigeria","client1":"GICL"},{"kad":"KAD3","name":"Suleiman Abdulmalik","kad_role":"Project Manager","location":"Nigeria","client1":"GICL"},{"kad":"KAD3","name":"Agbamuche Chris","kad_role":"Fiber Technician","location":"Nigeria","client1":"GICL"},{"kad":"KAD4","name":"Issaka Djibo Abdoul Aziz","kad_role":"KAD Leader","location":"Niger","client1":"Moov"},{"kad":"KAD4","name":"Bassira Abdou Laouali","kad_role":"HRBP","location":"Niger","client1":""},{"kad":"KAD4","name":"Ubon Ukpong Augustine","kad_role":"SME-Infrastructure","location":"Liberia","client1":"Orange"},{"kad":"KAD4","name":"Latifa Maman Sani","kad_role":"Account Manager","location":"Niger","client1":"Moov"},{"kad":"KAD4","name":"Aissata Dicko","kad_role":"Account Manager","location":"Mali","client1":"Orange"},{"kad":"KAD4","name":"Bintou Gnamba","kad_role":"Procurement Manager","location":"Mali","client1":"Orange"},{"kad":"KAD4","name":"Monthe Christelle Djuimo","kad_role":"Account Manager","location":"Cameroon","client1":"Orange"},{"kad":"KAD4","name":"Ali Iddrissa","kad_role":"Finance Manager","location":"Niger","client1":"Moov"},{"kad":"KAD4","name":"Garvis Ifeanyi Mukoro","kad_role":"RNO Technician","location":"Cameroon","client1":"Orange"},{"kad":"KAD4","name":"Tchounga Tankeu Simon","kad_role":"RNO Technician","location":"Cameroon","client1":"Orange"},{"kad":"KAD4","name":"Mimbah Sonia Lum","kad_role":"RNO Technician","location":"Cameroon","client1":"Orange"},{"kad":"KAD4","name":"Moussa traore","kad_role":"Fiber Technician","location":"Mali","client1":"Orange"},{"kad":"KAD4","name":"Mahamadou Gassama","kad_role":"Fiber Technician","location":"Mali","client1":"Orange"},{"kad":"KAD4","name":"Kakoin Diarra","kad_role":"Fiber Technician","location":"Mali","client1":"Orange"},{"kad":"KAD4","name":"Maxime Ibrahima Kamara","kad_role":"Fiber Technician","location":"Mali","client1":"Orange"},{"kad":"KAD4","name":"Ibourahima KOITA","kad_role":"Fiber Technician","location":"Mali","client1":"Orange"},{"kad":"KAD4","name":"Mohamadou Diakite","kad_role":"Project Manager","location":"Mali","client1":"Orange"},{"kad":"KAD4","name":"Oumar Tounkara","kad_role":"Driver","location":"Mali","client1":"Orange"},{"kad":"KAD4","name":"Abdoulaye Sissoko","kad_role":"Driver","location":"Mali","client1":"Orange"},{"kad":"KAD4","name":"Mamadou Traore","kad_role":"Driver","location":"Mali","client1":"Orange"},{"kad":"KAD4","name":"Lassina CISSE","kad_role":"Driver","location":"Mali","client1":"Orange"},{"kad":"KAD4","name":"Assa Coulibaly","kad_role":"I&C Technician","location":"Mali","client1":"Orange"},{"kad":"KAD4","name":"Hadjara Coulibaly","kad_role":"I&C Technician","location":"Mali","client1":"Orange"},{"kad":"KAD4","name":"Adeboye Sunday David","kad_role":"Maintenance Engineer","location":"Nigeria","client1":"Smile"},{"kad":"KAD4","name":"Mgbachi Julius","kad_role":"Maintenance Engineer","location":"Nigeria","client1":"Smile"},{"kad":"KAD4","name":"Edota Francis","kad_role":"Maintenance Engineer","location":"Nigeria","client1":"Smile"},{"kad":"KAD4","name":"Ajala Abraham Adura","kad_role":"Maintenance Engineer","location":"Nigeria","client1":"Smile"},{"kad":"KAD4","name":"Osanebe Ifeanyi","kad_role":"Maintenance Engineer","location":"Nigeria","client1":"Smile"},{"kad":"KAD4","name":"Iribogbe Peter","kad_role":"Maintenance Technician","location":"Nigeria","client1":"Smile"},{"kad":"KAD4","name":"Ukpong Nsikan Daniel","kad_role":"Maintenance Technician","location":"Nigeria","client1":"Smile"},{"kad":"KAD4","name":"Ojo Paul Olajide","kad_role":"Maintenance Technician","location":"Nigeria","client1":"Smile"},{"kad":"KAD4","name":"Taiwo Hassan Olatunji","kad_role":"Maintenance Technician","location":"Nigeria","client1":"Smile"},{"kad":"KAD4","name":"Ushene Favour Lucky","kad_role":"Maintenance Technician","location":"Nigeria","client1":"Smile"},{"kad":"KAD4","name":"Adeyemi Glory","kad_role":"Maintenance Engineer","location":"Nigeria","client1":"Smile"},{"kad":"KAD4","name":"Uche Martins Amobi","kad_role":"Maintenance Engineer","location":"Nigeria","client1":"Smile"},{"kad":"KAD4","name":"Yohanna Ruth","kad_role":"Maintenance Technician","location":"Nigeria","client1":"Smile"},{"kad":"KAD4","name":"Odume thomas Ogbona","kad_role":"Project Manager","location":"Nigeria","client1":"MTN"},{"kad":"KAD4","name":"Abdoul Nasser Bello Issoufou","kad_role":"Project Manager","location":"Niger","client1":"Moov"},{"kad":"KAD4","name":"Saley Sode Oumarou","kad_role":"Maintenance Engineer","location":"Niger","client1":"Moov"},{"kad":"KAD4","name":"Souley Mahaman Nourou","kad_role":"Maintenance Engineer","location":"Niger","client1":"Moov"},{"kad":"KAD4","name":"Boubacar Amadou","kad_role":"Maintenance Technician","location":"Niger","client1":"Moov"},{"kad":"KAD4","name":"Galiou Khamed","kad_role":"Maintenance Engineer","location":"Niger","client1":"Moov"},{"kad":"KAD4","name":"Mihiradji Zabeirou Souley","kad_role":"Maintenance Engineer","location":"Niger","client1":"Moov"},{"kad":"KAD4","name":"Acho Askoumi Moussa","kad_role":"Maintenance Engineer","location":"Niger","client1":"Moov"},{"kad":"KAD4","name":"Akim Assani","kad_role":"Maintenance Technician","location":"Niger","client1":"Moov"},{"kad":"KAD4","name":"Abdoul Razak Mahaman Issa","kad_role":"Maintenance Engineer","location":"Niger","client1":"Moov"},{"kad":"KAD4","name":"Kiari Mamada","kad_role":"Maintenance Engineer","location":"Niger","client1":"Moov"},{"kad":"KAD4","name":"Amadou Tidjani","kad_role":"Maintenance Technician","location":"Niger","client1":"Moov"},{"kad":"KAD4","name":"Midjitapha Souley","kad_role":"Maintenance Engineer","location":"Niger","client1":"Moov"},{"kad":"KAD4","name":"Abdourahamane Elhadj Bilal","kad_role":"Maintenance Engineer","location":"Niger","client1":"Moov"},{"kad":"KAD4","name":"Boubacar Ango","kad_role":"Maintenance Engineer","location":"Niger","client1":"Moov"},{"kad":"KAD4","name":"Nadia Boubakar","kad_role":"Maintenance Engineer","location":"Niger","client1":"Moov"},{"kad":"KAD4","name":"Mohamed Harou","kad_role":"Maintenance Engineer","location":"Niger","client1":"Moov"},{"kad":"KAD4","name":"Ibrahim Birgui","kad_role":"Maintenance Engineer","location":"Niger","client1":"Moov"},{"kad":"KAD4","name":"Abdoulaye Djibo","kad_role":"Maintenance Engineer","location":"Niger","client1":"Moov"},{"kad":"KAD4","name":"Salifou Oumarou","kad_role":"Maintenance Engineer","location":"Niger","client1":"Moov"},{"kad":"KAD4","name":"Ismaheel Quadri","kad_role":"RNO Technician","location":"Niger","client1":"Airtel"},{"kad":"KAD4","name":"Abdulshakur Abdulazeez","kad_role":"RNO Technician","location":"Niger","client1":"Airtel"},{"kad":"SS","name":"Babatunde Edward Adeyemi","kad_role":"Group Head IT","location":"Nigeria","client1":""},{"kad":"SS","name":"Mutiat Bamidele","kad_role":"Product Manager","location":"Nigeria","client1":""},{"kad":"SS","name":"David Adediran","kad_role":"Data Analyst","location":"Nigeria","client1":""},{"kad":"SS","name":"Nnamdi Nwonye","kad_role":"Chief of Staff","location":"Nigeria","client1":""},{"kad":"SS","name":"Eloisa Ibok","kad_role":"Commercial Support Analyst","location":"Nigeria","client1":""},{"kad":"SS","name":"Jima Potias","kad_role":"Finance Operations","location":"Nigeria","client1":""},{"kad":"SS","name":"Alpha Diallo","kad_role":"Treasury & Tax","location":"Nigeria","client1":""},{"kad":"SS","name":"Awoyomi Akintomiwa","kad_role":"HR Officer (Intern)","location":"Nigeria","client1":""},{"kad":"SS","name":"Isiaq Krusheed","kad_role":"Project Manager","location":"Nigeria","client1":""},{"kad":"SS","name":"Adewale Emmanuel","kad_role":"Logistics & Resources","location":"Nigeria","client1":""},{"kad":"SS","name":"Mustapha Ayoola Wasiu","kad_role":"Warehouse Logistics","location":"Nigeria","client1":""},{"kad":"SS","name":"Ahmed Zekeri","kad_role":"Logistics Officer","location":"Nigeria","client1":""},{"kad":"SS","name":"Ayunwi meme Fuh","kad_role":"QHSE Officer","location":"Cameroon","client1":""},{"kad":"SS","name":"Emmanuel Oboho","kad_role":"QHSE Officer","location":"CIV","client1":""},{"kad":"SS","name":"Shhukura Opeyemi Abdulrazak","kad_role":"Social Media Manager","location":"Nigeria","client1":""},{"kad":"SS","name":"Jogunomi Oluwatimilehin","kad_role":"Youth Corper","location":"Nigeria","client1":""},{"kad":"SS","name":"Ileaboya Emmanuel","kad_role":"Youth Corper","location":"Nigeria","client1":""},{"kad":"SS","name":"Elimian Caleb","kad_role":"Youth Corper","location":"Nigeria","client1":""},{"kad":"SS","name":"Adewoyin Blessing","kad_role":"Youth Corper","location":"Nigeria","client1":""}];
+
+// ── AUDIT SCHEMA — 6 phases ──
+const PHASES = [
+  {
+    id:'p1',label:'Phase 1 — Legal & Compliance',color:'var(--red)',crit:'critical',
+    intro:'The non-negotiable floor. No people system can be built until these basics are confirmed for every person.',
+    fields:[
+      {id:'contract',label:'Employment contract signed & current post-restructure',hint:'Does a signed, current contract exist reflecting the new KAD structure and role?'},
+      {id:'rtw',label:'Right-to-work / work permit verified',hint:'Particularly critical for cross-border assignments — Nigeria, Mali, Niger, CIV, Cameroon, SA, Liberia each have different requirements.'},
+      {id:'payroll',label:'On payroll with correct name, bank details, and role',hint:'Are payroll records accurate and matching the staff register?'},
+      {id:'payslip',label:'Payslip issued in the last month',hint:'A payslip is a legal requirement in most jurisdictions. "Paid but no payslip" is not compliant.'},
+    ]
+  },
+  {
+    id:'p2',label:'Phase 2 — People Documentation',color:'var(--amber)',crit:'critical',
+    intro:'The most critical gap across Telinno. Documentation must exist before performance can be managed.',
+    fields:[
+      {id:'jd',label:'Job description exists and is current',hint:'Does a written job description exist for this specific KAD role — not generic, not from a previous structure?'},
+      {id:'jsp',label:'Job Success Profile (JSP) completed',hint:'Has a JSP been completed using the Telinno JSP template? This includes success criteria, competencies, and behaviour expectations.'},
+      {id:'competency_assessed',label:'Competency assessment completed',hint:'Has the person been assessed against the competency framework for their role using the Competency Matrix tool?'},
+      {id:'td_plan',label:'Training & Development plan in place',hint:'Does a documented T&D plan exist based on their competency gaps? Not informal conversation — a written plan.'},
+    ]
+  },
+  {
+    id:'p3',label:'Phase 3 — Role Clarity',color:'var(--gold)',crit:'critical',
+    intro:'Every person must know exactly what they are responsible for, who they report to, and what KAD they belong to.',
+    fields:[
+      {id:'kad_confirmed',label:'KAD assignment formally communicated in writing',hint:'Has the person received written confirmation of their KAD, their KAD leader, and what the restructure means for their day-to-day?'},
+      {id:'reporting_clear',label:'Reporting line confirmed and understood',hint:'Does the person know who they report to? And does their manager know this person reports to them?'},
+      {id:'goals',label:'Performance goals documented and agreed',hint:'Does the person have written, SMART goals connected to KAD objectives — not generic, not verbal?'},
+      {id:'grade_confirmed',label:'Role grade / level assigned and communicated',hint:'Has a formal grade been assigned from the Telinno taxonomy: KAD Leader / SME / Manager / Coordinator / Engineer / Technician / Officer / Intern?'},
+    ]
+  },
+  {
+    id:'p4',label:'Phase 4 — Performance Management',color:'var(--blue)',crit:'important',
+    intro:'Performance cannot be managed without a foundation. This phase assumes Phase 3 is complete.',
+    fields:[
+      {id:'onetoone',label:'Regular 1:1 with manager in place (weekly or bi-weekly)',hint:'Is there a structured, recurring 1:1 — not just ad hoc conversations?'},
+      {id:'feedback_30d',label:'Received specific performance feedback in last 30 days',hint:'Behavioural, specific feedback — not just "good job." Has this happened in the last month?'},
+      {id:'no_conduct',label:'No open, unresolved conduct or performance concern',hint:'Flag here if there is an active PIP, conduct matter, or unresolved grievance.'},
+      {id:'mid_year',label:'Mid-year or last review completed',hint:'Has a formal performance review or mid-year check-in happened in the current cycle?'},
+    ]
+  },
+  {
+    id:'p5',label:'Phase 5 — Pay & Grading',color:'var(--green)',crit:'important',
+    intro:'"Vibes-based compensation" is the fastest route to inequity claims and losing good people. Document everything.',
+    fields:[
+      {id:'salary_on_file',label:'Agreed salary documented and on file',hint:'Is the salary formally recorded — not just in payroll, but in a compensation record per person?'},
+      {id:'market_checked',label:'Pay position checked against market for this role and country',hint:'Has the salary been benchmarked against market data for this specific role in this specific country?'},
+      {id:'pay_equity',label:'No known pay equity concern for this person',hint:'Are they paid comparably to peers in equivalent roles? Flag if there is a known or suspected disparity.'},
+      {id:'benefits_communicated',label:'Total reward / benefits communicated and understood',hint:'Does the person know the full value of their compensation package — base, benefits, any variable pay?'},
+    ]
+  },
+  {
+    id:'p6',label:'Phase 6 — Employee Experience & Retention',color:'#8b7fd4',crit:'building',
+    intro:'With foundations in place, this phase assesses the human reality — engagement, development, and retention risk.',
+    fields:[
+      {id:'onboarded',label:'Properly onboarded to KAD role (not just admin)',hint:'Did this person receive a real onboarding — context, team integration, purpose — or just logistics?'},
+      {id:'development',label:'Active development opportunity in place',hint:'Does the person have at least one active development opportunity: a skill being built, a certification, a stretch project?'},
+      {id:'engagement',label:'Engagement assessed — person appears engaged',hint:'Based on HRBP direct observation: does this person show up with intent and energy? Or are they going through motions?'},
+      {id:'not_flight_risk',label:'Not identified as flight risk',hint:'Is there intelligence — from conversations, behaviour, market signals — that this person may be looking elsewhere?'},
+    ]
+  }
+];
+
+// ── STATE ──
+const DKEY = 'telinno_audit_v4';
+let auditData = {};
+let currentPerson = null;
+let currentHRBP = '';
+let currentKAD = '';
+let visiblePeople = [];
+let saveTimer = null;
+
+function loadData(){try{const r=localStorage.getItem(DKEY);if(r)auditData=JSON.parse(r);}catch(e){}}
+function saveData(){try{localStorage.setItem(DKEY,JSON.stringify(auditData));}catch(e){}
+  const ind=document.getElementById('save-ind');ind.classList.add('v');
+  clearTimeout(saveTimer);saveTimer=setTimeout(()=>ind.classList.remove('v'),1500);}
+
+function pKey(p){return p.kad+'::'+p.name;}
+function pData(p){const k=pKey(p);if(!auditData[k])auditData[k]={};return auditData[k];}
+function getVal(p,fid){return pData(p)[fid]||null;}
+function setVal(p,fid,v){pData(p)[fid]=v;saveData();updateTopbar();updateRight();updateRosterRow(p);}
+function getNote(p,fid){return pData(p)[fid+'_note']||'';}
+function setNote(p,fid,v){pData(p)[fid+'_note']=v;saveData();}
+function getText(p,fid){return pData(p)[fid+'_text']||'';}
+function setText(p,fid,v){pData(p)[fid+'_text']=v;saveData();}
+
+// ── COMPLETION ──
+function allFields(){return PHASES.flatMap(p=>p.fields.map(f=>f.id));}
+function pCompletion(p){
+  const d=pData(p);const af=allFields();
+  const ans=af.filter(f=>d[f]&&d[f]!==null).length;
+  return{ans,total:af.length,pct:Math.round((ans/af.length)*100)};
+}
+function phaseCompletion(phaseId){
+  const ph=PHASES.find(p=>p.id===phaseId);
+  let ans=0,tot=0;
+  visiblePeople.forEach(p=>{const d=pData(p);ph.fields.forEach(f=>{tot++;if(d[f.id])ans++;});});
+  return tot>0?Math.round((ans/tot)*100):0;
+}
+function orgCompletion(){let a=0,t=0;visiblePeople.forEach(p=>{const c=pCompletion(p);a+=c.ans;t+=c.total;});return t>0?Math.round((a/t)*100):0;}
+function gapFlags(){
+  const f={contract:0,jd:0,sp:0,pay:0,goals:0,grade:0,flight:0};
+  visiblePeople.forEach(p=>{const d=pData(p);
+    if(d.contract==='no')f.contract++;
+    if(d.jd==='no')f.jd++;
+    if(d.jsp==='no')f.sp++;
+    if(d.payslip==='no')f.pay++;
+    if(d.goals==='no')f.goals++;
+    if(d.grade_confirmed==='no')f.grade++;
+    if(d.not_flight_risk==='no')f.flight++;
+  });return f;
+}
+
+// ── LOGIN ──
+function doLogin(){
+  const name=document.getElementById('login-name').value.trim();
+  const kad=document.getElementById('login-kad').value;
+  if(!name||!kad){alert('Please enter your name and select your KAD.');return;}
+  currentHRBP=name;currentKAD=kad;
+  visiblePeople=kad==='ALL'?PEOPLE:PEOPLE.filter(p=>p.kad===kad);
+  document.getElementById('login-screen').style.display='none';
+  document.getElementById('topbar').style.display='flex';
+  document.getElementById('layout').style.display='flex';
+  document.getElementById('hrbp-badge').textContent=`${name} · ${kad}`;
+  renderRoster();updateTopbar();updateRight();
+}
+function switchUser(){document.getElementById('login-screen').style.display='flex';currentPerson=null;}
+
+// ── ROSTER ──
+function renderRoster(filter='',kadF='',statusF=''){
+  const list=document.getElementById('roster-list');
+  const filtered=visiblePeople.filter(p=>{
+    const ms=!filter||p.name.toLowerCase().includes(filter.toLowerCase())||p.kad_role.toLowerCase().includes(filter.toLowerCase());
+    const mk=!kadF||p.kad===kadF;
+    let ms2=true;
+    if(statusF!==''){const{pct}=pCompletion(p);if(statusF==='0')ms2=pct===0;else if(statusF==='100')ms2=pct===100;else if(statusF==='partial')ms2=pct>0&&pct<100;}
+    return ms&&mk&&ms2;
+  });
+  document.getElementById('roster-count').textContent=`${filtered.length} of ${visiblePeople.length}`;
+  list.innerHTML=filtered.map(p=>{
+    const{pct}=pCompletion(p);
+    const rc=pct===0?'#3d3a36':pct===100?'var(--green)':'var(--amber)';
+    const rb=pct===0?'rgba(61,58,54,0.15)':pct===100?'var(--green-bg)':'var(--amber-bg)';
+    const isActive=currentPerson&&currentPerson.name===p.name&&currentPerson.kad===p.kad;
+    return `<div class="person-row${isActive?' active':''}" onclick="selectPerson('${p.name.replace(/'/g,"\\'")}','${p.kad}')">
+      <div class="person-completion" style="background:${rb};color:${rc};border:1px solid ${rc}40;">${pct}</div>
+      <div class="person-info">
+        <div class="person-name">${p.name}</div>
+        <div class="person-meta">${p.kad_role} · ${p.location}</div>
+      </div>
+      <span class="kad-badge kad-${p.kad}">${p.kad}</span>
+    </div>`;
+  }).join('')||'<div style="padding:14px;font-size:11px;color:var(--text-dim);">No results</div>';
+}
+
+function updateRosterRow(p){
+  const rows=document.querySelectorAll('.person-row');
+  rows.forEach(r=>{
+    if(r.querySelector('.person-name')&&r.querySelector('.person-name').textContent===p.name){
+      const{pct}=pCompletion(p);
+      const rc=pct===0?'#3d3a36':pct===100?'var(--green)':'var(--amber)';
+      const rb=pct===0?'rgba(61,58,54,0.15)':pct===100?'var(--green-bg)':'var(--amber-bg)';
+      const ring=r.querySelector('.person-completion');
+      if(ring){ring.style.background=rb;ring.style.color=rc;ring.style.borderColor=rc+'40';ring.textContent=pct;}
+    }
+  });
+}
+
+// ── SELECT ──
+function selectPerson(name,kad){
+  currentPerson=PEOPLE.find(p=>p.name===name&&p.kad===kad);
+  if(!currentPerson)return;
+  renderRoster(document.getElementById('search-input').value,document.getElementById('f-kad').value,document.getElementById('f-status').value);
+  document.getElementById('empty-state').style.display='none';
+  const ac=document.getElementById('audit-content');ac.style.display='flex';
+  document.getElementById('a-name').textContent=currentPerson.name;
+  const meta=document.getElementById('a-meta');
+  meta.innerHTML=`<span class="meta-chip kad-${currentPerson.kad}">${currentPerson.kad}</span><span class="meta-chip">${currentPerson.kad_role}</span><span class="meta-chip">${currentPerson.location}</span>${currentPerson.client1?`<span class="meta-chip">${currentPerson.client1}</span>`:''}`;
+  renderAuditBody();updateRight();
+}
+
+// ── AUDIT BODY ──
+function renderAuditBody(){
+  const body=document.getElementById('audit-body');
+  body.innerHTML=PHASES.map(ph=>`
+    <div class="audit-section">
+      <div class="as-header">
+        <span class="as-phase-tag" style="background:${ph.color}1a;color:${ph.color};border:1px solid ${ph.color}30;">${ph.id.toUpperCase()}</span>
+        <span class="as-title">${ph.label}</span>
+        <span class="as-crit crit-${ph.crit}">${ph.crit}</span>
+      </div>
+      <div class="as-intro">${ph.intro}</div>
+      <div class="audit-fields">
+        ${ph.fields.map(f=>renderField(ph,f)).join('')}
+      </div>
+    </div>`).join('');
+  // Add documentation text fields
+  renderDocFields();
+  attachEvents();
+}
+
+function renderDocFields(){
+  const body=document.getElementById('audit-body');
+  const p=currentPerson;
+  const docSection=document.createElement('div');
+  docSection.className='audit-section';
+  docSection.innerHTML=`
+    <div class="as-header">
+      <span class="as-phase-tag" style="background:rgba(139,127,212,0.1);color:#8b7fd4;border:1px solid rgba(139,127,212,0.25);">DOCS</span>
+      <span class="as-title">Documentation Record</span>
+      <span class="as-crit crit-important">record</span>
+    </div>
+    <div class="as-intro">Record document references, dates, and specific notes for this person's file. This is the audit trail.</div>
+    <div class="audit-fields single">
+      <div class="audit-field">
+        <div class="field-top"><span class="field-label">Contract reference / date signed</span></div>
+        <input class="text-field" placeholder="e.g. Contract #TL-2026-047, signed 5 Apr 2026" value="${getText(p,'contract_ref')}" onchange="setText(currentPerson,'contract_ref',this.value)">
+      </div>
+      <div class="audit-field">
+        <div class="field-top"><span class="field-label">Job description document reference</span></div>
+        <input class="text-field" placeholder="e.g. JD-ProjectManager-KAD3-v1.0, April 2026" value="${getText(p,'jd_ref')}" onchange="setText(currentPerson,'jd_ref',this.value)">
+      </div>
+      <div class="audit-field">
+        <div class="field-top"><span class="field-label">JSP completion date and HRBP who completed it</span></div>
+        <input class="text-field" placeholder="e.g. Completed 10 Apr 2026, Adeniyi Oluwadimimu" value="${getText(p,'jsp_ref')}" onchange="setText(currentPerson,'jsp_ref',this.value)">
+      </div>
+      <div class="audit-field">
+        <div class="field-top"><span class="field-label">Competency assessment date</span></div>
+        <input class="text-field" placeholder="e.g. Assessed 12 Apr 2026" value="${getText(p,'comp_date')}" onchange="setText(currentPerson,'comp_date',this.value)">
+      </div>
+      <div class="audit-field">
+        <div class="field-top"><span class="field-label">Performance goals reference / date agreed</span></div>
+        <input class="text-field" placeholder="e.g. Q2-Q4 2026 goals, signed off 15 Apr 2026" value="${getText(p,'goals_ref')}" onchange="setText(currentPerson,'goals_ref',this.value)">
+      </div>
+      <div class="audit-field">
+        <div class="field-top"><span class="field-label">Salary on file (do not enter exact figure — note as "documented" or "missing")</span></div>
+        <input class="text-field" placeholder='e.g. "Documented in compensation register" or "Missing — to be collected"' value="${getText(p,'salary_note')}" onchange="setText(currentPerson,'salary_note',this.value)">
+      </div>
+      <div class="audit-field">
+        <div class="field-top"><span class="field-label">HRBP notes — anything else relevant to this person's audit</span></div>
+        <textarea class="text-area-field" placeholder="Any additional context: flight risk reasons, open ER concerns, development priorities, upcoming contract expiry, special circumstances…" onchange="setText(currentPerson,'hrbp_notes',this.value)">${getText(p,'hrbp_notes')}</textarea>
+      </div>
+    </div>`;
+  body.appendChild(docSection);
+}
+
+function renderField(ph,field){
+  const v=getVal(currentPerson,field.id);
+  const note=getNote(currentPerson,field.id);
+  return `<div class="audit-field" data-field="${field.id}">
+    <div class="field-top">
+      <span class="field-label">${field.label}</span>
+      <div class="toggle-group">
+        <div class="tg-btn${v==='yes'?' ay':''}" data-val="yes">Yes</div>
+        <div class="tg-btn${v==='partial'?' ap':''}" data-val="partial">Part</div>
+        <div class="tg-btn${v==='no'?' an':''}" data-val="no">No</div>
+      </div>
+    </div>
+    <div class="field-hint">${field.hint}</div>
+    <textarea class="field-note" data-field="${field.id}" placeholder="Note…" rows="1">${note}</textarea>
+  </div>`;
+}
+
+function attachEvents(){
+  document.getElementById('audit-body').querySelectorAll('.tg-btn').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      const fid=btn.closest('.audit-field').dataset.field;
+      const val=btn.dataset.val;
+      setVal(currentPerson,fid,val);
+      const group=btn.closest('.toggle-group');
+      group.querySelectorAll('.tg-btn').forEach(b=>{b.className='tg-btn';if(b.dataset.val===val)b.classList.add(val==='yes'?'ay':val==='partial'?'ap':'an');});
+    });
+  });
+  document.getElementById('audit-body').querySelectorAll('.field-note').forEach(ta=>{
+    ta.addEventListener('input',()=>setNote(currentPerson,ta.dataset.field,ta.value));
+  });
+}
+
+// ── STATS ──
+function updateTopbar(){
+  let ns=0,ip=0,done=0;
+  visiblePeople.forEach(p=>{const{pct}=pCompletion(p);if(pct===0)ns++;else if(pct===100)done++;else ip++;});
+  document.getElementById('stat-total').textContent=visiblePeople.length;
+  document.getElementById('stat-ns').textContent=ns;
+  document.getElementById('stat-ip').textContent=ip;
+  document.getElementById('stat-done').textContent=done;
+}
+
+function updateRight(){
+  const pct=orgCompletion();
+  const circ=201.06;
+  document.getElementById('ring-fill').style.strokeDashoffset=circ-(circ*pct/100);
+  document.getElementById('ring-pct').textContent=pct+'%';
+  PHASES.forEach(ph=>{
+    const n=ph.id.replace('p','');
+    const p=phaseCompletion(ph.id);
+    const pe=document.getElementById('pct-p'+n);const be=document.getElementById('bar-p'+n);
+    if(pe)pe.textContent=p+'%';if(be)be.style.width=p+'%';
+  });
+  const fl=gapFlags();
+  const sf=(id,v,t)=>{const e=document.getElementById(id);if(!e)return;e.textContent=v;e.className='gf-val '+(v>=t?'red':v>0?'amber':'green');};
+  sf('f-contract',fl.contract,5);sf('f-jd',fl.jd,5);sf('f-sp',fl.sp,5);
+  sf('f-pay',fl.pay,5);sf('f-goals',fl.goals,5);sf('f-grade',fl.grade,10);
+  document.getElementById('f-flight').textContent=fl.flight;
+  document.getElementById('f-flight').className='gf-val '+(fl.flight>5?'red':fl.flight>0?'amber':'green');
+}
+
+// ── EXPORT ──
+function exportCSV(){
+  const allF=PHASES.flatMap(ph=>ph.fields.map(f=>({...f,phase:ph.label})));
+  const textFields=['contract_ref','jd_ref','jsp_ref','comp_date','goals_ref','salary_note','hrbp_notes'];
+  const headers=['HRBP','Name','KAD','KAD Role','Location','Client','Audit Completion %',
+    ...allF.map(f=>f.label),...allF.map(f=>f.label+' (note)'),
+    'Contract Reference','JD Reference','JSP Reference','Competency Assessment Date',
+    'Goals Reference','Salary Status','HRBP Notes'];
+  const rows=visiblePeople.map(p=>{
+    const{pct}=pCompletion(p);
+    const d=pData(p);
+    return[currentHRBP,p.name,p.kad,p.kad_role,p.location,p.client1,pct,
+      ...allF.map(f=>d[f.id]||''),...allF.map(f=>d[f.id+'_note']||''),
+      ...textFields.map(f=>d[f+'_text']||d[f]||'')];
+  });
+  const csv=[headers,...rows].map(r=>r.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
+  const blob=new Blob([csv],{type:'text/csv'});
+  const url=URL.createObjectURL(blob);const a=document.createElement('a');
+  a.href=url;a.download=`telinno_audit_${currentKAD}_${currentHRBP.replace(/\s+/g,'_')}_${new Date().toISOString().slice(0,10)}.csv`;
+  a.click();URL.revokeObjectURL(url);
+}
+
+// ── INIT ──
+loadData();
+document.getElementById('search-input').addEventListener('input',e=>renderRoster(e.target.value,document.getElementById('f-kad').value,document.getElementById('f-status').value));
+document.getElementById('f-kad').addEventListener('change',e=>renderRoster(document.getElementById('search-input').value,e.target.value,document.getElementById('f-status').value));
+document.getElementById('f-status').addEventListener('change',e=>renderRoster(document.getElementById('search-input').value,document.getElementById('f-kad').value,e.target.value));
+</script>
+</body>
+</html>

@@ -1,0 +1,1611 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Telinno — People Infrastructure Implementation Plan</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink: #0d1117;
+  --ink-2: #13181f;
+  --surface: #1a2030;
+  --border: rgba(255,255,255,0.07);
+  --border-mid: rgba(255,255,255,0.12);
+  --text: #e8e4dc;
+  --text-muted: #8b8680;
+  --text-dim: #4a4540;
+  --gold: #c8a840;
+  --gold-bg: rgba(200,168,64,0.1);
+  --gold-border: rgba(200,168,64,0.25);
+  --red: #e05555;
+  --red-bg: rgba(224,85,85,0.08);
+  --green: #5a9e8e;
+  --green-bg: rgba(90,158,142,0.08);
+  --blue: #5a8fd4;
+  --blue-bg: rgba(90,143,212,0.08);
+
+  /* Phase colours */
+  --p1: #c8a840;
+  --p2: #7a9fd4;
+  --p3: #6aa87a;
+
+  --sidebar-w: 240px;
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--ink);
+  color: var(--text);
+  min-height: 100vh;
+  display: flex;
+}
+
+/* ── SIDEBAR ── */
+#sidebar {
+  width: var(--sidebar-w);
+  min-width: var(--sidebar-w);
+  background: var(--ink-2);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
+}
+
+#sidebar::-webkit-scrollbar { width: 3px; }
+#sidebar::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+#sidebar-top {
+  padding: 24px 20px 16px;
+  border-bottom: 1px solid var(--border);
+}
+
+#sidebar-top .org-name {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 4px;
+}
+
+#sidebar-top h2 {
+  font-family: 'Playfair Display', serif;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text);
+  line-height: 1.3;
+}
+
+#sidebar-top p {
+  font-size: 10px;
+  color: var(--text-dim);
+  margin-top: 4px;
+  letter-spacing: 0.03em;
+}
+
+.sidebar-section {
+  padding: 12px 0 4px;
+}
+
+.sidebar-section-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 8.5px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  padding: 0 20px;
+  margin-bottom: 4px;
+}
+
+.sidebar-link {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 20px;
+  font-size: 11.5px;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all 0.15s;
+  text-decoration: none;
+  border-left: 2px solid transparent;
+}
+
+.sidebar-link:hover { color: var(--text); background: rgba(255,255,255,0.03); }
+.sidebar-link.active { color: var(--text); border-left-color: var(--gold); background: var(--gold-bg); }
+
+.sidebar-link-dot {
+  width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0;
+}
+
+.sidebar-stats {
+  margin-top: auto;
+  padding: 16px 20px;
+  border-top: 1px solid var(--border);
+}
+
+.stat-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding: 5px 0;
+  border-bottom: 1px solid var(--border);
+}
+.stat-row:last-child { border-bottom: none; }
+.stat-label { font-size: 10px; color: var(--text-dim); }
+.stat-value { font-family: 'DM Mono', monospace; font-size: 13px; color: var(--text); }
+.stat-value.gold { color: var(--gold); }
+
+/* ── MAIN ── */
+#main {
+  flex: 1;
+  overflow-y: auto;
+  padding: 48px 52px 80px;
+  max-width: 900px;
+}
+
+/* ── HEADER ── */
+#doc-header {
+  margin-bottom: 48px;
+  padding-bottom: 32px;
+  border-bottom: 1px solid var(--border);
+}
+
+.doc-kicker {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 12px;
+}
+
+#doc-header h1 {
+  font-family: 'Playfair Display', serif;
+  font-size: 38px;
+  font-weight: 700;
+  line-height: 1.1;
+  color: var(--text);
+  margin-bottom: 16px;
+}
+
+.doc-thesis {
+  font-size: 14px;
+  line-height: 1.75;
+  color: var(--text-muted);
+  max-width: 680px;
+  border-left: 3px solid var(--gold);
+  padding-left: 18px;
+}
+
+/* ── REALITY CHECK ── */
+.reality-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin: 28px 0 36px;
+}
+
+.reality-box {
+  border-radius: 8px;
+  padding: 16px 18px;
+}
+
+.reality-box.current {
+  background: var(--red-bg);
+  border: 1px solid rgba(224,85,85,0.2);
+}
+
+.reality-box.target {
+  background: var(--green-bg);
+  border: 1px solid rgba(90,158,142,0.2);
+}
+
+.reality-box-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 8.5px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+}
+
+.reality-box.current .reality-box-label { color: var(--red); }
+.reality-box.target .reality-box-label { color: var(--green); }
+
+.reality-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--text-muted);
+  line-height: 1.5;
+  margin-bottom: 6px;
+}
+.reality-item:last-child { margin-bottom: 0; }
+
+.reality-item::before {
+  flex-shrink: 0;
+  margin-top: 2px;
+  font-size: 10px;
+}
+.reality-box.current .reality-item::before { content: '✕'; color: var(--red); }
+.reality-box.target .reality-item::before { content: '✓'; color: var(--green); }
+
+/* ── ORG SNAPSHOT ── */
+.org-snapshot {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  margin: 24px 0 36px;
+}
+
+.org-kad {
+  background: var(--ink-2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 14px 16px;
+  position: relative;
+  overflow: hidden;
+}
+
+.org-kad::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: var(--kad-color, #666);
+}
+
+.org-kad-num {
+  font-family: 'DM Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 0.08em;
+  color: var(--text-dim);
+  margin-bottom: 4px;
+}
+
+.org-kad-name {
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--text);
+  line-height: 1.3;
+  margin-bottom: 8px;
+}
+
+.org-kad-hrbp {
+  font-size: 10px;
+  color: var(--gold);
+  margin-bottom: 6px;
+}
+
+.org-kad-stats {
+  display: flex;
+  gap: 10px;
+}
+
+.org-stat {
+  text-align: center;
+}
+
+.org-stat-num {
+  font-family: 'DM Mono', monospace;
+  font-size: 16px;
+  color: var(--text);
+  display: block;
+}
+
+.org-stat-label {
+  font-size: 9px;
+  color: var(--text-dim);
+  display: block;
+}
+
+/* ── SECTION HEADERS ── */
+.section-block {
+  margin-bottom: 52px;
+}
+
+.section-kicker {
+  font-family: 'DM Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  margin-bottom: 6px;
+}
+
+.section-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 10px;
+  line-height: 1.2;
+}
+
+.section-lead {
+  font-size: 13px;
+  line-height: 1.7;
+  color: var(--text-muted);
+  max-width: 680px;
+  margin-bottom: 24px;
+}
+
+/* ── PHASE CARDS ── */
+.phase-card {
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  overflow: hidden;
+  margin-bottom: 20px;
+}
+
+.phase-card-header {
+  padding: 20px 24px 18px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.phase-number {
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  padding: 4px 10px;
+  border-radius: 3px;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.phase-header-text { flex: 1; }
+
+.phase-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 1.2;
+  margin-bottom: 4px;
+}
+
+.phase-timeline {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  color: var(--text-dim);
+}
+
+.phase-card-body {
+  padding: 20px 24px;
+}
+
+.phase-thesis {
+  font-size: 13px;
+  line-height: 1.7;
+  color: var(--text-muted);
+  margin-bottom: 20px;
+  font-style: italic;
+}
+
+/* Workstream grid */
+.workstreams {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.workstream {
+  background: var(--ink-2);
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  padding: 14px 16px;
+}
+
+.ws-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 8.5px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+
+.ws-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 6px;
+}
+
+.ws-items {
+  list-style: none;
+}
+
+.ws-items li {
+  font-size: 11.5px;
+  color: var(--text-muted);
+  line-height: 1.5;
+  padding: 3px 0;
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+}
+
+.ws-items li::before {
+  content: '→';
+  color: var(--text-dim);
+  flex-shrink: 0;
+  margin-top: 1px;
+  font-size: 10px;
+}
+
+/* Deliverables */
+.deliverables-row {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+
+.deliverable-tag {
+  font-size: 10.5px;
+  padding: 4px 10px;
+  border-radius: 3px;
+  border: 1px solid var(--border-mid);
+  color: var(--text-muted);
+  background: var(--ink-2);
+}
+
+/* Owner row */
+.owner-row {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  padding-top: 14px;
+  border-top: 1px solid var(--border);
+  flex-wrap: wrap;
+}
+
+.owner-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.owner-role {
+  font-family: 'DM Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+}
+
+.owner-name {
+  font-size: 11.5px;
+  color: var(--text);
+}
+
+/* ── HRBP MANDATE ── */
+.hrbp-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.hrbp-card {
+  background: var(--ink-2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 16px 18px;
+  border-top: 2px solid var(--gold);
+}
+
+.hrbp-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 2px;
+}
+
+.hrbp-location {
+  font-family: 'DM Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 0.06em;
+  color: var(--gold);
+  text-transform: uppercase;
+  margin-bottom: 10px;
+}
+
+.hrbp-mandate-items {
+  list-style: none;
+}
+
+.hrbp-mandate-items li {
+  font-size: 11px;
+  color: var(--text-muted);
+  line-height: 1.5;
+  padding: 3px 0;
+  display: flex;
+  gap: 6px;
+}
+
+.hrbp-mandate-items li::before {
+  content: '·';
+  color: var(--gold);
+  flex-shrink: 0;
+}
+
+/* ── PRINCIPLES ── */
+.principles-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.principle-item {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+}
+
+.principle-num {
+  font-family: 'DM Mono', monospace;
+  font-size: 18px;
+  color: var(--text-dim);
+  flex-shrink: 0;
+  line-height: 1;
+  margin-top: 2px;
+  width: 28px;
+}
+
+.principle-text { flex: 1; }
+
+.principle-title {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 3px;
+}
+
+.principle-desc {
+  font-size: 12px;
+  color: var(--text-muted);
+  line-height: 1.65;
+}
+
+/* ── RISK TABLE ── */
+.risk-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 24px;
+}
+
+.risk-table th {
+  font-family: 'DM Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  text-align: left;
+  padding: 8px 14px;
+  border-bottom: 1px solid var(--border);
+}
+
+.risk-table td {
+  font-size: 11.5px;
+  color: var(--text-muted);
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border);
+  vertical-align: top;
+  line-height: 1.5;
+}
+
+.risk-table tr:last-child td { border-bottom: none; }
+.risk-table tr:hover td { background: rgba(255,255,255,0.02); }
+
+.risk-tag {
+  font-family: 'DM Mono', monospace;
+  font-size: 8.5px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 2px 7px;
+  border-radius: 2px;
+}
+
+.risk-tag.high { background: var(--red-bg); color: var(--red); border: 1px solid rgba(224,85,85,0.2); }
+.risk-tag.med { background: var(--gold-bg); color: var(--gold); border: 1px solid var(--gold-border); }
+
+/* ── FOOTER ── */
+#doc-footer {
+  margin-top: 52px;
+  padding-top: 28px;
+  border-top: 1px solid var(--border);
+}
+
+.footer-thesis {
+  font-family: 'Playfair Display', serif;
+  font-size: 16px;
+  font-style: italic;
+  line-height: 1.6;
+  color: var(--text-muted);
+  max-width: 600px;
+  margin-bottom: 16px;
+}
+
+.footer-meta {
+  font-family: 'DM Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 0.08em;
+  color: var(--text-dim);
+}
+
+/* Divider */
+.divider {
+  height: 1px;
+  background: var(--border);
+  margin: 36px 0;
+}
+
+/* Callout */
+.callout {
+  border-radius: 7px;
+  padding: 16px 18px;
+  margin: 20px 0;
+}
+
+.callout.warning {
+  background: var(--red-bg);
+  border: 1px solid rgba(224,85,85,0.2);
+  border-left: 3px solid var(--red);
+}
+
+.callout.info {
+  background: var(--gold-bg);
+  border: 1px solid var(--gold-border);
+  border-left: 3px solid var(--gold);
+}
+
+.callout.note {
+  background: var(--blue-bg);
+  border: 1px solid rgba(90,143,212,0.2);
+  border-left: 3px solid var(--blue);
+}
+
+.callout-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 8.5px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+
+.callout.warning .callout-label { color: var(--red); }
+.callout.info .callout-label { color: var(--gold); }
+.callout.note .callout-label { color: var(--blue); }
+
+.callout-text {
+  font-size: 12.5px;
+  color: var(--text-muted);
+  line-height: 1.65;
+}
+
+/* Timeline bar */
+.timeline-bar {
+  display: flex;
+  height: 40px;
+  border-radius: 6px;
+  overflow: hidden;
+  margin: 20px 0;
+  gap: 3px;
+}
+
+.timeline-segment {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'DM Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.7);
+  font-weight: 500;
+}
+
+/* Animation */
+@keyframes fadeUp {
+  from { opacity:0; transform:translateY(12px); }
+  to { opacity:1; transform:translateY(0); }
+}
+
+.phase-card { animation: fadeUp 0.4s ease both; }
+.phase-card:nth-child(1) { animation-delay: 0.05s; }
+.phase-card:nth-child(2) { animation-delay: 0.1s; }
+.phase-card:nth-child(3) { animation-delay: 0.15s; }
+
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.08); border-radius: 2px; }
+
+/* ── PHASE NAV ── */
+.phase-nav-bar{background:rgba(0,0,0,0.3);border-bottom:1px solid rgba(255,255,255,0.06);padding:0 20px;display:flex;align-items:center;justify-content:space-between;height:38px;}
+.pnb-back{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:0.06em;color:rgba(255,255,255,0.25);text-decoration:none;padding-right:14px;border-right:1px solid rgba(255,255,255,0.07);margin-right:14px;transition:color 0.15s;}
+.pnb-back:hover{color:rgba(255,255,255,0.55);}
+.pnb-left{display:flex;align-items:center;}
+.pnb-steps{display:flex;align-items:center;gap:0;}
+.pnb-step{display:flex;align-items:center;gap:5px;padding:0 10px 0 0;font-size:10px;color:rgba(255,255,255,0.22);white-space:nowrap;}
+.pnb-step-dot{width:15px;height:15px;border-radius:50%;border:1.5px solid;display:flex;align-items:center;justify-content:center;font-family:'DM Mono',monospace;font-size:6.5px;font-weight:600;flex-shrink:0;}
+.pnb-step.done{color:rgba(255,255,255,0.38);}
+.pnb-step.active{color:rgba(255,255,255,0.85);}
+.pnb-step-sep{color:rgba(255,255,255,0.1);font-size:9px;margin-right:10px;}
+.pnb-right{display:flex;gap:6px;align-items:center;}
+.pnb-right a{font-family:'DM Mono',monospace;font-size:8.5px;letter-spacing:0.05em;text-transform:uppercase;text-decoration:none;padding:4px 10px;border-radius:4px;border:1px solid;transition:all 0.15s;}
+</style>
+</head>
+<body>
+
+<!-- PORTAL NAV -->
+<div id="portal-nav" style="background:#0b0f18;border-bottom:1px solid rgba(255,255,255,0.06);padding:0 20px;height:38px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:9999;flex-shrink:0;">
+  <a href="index.html" style="font-family:'DM Mono',monospace;font-size:9.5px;letter-spacing:0.12em;text-transform:uppercase;color:#c9ab47;text-decoration:none;display:flex;align-items:center;gap:6px;">
+    <span style="font-size:11px;">←</span> Telinno Portal
+  </a>
+  <div style="display:flex;gap:2px;align-items:center;">
+    <a href="telinno-audit-v2.html" style="font-family:'DM Mono',monospace;font-size:8.5px;letter-spacing:0.06em;text-transform:uppercase;padding:4px 10px;border-radius:3px;color:#6b6660;text-decoration:none;transition:color 0.15s;" onmouseover="this.style.color='#e4dfd7'" onmouseout="this.style.color='#6b6660'">Audit</a>
+    <a href="telinno-jsp.html" style="font-family:'DM Mono',monospace;font-size:8.5px;letter-spacing:0.06em;text-transform:uppercase;padding:4px 10px;border-radius:3px;color:#6b6660;text-decoration:none;" onmouseover="this.style.color='#e4dfd7'" onmouseout="this.style.color='#6b6660'">JSP</a>
+    <a href="telinno-matrix.html" style="font-family:'DM Mono',monospace;font-size:8.5px;letter-spacing:0.06em;text-transform:uppercase;padding:4px 10px;border-radius:3px;color:#6b6660;text-decoration:none;" onmouseover="this.style.color='#e4dfd7'" onmouseout="this.style.color='#6b6660'">Matrix</a>
+    <a href="telinno-hr-plan.html" style="font-family:'DM Mono',monospace;font-size:8.5px;letter-spacing:0.06em;text-transform:uppercase;padding:4px 10px;border-radius:3px;color:#6b6660;text-decoration:none;" onmouseover="this.style.color='#e4dfd7'" onmouseout="this.style.color='#6b6660'">Plan</a>
+    <a href="pvc-v2.html" style="font-family:'DM Mono',monospace;font-size:8.5px;letter-spacing:0.06em;text-transform:uppercase;padding:4px 10px;border-radius:3px;color:#6b6660;text-decoration:none;" onmouseover="this.style.color='#e4dfd7'" onmouseout="this.style.color='#6b6660'">PVC</a>
+  </div>
+</div>
+
+
+<!-- SIDEBAR -->
+<aside id="sidebar">
+  <div id="sidebar-top">
+    <div class="org-name">Telinno Consulting</div>
+    <h2>HR Build Plan</h2>
+    <p>April 2026 · 4 KADs · 5 Countries</p>
+  </div>
+
+  <div class="sidebar-section">
+    <div class="sidebar-section-label">Document</div>
+    <a href="#context" class="sidebar-link active">
+      <span class="sidebar-link-dot" style="background:#c8a840"></span>
+      Starting Point
+    </a>
+    <a href="#org" class="sidebar-link">
+      <span class="sidebar-link-dot" style="background:#7a9fd4"></span>
+      Org Snapshot
+    </a>
+    <a href="#principles" class="sidebar-link">
+      <span class="sidebar-link-dot" style="background:#6aa87a"></span>
+      Design Principles
+    </a>
+  </div>
+
+  <div class="sidebar-section">
+    <div class="sidebar-section-label">Implementation</div>
+    <a href="#phase1" class="sidebar-link">
+      <span class="sidebar-link-dot" style="background:var(--p1)"></span>
+      Phase 1 — Foundation
+    </a>
+    <a href="#phase2" class="sidebar-link">
+      <span class="sidebar-link-dot" style="background:var(--p2)"></span>
+      Phase 2 — Operating
+    </a>
+    <a href="#phase3" class="sidebar-link">
+      <span class="sidebar-link-dot" style="background:var(--p3)"></span>
+      Phase 3 — Optimising
+    </a>
+  </div>
+
+  <div class="sidebar-section">
+    <div class="sidebar-section-label">Supporting</div>
+    <a href="#hrbps" class="sidebar-link">
+      <span class="sidebar-link-dot" style="background:var(--gold)"></span>
+      HRBP Mandates
+    </a>
+    <a href="#risks" class="sidebar-link">
+      <span class="sidebar-link-dot" style="background:var(--red)"></span>
+      Risks & Mitigations
+    </a>
+  </div>
+
+  <div class="sidebar-stats">
+    <div class="stat-row">
+      <span class="stat-label">Filled headcount</span>
+      <span class="stat-value gold">148</span>
+    </div>
+    <div class="stat-row">
+      <span class="stat-label">Open vacancies</span>
+      <span class="stat-value">12</span>
+    </div>
+    <div class="stat-row">
+      <span class="stat-label">Countries</span>
+      <span class="stat-value">6</span>
+    </div>
+    <div class="stat-row">
+      <span class="stat-label">HRBPs</span>
+      <span class="stat-value">4</span>
+    </div>
+    <div class="stat-row">
+      <span class="stat-label">Business Units</span>
+      <span class="stat-value">4 KADs</span>
+    </div>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<main id="main">
+
+  <!-- HEADER -->
+  <div id="doc-header">
+    <div class="doc-kicker">People Infrastructure · Implementation Plan · April 2026</div>
+    <h1>Building the People<br>Operating System<br>at Telinno</h1>
+    <p class="doc-thesis">
+      HR is a business unit. Its customer is every person in the organisation. Its product is a competent, engaged, loyal workforce. Its investor is the company. This plan builds the infrastructure to deliver that product — systematically, across four KADs, six countries, and 148 people who just received a restructure announcement.
+    </p>
+  </div>
+
+  <!-- STARTING POINT -->
+  <div id="context" class="section-block">
+    <div class="section-kicker">The Starting Point</div>
+    <div class="section-title">Where Telinno Is Right Now</div>
+    <p class="section-lead">
+      The CEO's restructure communication was clear and well-positioned. What follows it cannot be. You have described the current HR state as "relics from a past initiative without the essence." That is a precise diagnosis. The relics exist — the forms, the titles, the HRBP assignments — but the operating system that gives them meaning was never built. This plan builds it.
+    </p>
+
+    <div class="reality-grid">
+      <div class="reality-box current">
+        <div class="reality-box-label">Current State — What Exists</div>
+        <div class="reality-item">HR processes that are nominal, not operational</div>
+        <div class="reality-item">4 HRBPs assigned but without a mandate, tools, or cadence</div>
+        <div class="reality-item">148 people across 6 countries with no consistent people framework</div>
+        <div class="reality-item">A restructure just announced with no HR transition infrastructure</div>
+        <div class="reality-item">12 vacancies with no structured sourcing or selection process</div>
+        <div class="reality-item">No workforce plan behind the new KAD model</div>
+        <div class="reality-item">Employment law compliance unclear across 6 jurisdictions</div>
+      </div>
+      <div class="reality-box target">
+        <div class="reality-box-label">Target State — What Gets Built</div>
+        <div class="reality-item">Each HRBP operating with a clear mandate, rhythm, and tools</div>
+        <div class="reality-item">Every KAD with a documented workforce plan</div>
+        <div class="reality-item">Structured selection process reducing mis-hires</div>
+        <div class="reality-item">90-day onboarding for every hire above coordinator level</div>
+        <div class="reality-item">Performance contracts for all 148 people, connected to KAD goals</div>
+        <div class="reality-item">Compliance baseline secured in all 6 countries</div>
+        <div class="reality-item">HR analytics that speak in financial terms to KAD leaders</div>
+      </div>
+    </div>
+
+    <div class="callout warning">
+      <div class="callout-label">Immediate Priority</div>
+      <div class="callout-text">The restructure was announced "effective immediately." The personalised HRBP communications were due by April 2nd, 2026. Whether or not those landed, every employee is currently in a state of structural ambiguity. The first 30 days of this plan must stabilise that — before anything else is built. People who don't know where they stand don't produce. And they leave.</div>
+    </div>
+  </div>
+
+  <!-- ORG SNAPSHOT -->
+  <div id="org" class="section-block">
+    <div class="section-kicker">Telinno Organisation — April 2026</div>
+    <div class="section-title">The People You're Building This For</div>
+    <p class="section-lead">148 filled roles across 4 KADs and Shared Services. 12 open vacancies. 4 HRBPs embedded in KADs, each covering their assigned countries.</p>
+
+    <div class="org-snapshot">
+      <div class="org-kad" style="--kad-color:#c8a840">
+        <div class="org-kad-num">KAD 1</div>
+        <div class="org-kad-name">Equipment Vendors<br>(ZTE, Nokia)</div>
+        <div class="org-kad-hrbp">HRBP: Amadou Guindo · Mali</div>
+        <div class="org-kad-stats">
+          <div class="org-stat">
+            <span class="org-stat-num">30</span>
+            <span class="org-stat-label">people</span>
+          </div>
+          <div class="org-stat">
+            <span class="org-stat-num">2</span>
+            <span class="org-stat-label">vacancies</span>
+          </div>
+        </div>
+      </div>
+      <div class="org-kad" style="--kad-color:#7a9fd4">
+        <div class="org-kad-num">KAD 2</div>
+        <div class="org-kad-name">Huawei, Regulators &amp; Govt</div>
+        <div class="org-kad-hrbp">HRBP: Luvie Mafotsang · Cameroon</div>
+        <div class="org-kad-stats">
+          <div class="org-stat">
+            <span class="org-stat-num">21</span>
+            <span class="org-stat-label">people</span>
+          </div>
+          <div class="org-stat">
+            <span class="org-stat-num">2</span>
+            <span class="org-stat-label">vacancies</span>
+          </div>
+        </div>
+      </div>
+      <div class="org-kad" style="--kad-color:#e07060">
+        <div class="org-kad-num">KAD 3</div>
+        <div class="org-kad-name">Tower Infrastructure<br>(GICL, IHS, ATC)</div>
+        <div class="org-kad-hrbp">HRBP: Adeniyi Oluwadimimu · Nigeria</div>
+        <div class="org-kad-stats">
+          <div class="org-stat">
+            <span class="org-stat-num">20</span>
+            <span class="org-stat-label">people</span>
+          </div>
+          <div class="org-stat">
+            <span class="org-stat-num">4</span>
+            <span class="org-stat-label">vacancies</span>
+          </div>
+        </div>
+      </div>
+      <div class="org-kad" style="--kad-color:#6aa87a">
+        <div class="org-kad-num">KAD 4</div>
+        <div class="org-kad-name">Telecom Operators<br>(MTN, Airtel, Orange)</div>
+        <div class="org-kad-hrbp">HRBP: Bassira Abdou Laouali · Niger</div>
+        <div class="org-kad-stats">
+          <div class="org-stat">
+            <span class="org-stat-num">58</span>
+            <span class="org-stat-label">people</span>
+          </div>
+          <div class="org-stat">
+            <span class="org-stat-num">1</span>
+            <span class="org-stat-label">vacancy</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="callout note">
+      <div class="callout-label">Multi-Country Reality</div>
+      <div class="callout-text">Nigeria (55), Mali (26), Niger (26), Côte d'Ivoire (10), Cameroon (9), and Liberia (1). Each country has distinct employment law, different compensation benchmarks, different cultural norms around feedback and hierarchy, and different HR compliance obligations. The four HRBPs are not geographically tidy — Amadou in Mali holds KAD 1 across a West African footprint; Luvie in Cameroon covers KAD 2 across Nigeria and South Africa as well. The HR operating model must account for this span, not assume clean country-by-KAD alignment.</div>
+    </div>
+  </div>
+
+  <!-- PRINCIPLES -->
+  <div id="principles" class="section-block">
+    <div class="section-kicker">Non-Negotiable Design Principles</div>
+    <div class="section-title">How This Gets Built</div>
+    <p class="section-lead">Six principles govern the entire build. Violating any of them produces the same outcome: relics without essence.</p>
+
+    <div class="principles-list">
+      <div class="principle-item">
+        <div class="principle-num">01</div>
+        <div class="principle-text">
+          <div class="principle-title">Sequence matters. Don't skip foundations.</div>
+          <div class="principle-desc">The People Value Chain is a dependency system. Compliance before culture. Clarity before performance management. Onboarding before retention. Building Phase 2 before Phase 1 is complete produces impressive-looking processes that nobody uses — which is exactly where Telinno currently is.</div>
+        </div>
+      </div>
+      <div class="principle-item">
+        <div class="principle-num">02</div>
+        <div class="principle-desc">
+          <div class="principle-title">Each HRBP gets a mandate, not just a title.</div>
+          <div class="principle-desc">The four HRBPs exist. What doesn't exist is a clear operating model: what they own, what they decide, what they escalate, what cadence they keep, and how they are held accountable. The first output of this plan is a written HRBP mandate for each of the four.</div>
+        </div>
+      </div>
+      <div class="principle-item">
+        <div class="principle-num">03</div>
+        <div class="principle-text">
+          <div class="principle-title">Central sets the standard. HRBPs adapt to context.</div>
+          <div class="principle-desc">One policy framework does not mean one policy document. The HR architecture is consistent across KADs; the application accounts for country law, cultural norms, and market conditions. The HRBP is the translator, not the exception-maker.</div>
+        </div>
+      </div>
+      <div class="principle-item">
+        <div class="principle-num">04</div>
+        <div class="principle-text">
+          <div class="principle-title">HR speaks in financial terms, not HR terms.</div>
+          <div class="principle-desc">Every HR metric that reaches a KAD leader must be translated: attrition costs, time-to-fill against project pipeline, capability gaps against contract deliverables. A KAD leader who manages a P&L needs to see HR as a business function — not a compliance overhead.</div>
+        </div>
+      </div>
+      <div class="principle-item">
+        <div class="principle-num">05</div>
+        <div class="principle-text">
+          <div class="principle-title">Build only what will be used.</div>
+          <div class="principle-desc">For a 148-person company, the right answer is almost never the enterprise-grade process. It is the process that is proportionate, usable by a part-time HRBP, and actually adopted by busy managers. Complexity is the enemy. Simplicity that works is the goal.</div>
+        </div>
+      </div>
+      <div class="principle-item">
+        <div class="principle-num">06</div>
+        <div class="principle-text">
+          <div class="principle-title">Compliance is non-negotiable before strategy.</div>
+          <div class="principle-desc">Telinno operates in Nigeria, Mali, Niger, Côte d'Ivoire, Cameroon, and Liberia. Each jurisdiction has employment law obligations. Until those are secured, no strategic HR initiative is safe. Compliance is not boring — it is the floor on which everything else stands.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- TIMELINE BAR -->
+  <div style="margin-bottom:8px">
+    <div class="section-kicker">Implementation Timeline</div>
+  </div>
+  <div class="timeline-bar">
+    <div class="timeline-segment" style="flex:1.5; background:var(--p1);">Phase 1 · Months 1–3</div>
+    <div class="timeline-segment" style="flex:2; background:var(--p2);">Phase 2 · Months 4–9</div>
+    <div class="timeline-segment" style="flex:1.5; background:var(--p3);">Phase 3 · Months 10–18</div>
+  </div>
+  <p style="font-size:11px;color:var(--text-dim);margin-bottom:36px;">Phases are sequential by intent but parallel in practice. Phase 1 work does not stop when Phase 2 begins — it operates continuously. Phase 3 is the optimisation layer that emerges when Phases 1 and 2 are stable.</p>
+
+  <!-- PHASE 1 -->
+  <div id="phase1" class="section-block">
+    <div class="section-kicker">Phase 1 · Months 1–3</div>
+    <div class="section-title">Foundation — Stop the Bleeding, Build the Floor</div>
+    <p class="section-lead">The restructure announcement created structural ambiguity for 148 people. Phase 1 resolves that ambiguity, secures compliance in all 6 countries, gives each HRBP an operating mandate, and installs the minimum people processes without which no KAD can function as an autonomous profit centre.</p>
+
+    <div class="phase-card" style="background:rgba(200,168,64,0.04); border-color:rgba(200,168,64,0.2)">
+      <div class="phase-card-header">
+        <span class="phase-number" style="background:rgba(200,168,64,0.15); color:var(--p1); border:1px solid rgba(200,168,64,0.3)">MONTH 1</span>
+        <div class="phase-header-text">
+          <div class="phase-title" style="color:var(--p1)">Stabilise the Restructure</div>
+          <div class="phase-timeline">Weeks 1–4 · Immediate people risk mitigation</div>
+        </div>
+      </div>
+      <div class="phase-card-body">
+        <div class="phase-thesis">Every person in the organisation just received a significant structural change. Until they have clarity on their place in it, performance degrades and departure risk rises. This month is entirely about resolving that ambiguity.</div>
+        <div class="workstreams">
+          <div class="workstream">
+            <div class="ws-label" style="color:var(--p1)">HRBP Activation</div>
+            <div class="ws-title">Give HRBPs their mandate</div>
+            <ul class="ws-items">
+              <li>Draft and sign off HRBP Operating Charter (what they own, decide, escalate)</li>
+              <li>Assign each HRBP a defined people list — who they are responsible for</li>
+              <li>Establish a weekly HRBP sync with CEO/CHRO</li>
+              <li>Give each HRBP a 30-day priority: complete individual transition conversations with every person in their KAD</li>
+            </ul>
+          </div>
+          <div class="workstream">
+            <div class="ws-label" style="color:var(--p1)">Transition Communications</div>
+            <div class="ws-title">Personalised clarity for all 148</div>
+            <ul class="ws-items">
+              <li>Complete the personalised HRBP emails committed to in CEO communication (if not done)</li>
+              <li>Hold 1:1 transitions conversations — HRBP with every person in their KAD</li>
+              <li>Document any concerns, ambiguities, or resistance surfaced</li>
+              <li>Flag flight-risk employees to CEO within week 2</li>
+            </ul>
+          </div>
+          <div class="workstream">
+            <div class="ws-label" style="color:var(--p1)">Compliance Baseline</div>
+            <div class="ws-title">Know your legal exposure</div>
+            <ul class="ws-items">
+              <li>Commission employment law review for all 6 countries (engage local counsel)</li>
+              <li>Map current contracts against legal minimum requirements per jurisdiction</li>
+              <li>Identify any employees without current, signed employment contracts</li>
+              <li>Identify right-to-work gaps — especially cross-border assignments</li>
+            </ul>
+          </div>
+          <div class="workstream">
+            <div class="ws-label" style="color:var(--p1)">People Data Audit</div>
+            <div class="ws-title">Build the source of truth</div>
+            <ul class="ws-items">
+              <li>Verify the KAD mapping against actual contracts and payroll records</li>
+              <li>Identify any people on the staff map not in the payroll system</li>
+              <li>Document actual reporting lines (vs. announced reporting lines)</li>
+              <li>Create a single, verified headcount register as the master record</li>
+            </ul>
+          </div>
+        </div>
+        <div class="deliverables-row">
+          <span class="deliverable-tag">HRBP Operating Charter</span>
+          <span class="deliverable-tag">Verified headcount register</span>
+          <span class="deliverable-tag">Flight-risk register</span>
+          <span class="deliverable-tag">Country compliance gap report</span>
+          <span class="deliverable-tag">Transition conversation tracker</span>
+        </div>
+        <div class="owner-row">
+          <div class="owner-item"><span class="owner-role">Lead:</span><span class="owner-name">CEO + All 4 HRBPs</span></div>
+          <div class="owner-item"><span class="owner-role">Support:</span><span class="owner-name">Local employment counsel per country</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="phase-card" style="background:rgba(200,168,64,0.04); border-color:rgba(200,168,64,0.2)">
+      <div class="phase-card-header">
+        <span class="phase-number" style="background:rgba(200,168,64,0.15); color:var(--p1); border:1px solid rgba(200,168,64,0.3)">MONTH 2</span>
+        <div class="phase-header-text">
+          <div class="phase-title" style="color:var(--p1)">Fix the Legal Floor & Define Roles</div>
+          <div class="phase-timeline">Weeks 5–8 · Compliance remediation + role clarity</div>
+        </div>
+      </div>
+      <div class="phase-card-body">
+        <div class="phase-thesis">With the restructure communicated and people stabilised, the priority shifts to fixing the legal and structural gaps identified in Month 1 — and ensuring that every person in the organisation has a current, signed job description and understands what their role requires.</div>
+        <div class="workstreams">
+          <div class="workstream">
+            <div class="ws-label" style="color:var(--p1)">Contract Remediation</div>
+            <div class="ws-title">Close compliance gaps</div>
+            <ul class="ws-items">
+              <li>Issue updated employment contracts reflecting new KAD structure and reporting lines</li>
+              <li>Ensure all contracts meet minimum legal requirements per jurisdiction</li>
+              <li>Resolve any right-to-work gaps identified in Month 1</li>
+              <li>Review contractor vs employee classification for any ambiguous arrangements</li>
+            </ul>
+          </div>
+          <div class="workstream">
+            <div class="ws-label" style="color:var(--p1)">Job Architecture</div>
+            <div class="ws-title">What each role actually requires</div>
+            <ul class="ws-items">
+              <li>Use the KAD role taxonomy (from the Notes sheet) as the starting point</li>
+              <li>Produce 1-page job descriptions for each distinct role type per KAD</li>
+              <li>Define the success profile for each role: competencies, not just tasks</li>
+              <li>HRBPs quality-assure job descriptions for their KAD before sign-off</li>
+            </ul>
+          </div>
+          <div class="workstream">
+            <div class="ws-label" style="color:var(--p1)">Vacancy Plan</div>
+            <div class="ws-title">Fill the 12 open roles intelligently</div>
+            <ul class="ws-items">
+              <li>Prioritise the 12 vacancies by business urgency and KAD impact</li>
+              <li>Define sourcing strategy per vacancy — not all roles recruit the same way</li>
+              <li>Introduce structured interview framework before any role is filled</li>
+              <li>KAD 3 (TowerCo) has 4 vacancies — highest risk, prioritise first</li>
+            </ul>
+          </div>
+          <div class="workstream">
+            <div class="ws-label" style="color:var(--p1)">HR Policy Framework</div>
+            <div class="ws-title">The minimum viable policy set</div>
+            <ul class="ws-items">
+              <li>Draft core policies: grievance, disciplinary, code of conduct, QHSE</li>
+              <li>Ensure policies are jurisdiction-reviewed before distribution</li>
+              <li>Translate or adapt for French-speaking countries (Mali, Niger, CIV, Cameroon)</li>
+              <li>Distribute with a brief manager briefing note on each policy</li>
+            </ul>
+          </div>
+        </div>
+        <div class="deliverables-row">
+          <span class="deliverable-tag">Updated employment contracts (all 148)</span>
+          <span class="deliverable-tag">Job description library by role type</span>
+          <span class="deliverable-tag">Vacancy priority register</span>
+          <span class="deliverable-tag">Core HR policy set (bilingual)</span>
+          <span class="deliverable-tag">Structured interview framework</span>
+        </div>
+        <div class="owner-row">
+          <div class="owner-item"><span class="owner-role">Lead:</span><span class="owner-name">HRBPs per KAD</span></div>
+          <div class="owner-item"><span class="owner-role">Legal:</span><span class="owner-name">Country employment counsel</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="phase-card" style="background:rgba(200,168,64,0.04); border-color:rgba(200,168,64,0.2)">
+      <div class="phase-card-header">
+        <span class="phase-number" style="background:rgba(200,168,64,0.15); color:var(--p1); border:1px solid rgba(200,168,64,0.3)">MONTH 3</span>
+        <div class="phase-header-text">
+          <div class="phase-title" style="color:var(--p1)">Performance Contracts & Workforce Planning</div>
+          <div class="phase-timeline">Weeks 9–12 · People connected to business goals</div>
+        </div>
+      </div>
+      <div class="phase-card-body">
+        <div class="phase-thesis">The KAD model only delivers autonomous profit centres if each person in each KAD knows exactly what they are expected to deliver and how their performance will be measured. Month 3 connects people to goals — and connects HR to the business plan for the rest of 2026.</div>
+        <div class="workstreams">
+          <div class="workstream">
+            <div class="ws-label" style="color:var(--p1)">Performance Contracting</div>
+            <div class="ws-title">Goals for every person in every KAD</div>
+            <ul class="ws-items">
+              <li>Each KAD leader sets 3–5 KAD-level goals for Q2–Q4 2026</li>
+              <li>Each HRBP facilitates goal cascade from KAD to individual</li>
+              <li>Goal template: SMART deliverables + 2–3 behavioural competencies</li>
+              <li>All goals documented and signed off by end of Month 3</li>
+            </ul>
+          </div>
+          <div class="workstream">
+            <div class="ws-label" style="color:var(--p1)">Workforce Planning</div>
+            <div class="ws-title">What each KAD needs to win in 2026</div>
+            <ul class="ws-items">
+              <li>HRBP facilitates 2-hour workforce planning session per KAD</li>
+              <li>Map current capability vs. what's needed for 2026 contract pipeline</li>
+              <li>Identify capability gaps: build (train), buy (hire), borrow (contract)</li>
+              <li>Output: a 12-month resourcing roadmap per KAD</li>
+            </ul>
+          </div>
+          <div class="workstream">
+            <div class="ws-label" style="color:var(--p1)">Onboarding Framework</div>
+            <div class="ws-title">For the 12 vacancies being filled</div>
+            <ul class="ws-items">
+              <li>Design a 90-day integration plan template usable by all KADs</li>
+              <li>Define pre-boarding checklist (day-one readiness requirements)</li>
+              <li>HRBP 30-day and 60-day check-in protocol for all new hires</li>
+              <li>Apply to any hire made during Phase 1 as the new standard</li>
+            </ul>
+          </div>
+          <div class="workstream">
+            <div class="ws-label" style="color:var(--p1)">HRBP Operating Rhythm</div>
+            <div class="ws-title">The cadence that makes it all work</div>
+            <ul class="ws-items">
+              <li>Weekly: HRBP team sync (30 mins, all 4 HRBPs + HR lead)</li>
+              <li>Bi-weekly: HRBP 1:1 with their KAD leader</li>
+              <li>Monthly: People dashboard shared with CEO and KAD leaders</li>
+              <li>Quarterly: Cross-KAD talent review and calibration</li>
+            </ul>
+          </div>
+        </div>
+        <div class="deliverables-row">
+          <span class="deliverable-tag">Performance contracts (all 148)</span>
+          <span class="deliverable-tag">Workforce plan per KAD (12-month)</span>
+          <span class="deliverable-tag">90-day onboarding template</span>
+          <span class="deliverable-tag">HRBP operating calendar</span>
+          <span class="deliverable-tag">Monthly people dashboard v1</span>
+        </div>
+        <div class="owner-row">
+          <div class="owner-item"><span class="owner-role">Lead:</span><span class="owner-name">HRBPs per KAD</span></div>
+          <div class="owner-item"><span class="owner-role">Input:</span><span class="owner-name">KAD Leaders (Kingsley, Dayo, Chikezie, Issaka)</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PHASE 2 -->
+  <div id="phase2" class="section-block">
+    <div class="section-kicker">Phase 2 · Months 4–9</div>
+    <div class="section-title">Operating — Run the People System</div>
+    <p class="section-lead">With the foundation secure, Phase 2 builds the operating layer: the performance management cycle, engagement infrastructure, development programmes, and compensation framework. This is where HR stops being reactive and starts being strategic.</p>
+
+    <div class="phase-card" style="background:rgba(122,159,212,0.04); border-color:rgba(122,159,212,0.2)">
+      <div class="phase-card-header">
+        <span class="phase-number" style="background:rgba(122,159,212,0.12); color:var(--p2); border:1px solid rgba(122,159,212,0.25)">MONTHS 4–6</span>
+        <div class="phase-header-text">
+          <div class="phase-title" style="color:var(--p2)">Performance Management Cycle Live</div>
+          <div class="phase-timeline">Building the manager capability and feedback infrastructure</div>
+        </div>
+      </div>
+      <div class="phase-card-body">
+        <div class="phase-thesis">Goals are set. Now the organisation needs the capability and cadence to manage performance continuously — not wait for a December review to discover what went wrong in March.</div>
+        <div class="workstreams">
+          <div class="workstream">
+            <div class="ws-label" style="color:var(--p2)">Manager Capability</div>
+            <div class="ws-title">Build the management layer</div>
+            <ul class="ws-items">
+              <li>Manager training: structured 1:1s, SBI feedback, performance conversations</li>
+              <li>1:1 cadence non-negotiable: weekly for all direct reports</li>
+              <li>HRBP audits 1:1 frequency through engagement data — flags non-compliance</li>
+              <li>ER training for all managers: what they can and cannot do per jurisdiction</li>
+            </ul>
+          </div>
+          <div class="workstream">
+            <div class="ws-label" style="color:var(--p2)">Mid-Year Review</div>
+            <div class="ws-title">Q3 performance checkpoint</div>
+            <ul class="ws-items">
+              <li>Mid-year performance conversation for all 148 people</li>
+              <li>Review and update goals where business priorities have shifted</li>
+              <li>Identify any emerging PIP situations before they become ER cases</li>
+              <li>Cross-KAD calibration: HRBP forum reviews rating consistency</li>
+            </ul>
+          </div>
+          <div class="workstream">
+            <div class="ws-label" style="color:var(--p2)">First Engagement Survey</div>
+            <div class="ws-title">Measure what the restructure produced</div>
+            <ul class="ws-items">
+              <li>Run first engagement pulse — 10–12 questions, anonymous, third-party platform</li>
+              <li>Minimum drivers: role clarity, manager quality, development, recognition, inclusion</li>
+              <li>Report at KAD level — organisation average masks everything that matters</li>
+              <li>Each HRBP facilitates action-planning session with their KAD leader within 2 weeks of results</li>
+            </ul>
+          </div>
+          <div class="workstream">
+            <div class="ws-label" style="color:var(--p2)">Compensation Framework</div>
+            <div class="ws-title">Consistent, market-anchored pay decisions</div>
+            <ul class="ws-items">
+              <li>Build pay bands by level and country — using external market data, not internal history</li>
+              <li>Run pay equity analysis across KADs — identify any demographic pay gaps</li>
+              <li>Establish offer approval framework: HRBP approves within band, escalates above</li>
+              <li>Document total reward by country: what the employment package actually includes</li>
+            </ul>
+          </div>
+        </div>
+        <div class="deliverables-row">
+          <span class="deliverable-tag">Manager training programme</span>
+          <span class="deliverable-tag">Mid-year review completed</span>
+          <span class="deliverable-tag">Engagement pulse results + actions</span>
+          <span class="deliverable-tag">Pay band architecture by country</span>
+          <span class="deliverable-tag">Pay equity analysis</span>
+        </div>
+        <div class="owner-row">
+          <div class="owner-item"><span class="owner-role">Lead:</span><span class="owner-name">HRBPs</span></div>
+          <div class="owner-item"><span class="owner-role">Finance input:</span><span class="owner-name">Djenebou SOW (KAD1), Haastrup Adeniyi (KAD2), Ali Iddrissa (KAD4)</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="phase-card" style="background:rgba(122,159,212,0.04); border-color:rgba(122,159,212,0.2)">
+      <div class="phase-card-header">
+        <span class="phase-number" style="background:rgba(122,159,212,0.12); color:var(--p2); border:1px solid rgba(122,159,212,0.25)">MONTHS 7–9</span>
+        <div class="phase-header-text">
+          <div class="phase-title" style="color:var(--p2)">Development, Retention & End-of-Year Review</div>
+          <div class="phase-timeline">L&D, career pathing, annual review cycle</div>
+        </div>
+      </div>
+      <div class="phase-card-body">
+        <div class="phase-thesis">The engagement survey results will surface development gaps. This period turns those gaps into action — and builds the retention infrastructure before the annual review and the year-end attrition window it typically triggers.</div>
+        <div class="workstreams">
+          <div class="workstream">
+            <div class="ws-label" style="color:var(--p2)">Learning Needs Analysis</div>
+            <div class="ws-title">Targeted development, not training activity</div>
+            <ul class="ws-items">
+              <li>HRBP runs LNA per KAD — performance data + manager input + workforce plan gaps</li>
+              <li>Distinguish will gaps (motivation) from skill gaps (capability) from clarity gaps (direction)</li>
+              <li>Map priority gaps to learning solutions: not all gaps require training courses</li>
+              <li>Prioritise technical skills (RAN, RNO, Fiber, Infrastructure) alongside commercial capability</li>
+            </ul>
+          </div>
+          <div class="workstream">
+            <div class="ws-label" style="color:var(--p2)">Career Architecture</div>
+            <div class="ws-title">Growth paths inside Telinno</div>
+            <ul class="ws-items">
+              <li>Build career pathways using the KAD role taxonomy as the framework</li>
+              <li>Make cross-KAD mobility visible and actively facilitated</li>
+              <li>Identify high-potential employees in each KAD for succession planning</li>
+              <li>Internal vacancy policy: every role above coordinator considered internally first</li>
+            </ul>
+          </div>
+          <div class="workstream">
+            <div class="ws-label" style="color:var(--p2)">Annual Performance Review</div>
+            <div class="ws-title">The year's first proper review cycle</div>
+            <ul class="ws-items">
+              <li>Design the review form: goal assessment + competency assessment + development planning</li>
+              <li>Separate development conversation from pay conversation</li>
+              <li>Run cross-KAD calibration before any ratings are shared</li>
+              <li>Use aggregate data to inform 2027 L&D investment and succession planning</li>
+            </ul>
+          </div>
+          <div class="workstream">
+            <div class="ws-label" style="color:var(--p2)">Retention Intelligence</div>
+            <div class="ws-title">Understand the real attrition risk</div>
+            <ul class="ws-items">
+              <li>Calculate cost of attrition by role type — makes the case for retention investment</li>
+              <li>Build a leading indicator dashboard: engagement trends, flight risk signals</li>
+              <li>Implement structured exit interview process for all voluntary leavers</li>
+              <li>HRBP quarterly retention report to CEO: controllable vs uncontrollable attrition</li>
+            </ul>
+          </div>
+        </div>
+        <div class="deliverables-row">
+          <span class="deliverable-tag">L&D plan by KAD</span>
+          <span class="deliverable-tag">Career pathway framework</span>
+          <span class="deliverable-tag">Annual performance review completed</span>
+          <span class="deliverable-tag">Cross-KAD calibration completed</span>
+          <span class="deliverable-tag">Cost of attrition model</span>
+          <span class="deliverable-tag">Exit interview framework</span>
+        </div>
+        <div class="owner-row">
+          <div class="owner-item"><span class="owner-role">Lead:</span><span class="owner-name">HRBPs + KAD Leaders</span></div>
+          <div class="owner-item"><span class="owner-role">CEO input:</span><span class="owner-name">Cross-KAD calibration session</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PHASE 3 -->
+  <div id="phase3" class="section-block">
+    <div class="section-kicker">Phase 3 · Months 10–18</div>
+    <div class="section-title">Optimising — HR as a Strategic Lever</div>
+    <p class="section-lead">Phase 3 is not a new initiative. It is what the system naturally produces when Phases 1 and 2 are stable — predictive analytics, succession depth, employer brand, and HR as a function that KAD leaders actively want to use.</p>
+
+    <div class="phase-card" style="background:rgba(106,168,122,0.04); border-color:rgba(106,168,122,0.2)">
+      <div class="phase-card-header">
+        <span class="phase-number" style="background:rgba(106,168,122,0.12); color:var(--p3); border:1px solid rgba(106,168,122,0.25)">MONTHS 10–18</span>
+        <div class="phase-header-text">
+          <div class="phase-title" style="color:var(--p3)">Strategic People Infrastructure</div>
+          <div class="phase-timeline">Predictive, proactive, commercial</div>
+        </div>
+      </div>
+      <div class="phase-card-body">
+        <div class="workstreams">
+          <div class="workstream">
+            <div class="ws-label" style="color:var(--p3)">People Analytics</div>
+            <div class="ws-title">HR that speaks CFO</div>
+            <ul class="ws-items">
+              <li>Predictive attrition model: identify flight-risk employees before they resign</li>
+              <li>Cost-of-workforce analysis by KAD — HR's contribution to P&L</li>
+              <li>Time-to-productivity tracking: onboarding ROI</li>
+              <li>Quarterly people analytics report to board in financial terms</li>
+            </ul>
+          </div>
+          <div class="workstream">
+            <div class="ws-label" style="color:var(--p3)">Succession Planning</div>
+            <div class="ws-title">No single points of failure</div>
+            <ul class="ws-items">
+              <li>Map critical role dependencies across all 4 KADs</li>
+              <li>Identify at least one internal successor for every KAD leader role</li>
+              <li>Accelerated development programmes for high-potential employees</li>
+              <li>Cross-KAD succession: internal candidates for vacancies before external search</li>
+            </ul>
+          </div>
+          <div class="workstream">
+            <div class="ws-label" style="color:var(--p3)">Employer Brand</div>
+            <div class="ws-title">Telinno as a destination employer in West Africa</div>
+            <ul class="ws-items">
+              <li>Develop Telinno's EVP: what working here actually offers across 6 markets</li>
+              <li>KAD-specific EVP narratives for differentiated talent markets</li>
+              <li>Glassdoor and LinkedIn presence that reflects the real culture</li>
+              <li>Alumni network: former employees as referral sources and brand advocates</li>
+            </ul>
+          </div>
+          <div class="workstream">
+            <div class="ws-label" style="color:var(--p3)">DEI & Culture</div>
+            <div class="ws-title">Culture that's intentional, not accidental</div>
+            <ul class="ws-items">
+              <li>Representation audit: career progression rates by gender and origin</li>
+              <li>Psychological safety measurement embedded in annual engagement census</li>
+              <li>Culture values defined and embedded in performance reviews</li>
+              <li>Leadership behaviour as the primary culture signal — 360s for all KAD leaders</li>
+            </ul>
+          </div>
+        </div>
+        <div class="deliverables-row">
+          <span class="deliverable-tag">Predictive attrition model</span>
+          <span class="deliverable-tag">Succession plan (all critical roles)</span>
+          <span class="deliverable-tag">EVP + employer brand assets</span>
+          <span class="deliverable-tag">Annual DEI progress report</span>
+          <span class="deliverable-tag">Board people analytics dashboard</span>
+        </div>
+        <div class="owner-row">
+          <div class="owner-item"><span class="owner-role">Lead:</span><span class="owner-name">CHRO / HR Director</span></div>
+          <div class="owner-item"><span class="owner-role">Board sponsor:</span><span class="owner-name">CEO (Kehinde Adewoye)</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- HRBP MANDATES -->
+  <div id="hrbps" class="section-block">
+    <div class="section-kicker">HRBP Operating Mandates</div>
+    <div class="section-title">What Each HRBP Owns</div>
+    <p class="section-lead">The four HRBPs are not HR administrators assigned to KADs. They are the people operating officers of their business units. The following is the minimum mandate each requires to function effectively. This should be formalised in the HRBP Operating Charter (Month 1 deliverable).</p>
+
+    <div class="hrbp-grid">
+      <div class="hrbp-card">
+        <div class="hrbp-name">Amadou Guindo</div>
+        <div class="hrbp-location">Mali · KAD 1: Equipment Vendors (ZTE, Nokia) · 30 people</div>
+        <ul class="hrbp-mandate-items">
+          <li>Own all people processes for KAD 1 across Mali and related geographies</li>
+          <li>Primary interface between KAD leader (Kingsley Okougha) and central HR</li>
+          <li>Manage the Nokia Mali team (9 Back Office Analysts + Project Managers) as highest-volume sub-group</li>
+          <li>Fill 2 vacancies (both ZTE Project Managers — Nigeria and Liberia) using structured selection</li>
+          <li>French-language HR policy adaptation for Mali-based employees</li>
+          <li>Weekly KAD 1 people pulse: who's engaged, who's at risk, what's blocked</li>
+        </ul>
+      </div>
+      <div class="hrbp-card">
+        <div class="hrbp-name">Luvie Mafotsang</div>
+        <div class="hrbp-location">Cameroon · KAD 2: Huawei, Regulators & Govt · 21 people</div>
+        <ul class="hrbp-mandate-items">
+          <li>Own all people processes for KAD 2 across Nigeria, Cameroon, and South Africa</li>
+          <li>Primary interface with KAD leader (Dayo Oyeniyi, based in SA)</li>
+          <li>Manage the NCC Regulatory team (5 Drive Test Engineers + 2 Post Processing Officers) — technically specialised, retention-sensitive</li>
+          <li>Fill 2 Project Coordinator vacancies in Nigeria</li>
+          <li>Cross-border HR: SA employment law differs significantly from Nigeria and Cameroon</li>
+          <li>Highest ER exposure: KAD 2 has senior profiles and complex client relationships</li>
+        </ul>
+      </div>
+      <div class="hrbp-card">
+        <div class="hrbp-name">Adeniyi Oluwadimimu</div>
+        <div class="hrbp-location">Nigeria · KAD 3: TowerCo & Infrastructure · 20 people + 4 vacancies</div>
+        <ul class="hrbp-mandate-items">
+          <li>Own all people processes for KAD 3 — predominantly Nigeria-based</li>
+          <li>Primary interface with KAD leader (Chikezie Nwogu, COO)</li>
+          <li>Highest vacancy load: 4 open positions including 2 Finance/Procurement critical roles</li>
+          <li>Manage a large GICL Fiber team — field-based, QHSE-intensive, higher operational risk</li>
+          <li>QHSE integration: people processes must align with QHSE requirements for field teams</li>
+          <li>Priority: fill Finance Manager and Procurement Manager vacancies as KAD 3 cannot operate as a profit centre without them</li>
+        </ul>
+      </div>
+      <div class="hrbp-card">
+        <div class="hrbp-name">Bassira Abdou Laouali</div>
+        <div class="hrbp-location">Niger · KAD 4: Telecom Operators · 58 people (largest KAD)</div>
+        <ul class="hrbp-mandate-items">
+          <li>Own all people processes for KAD 4 — the largest and most geographically dispersed KAD</li>
+          <li>Primary interface with KAD leader (Issaka Djibo Abdoul Aziz)</li>
+          <li>Manage people across Niger, Cameroon, Mali, Nigeria, and Liberia</li>
+          <li>Largest Orange Mali team (field engineers, drivers, project managers) — high-volume operational staff requiring structured performance management</li>
+          <li>Smile Nigeria team (5 field engineers) — different client, different operating environment</li>
+          <li>Highest complexity: 5 countries, multiple clients, field + office staff split</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="callout info">
+      <div class="callout-label">The HRBP Forum</div>
+      <div class="callout-text">All 4 HRBPs must meet weekly — even for 30 minutes. This is the connective tissue of the HR operating model. Without it, each HRBP operates in isolation, cross-KAD talent opportunities are missed, ER decisions are made inconsistently, and the CEO has no integrated view of the people system. The HRBP forum is the most important meeting in the HR calendar.</div>
+    </div>
+  </div>
+
+  <!-- RISKS -->
+  <div id="risks" class="section-block">
+    <div class="section-kicker">Risks & Mitigations</div>
+    <div class="section-title">What Could Break This Plan</div>
+    <p class="section-lead">These are the most likely failure modes, in order of probability. Each has a defined mitigation. None of them are theoretical — they are the standard failure patterns for an organisation at exactly this stage.</p>
+
+    <table class="risk-table">
+      <thead>
+        <tr>
+          <th>Risk</th>
+          <th>Probability</th>
+          <th>Impact</th>
+          <th>Mitigation</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>HRBPs are too overloaded to build while operating.</strong> Running the current system and building the new one simultaneously is a significant bandwidth demand on 4 people who may also have non-HR responsibilities.</td>
+          <td><span class="risk-tag high">High</span></td>
+          <td>Plan stalls in Phase 1</td>
+          <td>Phase 1 is explicitly sequenced to reduce load before adding it. Each HRBP's Month 1 priority is one thing: transition conversations. Nothing new is built until the fire is out.</td>
+        </tr>
+        <tr>
+          <td><strong>KAD leaders don't engage with the people process.</strong> KAD leaders focused on revenue and client delivery may treat HR requirements as overhead rather than infrastructure.</td>
+          <td><span class="risk-tag high">High</span></td>
+          <td>Processes exist on paper, not in practice</td>
+          <td>CEO must sponsor explicitly — not just the restructure, but the people operating model. Every HRBP interaction with a KAD leader should be framed in commercial terms: time-to-fill against project deadlines, attrition costs against P&L.</td>
+        </tr>
+        <tr>
+          <td><strong>Multi-country compliance breach.</strong> Operating across 6 jurisdictions without country-specific legal review creates exposure — particularly for cross-border assignments and non-standard contracts.</td>
+          <td><span class="risk-tag high">High</span></td>
+          <td>Employment tribunal, regulatory fine, reputational damage</td>
+          <td>Month 1 compliance audit is non-negotiable. Engage local employment counsel in Nigeria, Mali, Niger, CIV, Cameroon within Week 1. Do not issue updated contracts without legal sign-off per jurisdiction.</td>
+        </tr>
+        <tr>
+          <td><strong>Key person attrition in the transition window.</strong> Restructures are the highest-risk moment for voluntary departure — particularly among people who were not consulted and who have options.</td>
+          <td><span class="risk-tag high">High</span></td>
+          <td>Loss of institutional knowledge, client continuity risk</td>
+          <td>Flight-risk register built in Week 2. Personal retention conversations for any person identified as high risk. Retention decisions (counter-offers, role enhancements) made proactively — not reactively after a resignation.</td>
+        </tr>
+        <tr>
+          <td><strong>No HRIS = no data integrity.</strong> Without a master people data system, the headcount register will drift from reality, analytics will be unreliable, and compliance reporting will require manual reconciliation.</td>
+          <td><span class="risk-tag med">Med</span></td>
+          <td>HR analytics not credible, compliance gaps missed</td>
+          <td>Even a well-managed spreadsheet, locked and owned by HR, is better than multiple disconnected lists. The Month 1 data audit establishes the single source of truth. Phase 2 scopes an HRIS implementation if the manual system is showing strain.</td>
+        </tr>
+        <tr>
+          <td><strong>French-language HR processes not localised.</strong> 62 of 148 employees are in French-speaking countries (Mali, Niger, CIV, Cameroon). HR policies, contracts, and performance tools in English only are not usable by a third of the workforce.</td>
+          <td><span class="risk-tag med">Med</span></td>
+          <td>Policy non-adoption, legal exposure in Francophone jurisdictions</td>
+          <td>All core HR documents must be available in French. Amadou (Mali) and Luvie (Cameroon) are the quality assurance leads for French-language localisation. This is a Month 2 deliverable, not an afterthought.</td>
+        </tr>
+        <tr>
+          <td><strong>Performance management becomes performative.</strong> The most common failure mode for the performance system described in this plan: managers complete the forms, goals are documented, and nothing changes in how people are actually managed day-to-day.</td>
+          <td><span class="risk-tag med">Med</span></td>
+          <td>Process exists, behaviour doesn't change</td>
+          <td>Manager training (Month 4–6) is the primary mitigation. HRBP audit of 1:1 frequency via engagement data is the detection mechanism. If a manager's team scores consistently low on 'I receive regular, useful feedback' — the HRBP names this directly.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- FOOTER -->
+  <div id="doc-footer">
+    <div class="footer-thesis">
+      "The restructure is the announcement. The people operating system is what makes it real. One without the other is communication without change."
+    </div>
+    <div class="footer-meta">Telinno Consulting · People Infrastructure Implementation Plan · April 2026 · Confidential</div>
+  </div>
+
+</main>
+
+<script>
+// Sidebar active link on scroll
+const links = document.querySelectorAll('.sidebar-link');
+const sections = document.querySelectorAll('[id]');
+
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      links.forEach(l => l.classList.remove('active'));
+      const active = document.querySelector(`.sidebar-link[href="#${entry.target.id}"]`);
+      if (active) active.classList.add('active');
+    }
+  });
+}, { rootMargin: '-20% 0px -70% 0px' });
+
+sections.forEach(s => observer.observe(s));
+
+links.forEach(link => {
+  link.addEventListener('click', e => {
+    e.preventDefault();
+    const target = document.querySelector(link.getAttribute('href'));
+    if (target) target.scrollIntoView({ behavior: 'smooth' });
+  });
+});
+</script>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Telinno — What Success Looks Like</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink:#0b0f18; --ink-2:#111620; --ink-3:#181e2c; --surface:#1e2a3a;
+  --border:rgba(255,255,255,0.06); --border-mid:rgba(255,255,255,0.11);
+  --text:#e4dfd7; --text-muted:#6b6660; --text-dim:#353230;
+  --gold:#c9ab47; --gold-bg:rgba(201,171,71,0.08); --gold-border:rgba(201,171,71,0.2);
+  --green:#4d9e82; --green-bg:rgba(77,158,130,0.08); --green-border:rgba(77,158,130,0.2);
+  --blue:#4a85c8; --blue-bg:rgba(74,133,200,0.08); --blue-border:rgba(74,133,200,0.2);
+  --red:#e07060; --red-bg:rgba(224,112,96,0.08); --red-border:rgba(224,112,96,0.2);
+  --amber:#d4922a; --amber-bg:rgba(212,146,42,0.08); --amber-border:rgba(212,146,42,0.2);
+  --purple:#8b7fd4;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'DM Sans',sans-serif;background:var(--ink);color:var(--text);min-height:100vh;display:flex;flex-direction:column;}
+/* TOPBAR */
+#topbar{background:var(--ink-2);border-bottom:1px solid var(--border);padding:0 32px;height:50px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;flex-shrink:0;}
+.brand{display:flex;align-items:center;gap:10px;}
+.brand-name{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:var(--gold);}
+.brand-title{font-size:11.5px;color:var(--text-muted);}
+.topbar-actions{display:flex;gap:8px;}
+.btn{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:0.07em;text-transform:uppercase;padding:6px 13px;border-radius:4px;cursor:pointer;border:1px solid var(--border-mid);background:var(--ink-3);color:var(--text-muted);transition:all 0.15s;text-decoration:none;display:inline-block;}
+.btn:hover{color:var(--text);border-color:rgba(255,255,255,0.2);}
+.btn.next{background:var(--blue-bg);border-color:var(--blue-border);color:var(--blue);}
+.btn.next:hover{background:rgba(74,133,200,0.14);}
+/* PHASE NAV */
+.phase-nav-bar{background:rgba(0,0,0,0.3);border-bottom:1px solid var(--border);padding:0 32px;display:flex;align-items:center;justify-content:space-between;height:38px;}
+.pnb-back{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:0.06em;color:rgba(255,255,255,0.25);text-decoration:none;padding-right:14px;border-right:1px solid rgba(255,255,255,0.07);margin-right:14px;transition:color 0.15s;}
+.pnb-back:hover{color:rgba(255,255,255,0.55);}
+.pnb-left{display:flex;align-items:center;}
+.pnb-steps{display:flex;align-items:center;gap:0;}
+.pnb-step{display:flex;align-items:center;gap:5px;padding:0 10px 0 0;font-size:10px;color:rgba(255,255,255,0.22);white-space:nowrap;}
+.pnb-step-dot{width:15px;height:15px;border-radius:50%;border:1.5px solid;display:flex;align-items:center;justify-content:center;font-family:'DM Mono',monospace;font-size:6.5px;font-weight:600;flex-shrink:0;}
+.pnb-step-sep{color:rgba(255,255,255,0.1);font-size:9px;margin-right:10px;}
+.pnb-right a{font-family:'DM Mono',monospace;font-size:8.5px;letter-spacing:0.05em;text-transform:uppercase;text-decoration:none;padding:4px 11px;border-radius:4px;border:1px solid;transition:all 0.15s;}
+/* PAGE LAYOUT */
+#page{max-width:900px;margin:0 auto;padding:48px 40px 100px;width:100%;}
+/* HERO */
+.doc-kicker{font-family:'DM Mono',monospace;font-size:9.5px;letter-spacing:0.14em;text-transform:uppercase;color:var(--green);margin-bottom:10px;}
+.doc-title{font-family:'Playfair Display',serif;font-size:38px;font-weight:700;line-height:1.1;margin-bottom:10px;letter-spacing:-0.02em;}
+.doc-title em{font-style:italic;color:var(--green);}
+.doc-sub{font-size:13px;color:var(--text-muted);line-height:1.75;max-width:600px;margin-bottom:36px;}
+/* SECTION HEADERS */
+.section{margin-bottom:48px;}
+.section-kicker{font-family:'DM Mono',monospace;font-size:8.5px;letter-spacing:0.14em;text-transform:uppercase;color:var(--text-dim);margin-bottom:12px;display:flex;align-items:center;gap:10px;}
+.section-kicker::after{content:'';flex:1;height:1px;background:var(--border);}
+.section-title{font-family:'Playfair Display',serif;font-size:22px;font-weight:700;margin-bottom:8px;line-height:1.25;}
+.section-desc{font-size:12.5px;color:var(--text-muted);line-height:1.8;margin-bottom:20px;max-width:700px;}
+/* STANDARD CARDS */
+.standard-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.standard-card{background:var(--ink-2);border:1px solid var(--border);border-radius:8px;padding:16px 18px;position:relative;overflow:hidden;}
+.standard-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--sc-color, var(--green));}
+.sc-title{font-size:12.5px;font-weight:600;color:var(--text);margin-bottom:6px;}
+.sc-desc{font-size:11.5px;color:var(--text-muted);line-height:1.7;}
+.sc-markers{margin-top:10px;display:flex;flex-direction:column;gap:4px;}
+.sc-marker{font-size:11px;color:var(--text-muted);display:flex;align-items:flex-start;gap:7px;line-height:1.5;}
+.sc-marker::before{content:'&#x2713;';color:var(--green);flex-shrink:0;font-size:10px;margin-top:2px;}
+/* EXCELLENCE vs BASELINE TABLE */
+.compare-table{width:100%;border-collapse:collapse;background:var(--ink-2);border:1px solid var(--border);border-radius:8px;overflow:hidden;}
+.compare-table th{font-family:'DM Mono',monospace;font-size:8px;letter-spacing:0.1em;text-transform:uppercase;padding:10px 14px;border-bottom:1px solid var(--border);text-align:left;}
+.compare-table th:nth-child(1){color:var(--text-dim);width:22%;}
+.compare-table th:nth-child(2){color:var(--red);background:var(--red-bg);width:39%;}
+.compare-table th:nth-child(3){color:var(--green);background:var(--green-bg);width:39%;}
+.compare-table td{padding:10px 14px;border-bottom:1px solid var(--border);font-size:11.5px;vertical-align:top;line-height:1.6;}
+.compare-table tr:last-child td{border-bottom:none;}
+.compare-table td:nth-child(1){font-weight:600;color:var(--text);font-size:11px;}
+.compare-table td:nth-child(2){color:var(--text-muted);}
+.compare-table td:nth-child(3){color:var(--text-muted);}
+/* BENCHMARK BARS */
+.benchmark-section{margin-bottom:20px;}
+.bm-row{display:flex;align-items:center;gap:12px;padding:8px 0;border-bottom:1px solid var(--border);}
+.bm-row:last-child{border-bottom:none;}
+.bm-label{font-size:11.5px;color:var(--text);width:220px;flex-shrink:0;}
+.bm-bar-wrap{flex:1;height:6px;background:var(--ink-3);border-radius:3px;overflow:hidden;}
+.bm-bar{height:100%;border-radius:3px;background:var(--green);}
+.bm-value{font-family:'DM Mono',monospace;font-size:9.5px;color:var(--text-muted);width:80px;text-align:right;flex-shrink:0;}
+/* CULTURE BLOCKS */
+.culture-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
+.culture-card{background:var(--ink-2);border:1px solid var(--border);border-radius:8px;padding:16px 18px;}
+.cc-icon{font-size:18px;margin-bottom:10px;display:block;}
+.cc-title{font-size:12px;font-weight:600;color:var(--text);margin-bottom:6px;}
+.cc-desc{font-size:11px;color:var(--text-muted);line-height:1.7;}
+.cc-norm{margin-top:10px;padding-top:10px;border-top:1px solid var(--border);font-size:10.5px;color:var(--text-dim);font-style:italic;line-height:1.6;}
+/* READY CHECKLIST */
+.ready-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:24px;}
+.ready-item{display:flex;align-items:flex-start;gap:10px;background:var(--ink-2);border:1px solid var(--border);border-radius:7px;padding:12px 14px;}
+.ri-check{width:20px;height:20px;border-radius:50%;background:var(--green-bg);border:1px solid var(--green-border);color:var(--green);display:flex;align-items:center;justify-content:center;font-size:9px;flex-shrink:0;margin-top:1px;}
+.ri-text{font-size:11.5px;color:var(--text-muted);line-height:1.6;}
+.ri-text strong{display:block;font-size:12px;color:var(--text);margin-bottom:2px;}
+/* CTA BLOCK */
+.cta-block{background:var(--blue-bg);border:1px solid var(--blue-border);border-radius:10px;padding:28px 32px;display:flex;align-items:center;justify-content:space-between;gap:20px;}
+.cta-block h3{font-family:'Playfair Display',serif;font-size:20px;font-weight:700;margin-bottom:6px;}
+.cta-block p{font-size:12px;color:var(--text-muted);line-height:1.7;max-width:500px;}
+.cta-btn{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:0.08em;text-transform:uppercase;padding:11px 20px;border-radius:5px;border:1px solid var(--blue-border);background:var(--blue-bg);color:var(--blue);text-decoration:none;white-space:nowrap;transition:all 0.18s;flex-shrink:0;}
+.cta-btn:hover{background:rgba(74,133,200,0.14);transform:translateY(-1px);}
+::-webkit-scrollbar{width:4px} ::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.08);border-radius:2px}
+</style>
+</head>
+<body>
+
+<div id="topbar">
+  <div class="brand">
+    <span class="brand-name">Telinno</span>
+    <span class="brand-title">What Success Looks Like</span>
+  </div>
+  <div class="topbar-actions">
+    <a href="index.html" class="btn">&#x2190; Portal</a>
+    <a href="telinno-jsp.html" class="btn next">Start Phase 4 &#x2192;</a>
+  </div>
+</div>
+
+<div class="phase-nav-bar">
+  <div class="pnb-left">
+    <a href="index.html" class="pnb-back">&#x2190; Portal</a>
+    <div class="pnb-steps">
+      <div class="pnb-step" style="color:rgba(255,255,255,0.38);">
+        <div class="pnb-step-dot" style="border-color:rgba(224,112,96,0.4);color:rgba(224,112,96,0.4);">&#x2713;</div>
+        <span>Diagnose System</span>
+      </div>
+      <span class="pnb-step-sep">&#x203A;</span>
+      <div class="pnb-step" style="color:rgba(255,255,255,0.38);">
+        <div class="pnb-step-dot" style="border-color:rgba(201,171,71,0.4);color:rgba(201,171,71,0.4);">&#x2713;</div>
+        <span>Diagnose People</span>
+      </div>
+      <span class="pnb-step-sep">&#x203A;</span>
+      <div class="pnb-step" style="color:#4d9e82;">
+        <div class="pnb-step-dot" style="border-color:#4d9e82;color:#4d9e82;background:rgba(77,158,130,0.1);">3</div>
+        <span style="font-weight:600;color:#4d9e82;">Define Success</span>
+      </div>
+      <span class="pnb-step-sep">&#x203A;</span>
+      <div class="pnb-step">
+        <div class="pnb-step-dot" style="border-color:rgba(255,255,255,0.14);color:rgba(255,255,255,0.18);">4</div>
+        <span>Fix It</span>
+      </div>
+    </div>
+  </div>
+  <div class="pnb-right">
+    <a href="telinno-audit-v2.html" style="background:rgba(255,255,255,0.04);border-color:rgba(255,255,255,0.1);color:rgba(255,255,255,0.4);">&#x2190; People Audit</a>
+    <a href="telinno-jsp.html" style="background:rgba(74,133,200,0.1);border-color:rgba(74,133,200,0.25);color:#4a85c8;">Next: Role Definitions &#x2192;</a>
+  </div>
+</div>
+
+<div id="page">
+
+  <div class="doc-kicker">Phase 3 of 4 &middot; Target State</div>
+  <div class="doc-title">What <em>Success</em><br>Looks Like</div>
+  <div class="doc-sub">This is where you are going. Before fixing anything, every HRBP and KAD lead must hold the same picture of the destination. This document defines the optimal HR operating model for Telinno — the standards to close towards, not a fantasy. Align on this before Phase 4 begins.</div>
+
+  <!-- SECTION 1: THE TARGET MODEL -->
+  <div class="section">
+    <div class="section-kicker">The Operating Model</div>
+    <div class="section-title">The Optimal People System for Telinno</div>
+    <div class="section-desc">At full operating maturity, Telinno's people system delivers six outcomes simultaneously. These are not aspirations — they are the baseline definition of a functioning HR operation for a 148-person, multi-country telecoms services company.</div>
+    <div class="standard-grid">
+      <div class="standard-card" style="--sc-color:var(--green);">
+        <div class="sc-title">Every person knows what is expected of them</div>
+        <div class="sc-desc">Every role has a Job Success Profile. Every person has been shown it, agreed to it, and is being managed against it. There are no ambiguous roles.</div>
+        <div class="sc-markers">
+          <div class="sc-marker">JSP exists for every role type across all 4 KADs</div>
+          <div class="sc-marker">Each person has received and acknowledged their JSP</div>
+          <div class="sc-marker">Performance reviews reference JSP outputs and KPIs</div>
+        </div>
+      </div>
+      <div class="standard-card" style="--sc-color:var(--blue);">
+        <div class="sc-title">Every person knows their development path</div>
+        <div class="sc-desc">Competency gaps are mapped. Training plans are active. People can see where they are, where they need to be, and what is being done to bridge the gap.</div>
+        <div class="sc-markers">
+          <div class="sc-marker">Competency assessment completed for all 148 people</div>
+          <div class="sc-marker">T&amp;D plan active for every person with a gap</div>
+          <div class="sc-marker">L&amp;D calendar built from aggregated training needs</div>
+        </div>
+      </div>
+      <div class="standard-card" style="--sc-color:var(--gold);">
+        <div class="sc-title">Compliance is clean across all 6 countries</div>
+        <div class="sc-desc">Every contract is current and country-compliant. Statutory obligations are met. No person is working on an expired or informal arrangement in any jurisdiction.</div>
+        <div class="sc-markers">
+          <div class="sc-marker">Valid contracts for all staff (NG, ML, NE, CI, CM)</div>
+          <div class="sc-marker">Statutory deductions current in each jurisdiction</div>
+          <div class="sc-marker">Leave, benefits &amp; entitlements documented per country</div>
+        </div>
+      </div>
+      <div class="standard-card" style="--sc-color:var(--purple);">
+        <div class="sc-title">Performance is managed, not assumed</div>
+        <div class="sc-desc">A single performance cycle runs across all KADs. Goals are set, mid-year reviews happen, end-of-year outcomes are recorded. Underperformance is managed, not ignored.</div>
+        <div class="sc-markers">
+          <div class="sc-marker">Annual performance cycle live for all 148 people</div>
+          <div class="sc-marker">Managers trained on how to conduct reviews</div>
+          <div class="sc-marker">Performance data feeds compensation decisions</div>
+        </div>
+      </div>
+      <div class="standard-card" style="--sc-color:var(--amber);">
+        <div class="sc-title">Pay is fair, graded, and understood</div>
+        <div class="sc-desc">A salary grade framework exists. Pay decisions are defensible. Everyone knows their grade and what determines movement within it. No pay is purely relationship-driven.</div>
+        <div class="sc-markers">
+          <div class="sc-marker">Grade framework built for all KAD role families</div>
+          <div class="sc-marker">Benchmarking done vs telecoms sector in each country</div>
+          <div class="sc-marker">Pay review process documented and followed</div>
+        </div>
+      </div>
+      <div class="standard-card" style="--sc-color:var(--red);">
+        <div class="sc-title">The HR function itself is functional</div>
+        <div class="sc-desc">Each HRBP has a clear mandate, operates with authority, and is trusted by their KAD. HR data is accurate and up to date. HR is treated as a business function, not an admin service.</div>
+        <div class="sc-markers">
+          <div class="sc-marker">HRBP mandate documented and signed off per KAD</div>
+          <div class="sc-marker">HRBP operating rhythm active (weekly, monthly cycles)</div>
+          <div class="sc-marker">HR data accurate, accessible, and decision-ready</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 2: WHAT GOOD LOOKS LIKE -->
+  <div class="section">
+    <div class="section-kicker">The Excellence Standard</div>
+    <div class="section-title">What Good Looks Like vs Where You Are Now</div>
+    <div class="section-desc">Use this to measure the distance between current state (from Phase 1 &amp; 2) and the target. Do not look for perfection — look for the minimum standard that constitutes a functioning people system.</div>
+    <table class="compare-table">
+      <thead>
+        <tr>
+          <th>Function</th>
+          <th>&#x2717; Current Reality (typical)</th>
+          <th>&#x2713; Target Standard</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Compliance</td>
+          <td>Contracts outdated or missing in some countries; statutory obligations partially met; informal arrangements persisting</td>
+          <td>100% valid contracts per jurisdiction; all statutory obligations current; no informal employment relationships</td>
+        </tr>
+        <tr>
+          <td>Role Clarity</td>
+          <td>Job descriptions informal or non-existent; people unsure of their actual scope and authority; managers define roles ad hoc</td>
+          <td>JSP exists for every role type; every person has received and acknowledged theirs; used in recruitment, onboarding, and reviews</td>
+        </tr>
+        <tr>
+          <td>Performance Management</td>
+          <td>No formal cycle; reviews happen informally if at all; underperformance avoided; no link between performance and pay</td>
+          <td>Annual cycle running; goals set at start of year; mid-year check-in; year-end outcome recorded; underperformance process exists and is used</td>
+        </tr>
+        <tr>
+          <td>L&amp;D</td>
+          <td>Training ad hoc and untracked; no gap analysis; budgets spent without strategic intent; no L&amp;D plan</td>
+          <td>Competency gaps mapped for all 148; T&amp;D plan per person; org-wide L&amp;D calendar; training tracked and effectiveness measured</td>
+        </tr>
+        <tr>
+          <td>Pay &amp; Grading</td>
+          <td>Pay determined by negotiation history; no grade structure; inconsistency across KADs; no benchmarking</td>
+          <td>Grade framework in place; benchmarked pay bands per role family; pay decisions defensible; annual review process documented</td>
+        </tr>
+        <tr>
+          <td>Employee Relations</td>
+          <td>Grievances handled informally; no consistent disciplinary process; manager dependence for all people issues</td>
+          <td>Grievance and disciplinary procedures documented and followed; HRBPs trained; employees know the process</td>
+        </tr>
+        <tr>
+          <td>HR Data</td>
+          <td>Data siloed per KAD; headcount numbers uncertain; no single source of truth; reporting manual and slow</td>
+          <td>Single HRIS or equivalent; accurate headcount, role, and contract data; monthly HR dashboard; data exported for board reporting</td>
+        </tr>
+        <tr>
+          <td>HRBP Mandate</td>
+          <td>HRBPs seen as admin support; limited access to KAD leadership; no formal operating rhythm; authority unclear</td>
+          <td>HRBP mandate agreed with each KAD head; weekly operating rhythm; seat at KAD leadership meetings; authority on people decisions respected</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- SECTION 3: KAD BENCHMARKS -->
+  <div class="section">
+    <div class="section-kicker">KAD-Level Targets</div>
+    <div class="section-title">What Readiness Looks Like Per KAD</div>
+    <div class="section-desc">Each KAD has the same destination but a potentially different distance to travel. These are the indicators that tell you a KAD's people system is functioning, not just in progress.</div>
+    <div class="benchmark-section">
+      <div class="bm-row"><div class="bm-label">JSPs completed for all role types</div><div class="bm-bar-wrap"><div class="bm-bar" style="width:100%;background:var(--green);"></div></div><div class="bm-value">100% of roles</div></div>
+      <div class="bm-row"><div class="bm-label">Contracts valid &amp; compliant</div><div class="bm-bar-wrap"><div class="bm-bar" style="width:100%;background:var(--green);"></div></div><div class="bm-value">100% of staff</div></div>
+      <div class="bm-row"><div class="bm-label">Competency assessments done</div><div class="bm-bar-wrap"><div class="bm-bar" style="width:100%;background:var(--blue);"></div></div><div class="bm-value">100% of staff</div></div>
+      <div class="bm-row"><div class="bm-label">T&amp;D plans active (gap cases)</div><div class="bm-bar-wrap"><div class="bm-bar" style="width:100%;background:var(--blue);"></div></div><div class="bm-value">100% with gaps</div></div>
+      <div class="bm-row"><div class="bm-label">Performance goals set this cycle</div><div class="bm-bar-wrap"><div class="bm-bar" style="width:100%;background:var(--gold);"></div></div><div class="bm-value">100% of staff</div></div>
+      <div class="bm-row"><div class="bm-label">Managers trained on review process</div><div class="bm-bar-wrap"><div class="bm-bar" style="width:100%;background:var(--gold);"></div></div><div class="bm-value">100% of managers</div></div>
+      <div class="bm-row"><div class="bm-label">Pay graded within framework</div><div class="bm-bar-wrap"><div class="bm-bar" style="width:100%;background:var(--amber);"></div></div><div class="bm-value">100% of staff</div></div>
+      <div class="bm-row"><div class="bm-label">HRBP mandate signed off by KAD head</div><div class="bm-bar-wrap"><div class="bm-bar" style="width:100%;background:var(--red);"></div></div><div class="bm-value">4 of 4 KADs</div></div>
+    </div>
+  </div>
+
+  <!-- SECTION 4: CULTURE -->
+  <div class="section" id="culture">
+    <div class="section-kicker">Culture &amp; Ownership</div>
+    <div class="section-title">The Behavioural Standards That Make It Hold</div>
+    <div class="section-desc">Tools and processes only work when the culture supports them. These six norms define how people at Telinno lead and behave — not as aspirational values, but as the operating standard managers are expected to model and HRBPs are expected to reinforce.</div>
+    <div class="culture-grid">
+      <div class="culture-card">
+        <span class="cc-icon">&#x1F3AF;</span>
+        <div class="cc-title">Clarity Before Activity</div>
+        <div class="cc-desc">Before any person starts a new role or takes on new scope, they have a clear brief. No-one is deployed without knowing what success looks like in their role.</div>
+        <div class="cc-norm">In practice: Managers complete a JSP before filling any role. No exceptions, including internal moves.</div>
+      </div>
+      <div class="culture-card">
+        <span class="cc-icon">&#x1F4AC;</span>
+        <div class="cc-title">Feedback Is Continuous</div>
+        <div class="cc-desc">Performance conversations are not annual events. Managers give feedback regularly. People are not surprised by their end-of-year assessment.</div>
+        <div class="cc-norm">In practice: Mid-cycle conversations are mandatory. Managers log the conversation in the performance record.</div>
+      </div>
+      <div class="culture-card">
+        <span class="cc-icon">&#x1F4BC;</span>
+        <div class="cc-title">HR Has Authority</div>
+        <div class="cc-desc">HRBPs are not administrators. They have a mandate, access to leadership, and authority to make and enforce people decisions within that mandate.</div>
+        <div class="cc-norm">In practice: HRBP mandate is agreed in writing with each KAD head and reviewed annually.</div>
+      </div>
+      <div class="culture-card">
+        <span class="cc-icon">&#x1F4C5;</span>
+        <div class="cc-title">Ownership Without Excuses</div>
+        <div class="cc-desc">Managers own the performance of their people. HRBPs are a resource and a guardrail, not a substitute for management accountability.</div>
+        <div class="cc-norm">In practice: Performance issues are raised by the line manager first. HRBP is escalation path, not first call.</div>
+      </div>
+      <div class="culture-card">
+        <span class="cc-icon">&#x1F30D;</span>
+        <div class="cc-title">Multi-Country Is Not an Excuse</div>
+        <div class="cc-desc">Operating across 6 countries creates complexity. It does not create exceptions. Compliance, documentation, and people standards apply in every jurisdiction.</div>
+        <div class="cc-norm">In practice: HRBPs are responsible for country-specific compliance. Legal advice sought proactively, not reactively.</div>
+      </div>
+      <div class="culture-card">
+        <span class="cc-icon">&#x1F4C8;</span>
+        <div class="cc-title">Development Is an Investment</div>
+        <div class="cc-desc">L&amp;D is not a reward or a bonus. It is a business investment in closing identified capability gaps. Training spend is planned, targeted, and tracked.</div>
+        <div class="cc-norm">In practice: Every training spend traces back to a documented competency gap and a T&amp;D plan entry.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 5: YOU ARE READY FOR PHASE 4 WHEN -->
+  <div class="section">
+    <div class="section-kicker">Phase Gate</div>
+    <div class="section-title">You Are Ready for Phase 4 When...</div>
+    <div class="section-desc">Do not start Phase 4 until these conditions are met. Moving to the fix phase without alignment on the target will produce activity without direction.</div>
+    <div class="ready-grid">
+      <div class="ready-item">
+        <div class="ri-check">&#x2713;</div>
+        <div class="ri-text"><strong>All HRBPs have reviewed this document</strong>Every HRBP has read the target state and can articulate what they are building towards in their KAD.</div>
+      </div>
+      <div class="ready-item">
+        <div class="ri-check">&#x2713;</div>
+        <div class="ri-text"><strong>Phase 1 audit reports are complete</strong>All four KAD HR Function Audits are done and the gap picture is honest and documented.</div>
+      </div>
+      <div class="ready-item">
+        <div class="ri-check">&#x2713;</div>
+        <div class="ri-text"><strong>Phase 2 people audit is underway or complete</strong>The People Audit System is active and the documentation picture per KAD is visible.</div>
+      </div>
+      <div class="ready-item">
+        <div class="ri-check">&#x2713;</div>
+        <div class="ri-text"><strong>KAD leads have seen the target model</strong>At least one session has been run with KAD leadership to align on the destination and their role in it.</div>
+      </div>
+      <div class="ready-item">
+        <div class="ri-check">&#x2713;</div>
+        <div class="ri-text"><strong>HRBP mandates are either in place or first on the Phase 4 list</strong>HRBPs cannot build the system without the authority to do so.</div>
+      </div>
+      <div class="ready-item">
+        <div class="ri-check">&#x2713;</div>
+        <div class="ri-text"><strong>The culture norms above have been shared with all managers</strong>The behavioural expectations are not a surprise. Managers know what is expected before the fix programme begins.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CTA -->
+  <div class="cta-block">
+    <div>
+      <h3>Ready. Start Phase 4.</h3>
+      <p>Begin with role definitions. One Job Success Profile per distinct role type across your KAD. Nothing else in Phase 4 works without this foundation.</p>
+    </div>
+    <a href="telinno-jsp.html" class="cta-btn">Open Role Definitions &#x2192;</a>
+  </div>
+
+</div>
+</body>
+</html>

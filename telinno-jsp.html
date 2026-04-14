@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Telinno — Job Success Profile</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink:#0c1018; --ink-2:#131924; --ink-3:#1a2235; --surface:#1e293b;
+  --border:rgba(255,255,255,0.07); --border-mid:rgba(255,255,255,0.12);
+  --text:#e2ddd5; --text-muted:#7a7570; --text-dim:#3d3a36;
+  --gold:#c9ab47; --gold-bg:rgba(201,171,71,0.09); --gold-border:rgba(201,171,71,0.22);
+  --red:#e05555; --red-bg:rgba(224,85,85,0.09);
+  --green:#4d9e82; --green-bg:rgba(77,158,130,0.09); --green-border:rgba(77,158,130,0.22);
+  --blue:#4a85c8;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'DM Sans',sans-serif;background:var(--ink);color:var(--text);min-height:100vh;}
+
+#topbar{background:var(--ink-2);border-bottom:1px solid var(--border);padding:0 32px;height:50px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;}
+.brand{display:flex;align-items:center;gap:10px;}
+.brand-name{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:var(--gold);}
+.brand-title{font-size:11.5px;color:var(--text-muted);}
+.topbar-actions{display:flex;gap:8px;}
+.btn{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:0.08em;text-transform:uppercase;padding:7px 14px;border-radius:4px;cursor:pointer;border:1px solid var(--border-mid);background:var(--ink-3);color:var(--text-muted);transition:all 0.15s;}
+.btn:hover{color:var(--text);border-color:var(--text-dim);}
+.btn.primary{background:var(--gold-bg);border-color:var(--gold-border);color:var(--gold);}
+.btn.primary:hover{background:rgba(201,171,71,0.15);}
+
+#page{max-width:860px;margin:0 auto;padding:40px 32px 80px;}
+
+/* Header block */
+.doc-header{margin-bottom:36px;padding-bottom:24px;border-bottom:1px solid var(--border);}
+.doc-kicker{font-family:'DM Mono',monospace;font-size:9.5px;letter-spacing:0.12em;text-transform:uppercase;color:var(--gold);margin-bottom:10px;}
+.doc-title{font-family:'Playfair Display',serif;font-size:32px;font-weight:700;line-height:1.15;margin-bottom:6px;}
+.doc-sub{font-size:12px;color:var(--text-muted);}
+
+/* Sections */
+.jsp-section{margin-bottom:28px;}
+.section-label{font-family:'DM Mono',monospace;font-size:8.5px;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-dim);margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid var(--border);}
+.section-title{font-size:13px;font-weight:600;color:var(--text);margin-bottom:8px;}
+.section-desc{font-size:11.5px;color:var(--text-muted);line-height:1.6;margin-bottom:14px;}
+
+/* Meta grid */
+.meta-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;}
+.meta-grid.three{grid-template-columns:1fr 1fr 1fr;}
+.meta-field{display:flex;flex-direction:column;gap:5px;}
+.field-label{font-family:'DM Mono',monospace;font-size:8.5px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-dim);}
+.field-input{background:var(--ink-2);border:1px solid var(--border-mid);border-radius:5px;padding:8px 10px;font-family:'DM Sans',sans-serif;font-size:12px;color:var(--text);outline:none;transition:border-color 0.15s;width:100%;}
+.field-input:focus{border-color:var(--gold-border);}
+.field-input::placeholder{color:var(--text-dim);}
+.field-select{appearance:none;background:var(--ink-2);border:1px solid var(--border-mid);border-radius:5px;padding:8px 10px;font-family:'DM Sans',sans-serif;font-size:12px;color:var(--text);outline:none;cursor:pointer;width:100%;}
+.field-select:focus{border-color:var(--gold-border);}
+.field-textarea{background:var(--ink-2);border:1px solid var(--border-mid);border-radius:5px;padding:8px 10px;font-family:'DM Sans',sans-serif;font-size:12px;color:var(--text);outline:none;resize:vertical;width:100%;min-height:80px;line-height:1.6;transition:border-color 0.15s;}
+.field-textarea:focus{border-color:var(--gold-border);}
+.field-textarea::placeholder{color:var(--text-dim);}
+.field-textarea.tall{min-height:120px;}
+
+/* Key outputs table */
+.outputs-table{width:100%;border-collapse:collapse;margin-bottom:8px;}
+.outputs-table th{font-family:'DM Mono',monospace;font-size:8px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-dim);text-align:left;padding:8px 10px;border-bottom:1px solid var(--border);}
+.outputs-table td{padding:0;border-bottom:1px solid var(--border);}
+.outputs-table tr:last-child td{border-bottom:none;}
+.output-cell-input{background:transparent;border:none;padding:8px 10px;font-family:'DM Sans',sans-serif;font-size:12px;color:var(--text);outline:none;width:100%;}
+.output-cell-input:focus{background:var(--ink-3);}
+.output-cell-input::placeholder{color:var(--text-dim);}
+.add-row-btn{font-size:11px;color:var(--gold);cursor:pointer;padding:6px 0;display:flex;align-items:center;gap:5px;opacity:0.7;transition:opacity 0.15s;background:none;border:none;font-family:'DM Sans',sans-serif;}
+.add-row-btn:hover{opacity:1;}
+
+/* Competency grid */
+.competency-table{width:100%;border-collapse:collapse;}
+.competency-table th{font-family:'DM Mono',monospace;font-size:8px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-dim);text-align:left;padding:8px 10px;border-bottom:1px solid var(--border);}
+.competency-table td{padding:6px 8px;border-bottom:1px solid var(--border);vertical-align:middle;}
+.competency-table tr:last-child td{border-bottom:none;}
+.competency-name-input{background:transparent;border:none;padding:4px 6px;font-size:12px;color:var(--text);outline:none;width:100%;}
+.competency-name-input:focus{background:var(--ink-3);border-radius:3px;}
+.competency-name-input::placeholder{color:var(--text-dim);}
+.level-select{background:var(--ink-3);border:1px solid var(--border);border-radius:3px;padding:4px 6px;font-family:'DM Mono',monospace;font-size:9px;color:var(--text-muted);outline:none;cursor:pointer;width:100%;}
+.level-select:focus{border-color:var(--gold-border);}
+.level-select option{background:var(--ink-2);}
+
+/* Leadership behaviours */
+.behaviour-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.behaviour-card{background:var(--ink-2);border:1px solid var(--border);border-radius:6px;padding:12px 14px;}
+.behaviour-title{font-size:12px;font-weight:600;color:var(--text);margin-bottom:6px;display:flex;align-items:center;gap:6px;}
+.behaviour-dot{width:6px;height:6px;border-radius:50%;background:var(--gold);flex-shrink:0;}
+.behaviour-desc{font-size:11px;color:var(--text-muted);line-height:1.55;}
+
+/* Grade badge */
+.grade-options{display:flex;gap:6px;flex-wrap:wrap;margin-top:4px;}
+.grade-opt{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:0.05em;padding:5px 10px;border-radius:3px;border:1px solid var(--border-mid);color:var(--text-dim);cursor:pointer;transition:all 0.12s;user-select:none;}
+.grade-opt:hover{border-color:var(--gold-border);color:var(--gold);}
+.grade-opt.selected{background:var(--gold-bg);border-color:var(--gold-border);color:var(--gold);}
+
+/* Divider */
+.divider{height:1px;background:var(--border);margin:28px 0;}
+
+/* Info callout */
+.callout{background:var(--gold-bg);border:1px solid var(--gold-border);border-left:3px solid var(--gold);border-radius:0 6px 6px 0;padding:12px 14px;margin-bottom:16px;}
+.callout-text{font-size:11.5px;color:var(--text-muted);line-height:1.6;}
+
+/* Print */
+@media print{
+  #topbar{display:none;}
+  #page{padding:20px;}
+  .field-input,.field-textarea,.output-cell-input,.competency-name-input{border:1px solid #ccc!important;}
+}
+::-webkit-scrollbar{width:4px;} ::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.08);border-radius:2px;}
+
+/* ── PHASE NAV ── */
+.phase-nav-bar{background:rgba(0,0,0,0.3);border-bottom:1px solid rgba(255,255,255,0.06);padding:0 32px;display:flex;align-items:center;justify-content:space-between;height:38px;}
+.pnb-back{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:0.06em;color:rgba(255,255,255,0.25);text-decoration:none;padding-right:14px;border-right:1px solid rgba(255,255,255,0.07);margin-right:14px;transition:color 0.15s;}
+.pnb-back:hover{color:rgba(255,255,255,0.55);}
+.pnb-left{display:flex;align-items:center;}
+.pnb-steps{display:flex;align-items:center;gap:0;}
+.pnb-step{display:flex;align-items:center;gap:5px;padding:0 10px 0 0;font-size:10px;color:rgba(255,255,255,0.22);white-space:nowrap;}
+.pnb-step-dot{width:15px;height:15px;border-radius:50%;border:1.5px solid;display:flex;align-items:center;justify-content:center;font-family:'DM Mono',monospace;font-size:6.5px;font-weight:600;flex-shrink:0;}
+.pnb-step.done{color:rgba(255,255,255,0.38);}
+.pnb-step.active{color:rgba(255,255,255,0.85);}
+.pnb-step-sep{color:rgba(255,255,255,0.1);font-size:9px;margin-right:10px;}
+.pnb-right{display:flex;gap:6px;align-items:center;}
+.pnb-right a{font-family:'DM Mono',monospace;font-size:8.5px;letter-spacing:0.05em;text-transform:uppercase;text-decoration:none;padding:4px 10px;border-radius:4px;border:1px solid;transition:all 0.15s;}
+</style>
+</head>
+<body>
+
+<!-- PORTAL NAV -->
+<div id="portal-nav" style="background:#0b0f18;border-bottom:1px solid rgba(255,255,255,0.06);padding:0 20px;height:38px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:9999;flex-shrink:0;">
+  <a href="index.html" style="font-family:'DM Mono',monospace;font-size:9.5px;letter-spacing:0.12em;text-transform:uppercase;color:#c9ab47;text-decoration:none;display:flex;align-items:center;gap:6px;">
+    <span style="font-size:11px;">←</span> Telinno Portal
+  </a>
+  <div style="display:flex;gap:2px;align-items:center;">
+    <a href="telinno-audit-v2.html" style="font-family:'DM Mono',monospace;font-size:8.5px;letter-spacing:0.06em;text-transform:uppercase;padding:4px 10px;border-radius:3px;color:#6b6660;text-decoration:none;transition:color 0.15s;" onmouseover="this.style.color='#e4dfd7'" onmouseout="this.style.color='#6b6660'">Audit</a>
+    <a href="telinno-jsp.html" style="font-family:'DM Mono',monospace;font-size:8.5px;letter-spacing:0.06em;text-transform:uppercase;padding:4px 10px;border-radius:3px;color:#6b6660;text-decoration:none;" onmouseover="this.style.color='#e4dfd7'" onmouseout="this.style.color='#6b6660'">JSP</a>
+    <a href="telinno-matrix.html" style="font-family:'DM Mono',monospace;font-size:8.5px;letter-spacing:0.06em;text-transform:uppercase;padding:4px 10px;border-radius:3px;color:#6b6660;text-decoration:none;" onmouseover="this.style.color='#e4dfd7'" onmouseout="this.style.color='#6b6660'">Matrix</a>
+    <a href="telinno-hr-plan.html" style="font-family:'DM Mono',monospace;font-size:8.5px;letter-spacing:0.06em;text-transform:uppercase;padding:4px 10px;border-radius:3px;color:#6b6660;text-decoration:none;" onmouseover="this.style.color='#e4dfd7'" onmouseout="this.style.color='#6b6660'">Plan</a>
+    <a href="pvc-v2.html" style="font-family:'DM Mono',monospace;font-size:8.5px;letter-spacing:0.06em;text-transform:uppercase;padding:4px 10px;border-radius:3px;color:#6b6660;text-decoration:none;" onmouseover="this.style.color='#e4dfd7'" onmouseout="this.style.color='#6b6660'">PVC</a>
+  </div>
+</div>
+
+
+<div id="topbar">
+  <div class="brand">
+    <span class="brand-name">Telinno</span>
+    <span style="color:var(--text-dim)">·</span>
+    <span class="brand-title">Job Success Profile Template</span>
+  </div>
+  <div class="topbar-actions">
+    <button class="btn" onclick="clearForm()">Clear Form</button>
+    <button class="btn" onclick="window.print()">Print / PDF</button>
+    <button class="btn primary" onclick="exportJSON()">Export JSON</button>
+  </div>
+</div>
+
+
+<div class="phase-nav-bar">
+  <div class="pnb-left">
+    <a href="index.html" class="pnb-back">&#x2190; Portal</a>
+    <div class="pnb-steps">
+      <div class="pnb-step done"><div class="pnb-step-dot" style="border-color:rgba(224,112,96,0.4);color:rgba(224,112,96,0.4);">&#x2713;</div><span>System</span></div>
+      <span class="pnb-step-sep">&#x203A;</span>
+      <div class="pnb-step done"><div class="pnb-step-dot" style="border-color:rgba(201,171,71,0.4);color:rgba(201,171,71,0.4);">&#x2713;</div><span>People</span></div>
+      <span class="pnb-step-sep">&#x203A;</span>
+      <div class="pnb-step done"><div class="pnb-step-dot" style="border-color:rgba(77,158,130,0.4);color:rgba(77,158,130,0.4);">&#x2713;</div><span>Target</span></div>
+      <span class="pnb-step-sep">&#x203A;</span>
+      <div class="pnb-step active" style="color:#4a85c8;"><div class="pnb-step-dot" style="border-color:#4a85c8;color:#4a85c8;background:rgba(74,133,200,0.1);">4</div><span style="font-weight:600;">Fix It</span></div>
+      <span class="pnb-step-sep" style="color:rgba(255,255,255,0.06);">|</span>
+      <div class="pnb-step active"><div class="pnb-step-dot" style="border-color:#4a85c8;color:#4a85c8;">4a</div><span style="color:#4a85c8;font-weight:600;">Role Definitions</span></div><span class="pnb-step-sep">&#x203A;</span><div class="pnb-step "><div class="pnb-step-dot" style="border-color:rgba(255,255,255,0.14);color:rgba(255,255,255,0.18);">4b</div><span style="">Competencies</span></div><span class="pnb-step-sep">&#x203A;</span><div class="pnb-step "><div class="pnb-step-dot" style="border-color:rgba(255,255,255,0.14);color:rgba(255,255,255,0.18);">4c</div><span style="">Culture</span></div><span class="pnb-step-sep">&#x203A;</span><div class="pnb-step "><div class="pnb-step-dot" style="border-color:rgba(255,255,255,0.14);color:rgba(255,255,255,0.18);">4d</div><span style="">Timeline</span></div>
+    </div>
+  </div>
+  <div class="pnb-right"><a href="telinno-matrix.html" style="background:rgba(74,133,200,0.1);border-color:rgba(74,133,200,0.25);color:#4a85c8;">Competencies &#x2192;</a></div>
+</div>
+
+<div id="page">
+  <div class="doc-header">
+    <div class="doc-kicker">Telinno Consulting · People Infrastructure</div>
+    <div class="doc-title">Job Success Profile</div>
+    <div class="doc-sub">Complete one profile per distinct role. This document defines what the role is, what it delivers, what it requires, and what excellent performance looks like. It is the foundation for hiring, onboarding, and performance management.</div>
+  </div>
+
+  <!-- SECTION 1: ROLE IDENTITY -->
+  <div class="jsp-section">
+    <div class="section-label">Section 1 — Role Identity</div>
+    <div class="meta-grid">
+      <div class="meta-field">
+        <label class="field-label">Position Title</label>
+        <input class="field-input" id="s1_title" placeholder="e.g. Project Manager, RNO Technician">
+      </div>
+      <div class="meta-field">
+        <label class="field-label">KAD / Business Unit</label>
+        <select class="field-select" id="s1_kad">
+          <option value="">Select KAD…</option>
+          <option>KAD 1 — Equipment Vendors (ZTE, Nokia)</option>
+          <option>KAD 2 — Huawei, Regulators & Government</option>
+          <option>KAD 3 — Tower Infrastructure (GICL, IHS, ATC)</option>
+          <option>KAD 4 — Telecom Operators (MTN, Airtel, Orange)</option>
+          <option>Shared Services</option>
+        </select>
+      </div>
+      <div class="meta-field">
+        <label class="field-label">Technical Service Area</label>
+        <select class="field-select" id="s1_service">
+          <option value="">Select area…</option>
+          <option>RAN — Radio Access Network</option>
+          <option>RNO — Radio Network Optimisation</option>
+          <option>Fiber — Fibre Implementation & Managed Services</option>
+          <option>Infrastructure — Tower, Rural Telephony</option>
+          <option>Commercial / Account Management</option>
+          <option>Finance</option>
+          <option>Procurement</option>
+          <option>QHSE</option>
+          <option>Project Management</option>
+          <option>HR / People</option>
+          <option>IT / Technology</option>
+          <option>Operations / Admin</option>
+        </select>
+      </div>
+      <div class="meta-field">
+        <label class="field-label">Department / Function</label>
+        <input class="field-input" id="s1_dept" placeholder="e.g. Engineering, Commercial, Finance">
+      </div>
+    </div>
+
+    <div class="meta-grid three">
+      <div class="meta-field">
+        <label class="field-label">Direct Report To</label>
+        <input class="field-input" id="s1_direct" placeholder="e.g. KAD Leader, Project Manager">
+      </div>
+      <div class="meta-field">
+        <label class="field-label">Indirect Report To</label>
+        <input class="field-input" id="s1_indirect" placeholder="e.g. COO, HRBP">
+      </div>
+      <div class="meta-field">
+        <label class="field-label">Primary Location(s)</label>
+        <input class="field-input" id="s1_location" placeholder="e.g. Nigeria, Mali, Multi-country">
+      </div>
+    </div>
+
+    <div class="meta-grid three">
+      <div class="meta-field">
+        <label class="field-label">Role Grade / Level</label>
+        <div class="grade-options" id="grade-options">
+          <span class="grade-opt" onclick="selectGrade(this,'KAD Leader')">KAD Leader</span>
+          <span class="grade-opt" onclick="selectGrade(this,'SME')">SME</span>
+          <span class="grade-opt" onclick="selectGrade(this,'Manager')">Manager</span>
+          <span class="grade-opt" onclick="selectGrade(this,'Coordinator')">Coordinator</span>
+          <span class="grade-opt" onclick="selectGrade(this,'Engineer')">Engineer</span>
+          <span class="grade-opt" onclick="selectGrade(this,'Technician')">Technician</span>
+          <span class="grade-opt" onclick="selectGrade(this,'Officer')">Officer</span>
+          <span class="grade-opt" onclick="selectGrade(this,'Intern')">Intern</span>
+        </div>
+        <input type="hidden" id="s1_grade">
+      </div>
+      <div class="meta-field">
+        <label class="field-label">Client Account(s)</label>
+        <input class="field-input" id="s1_clients" placeholder="e.g. Nokia, GICL, MTN">
+      </div>
+      <div class="meta-field">
+        <label class="field-label">Date / Version</label>
+        <input class="field-input" id="s1_date" placeholder="Month Year — v1.0">
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 2: PURPOSE -->
+  <div class="jsp-section">
+    <div class="section-label">Section 2 — Purpose of Role</div>
+    <div class="section-desc">One paragraph. Why does this role exist? What would break if it were empty? Be specific to the KAD and client context, not generic.</div>
+    <div class="meta-field">
+      <textarea class="field-textarea tall" id="s2_purpose" placeholder="Describe the core reason this role exists — what it enables for the KAD, for the client, and for Telinno. Avoid job description copy-paste. Write the business case for the role."></textarea>
+    </div>
+  </div>
+
+  <!-- SECTION 3: KEY OUTPUTS -->
+  <div class="jsp-section">
+    <div class="section-label">Section 3 — Key Outputs & Performance Indicators</div>
+    <div class="section-desc">What must this role deliver? Each output should be specific and measurable. Link each output to a performance metric so the role-holder and manager share a definition of success.</div>
+    <table class="outputs-table" id="outputs-table">
+      <thead>
+        <tr>
+          <th style="width:60%">Key Output / Deliverable</th>
+          <th style="width:40%">How Success Is Measured</th>
+        </tr>
+      </thead>
+      <tbody id="outputs-body">
+        <tr>
+          <td><input class="output-cell-input" placeholder="e.g. Deliver RNO analysis reports on time per contract SLA"></td>
+          <td><input class="output-cell-input" placeholder="e.g. 100% on-time delivery, <3 revision requests/month"></td>
+        </tr>
+        <tr>
+          <td><input class="output-cell-input" placeholder=""></td>
+          <td><input class="output-cell-input" placeholder=""></td>
+        </tr>
+        <tr>
+          <td><input class="output-cell-input" placeholder=""></td>
+          <td><input class="output-cell-input" placeholder=""></td>
+        </tr>
+      </tbody>
+    </table>
+    <button class="add-row-btn" onclick="addOutputRow()">+ Add output</button>
+  </div>
+
+  <!-- SECTION 4: RELATIONSHIPS -->
+  <div class="jsp-section">
+    <div class="section-label">Section 4 — Key Relationships</div>
+    <div class="meta-grid">
+      <div class="meta-field">
+        <label class="field-label">Internal Relationships (within Telinno)</label>
+        <textarea class="field-textarea" id="s4_internal" placeholder="Who does this role depend on, collaborate with, or report to internally? Include KAD leaders, HRBP, finance, procurement, shared services."></textarea>
+      </div>
+      <div class="meta-field">
+        <label class="field-label">External Relationships (clients, vendors, regulators)</label>
+        <textarea class="field-textarea" id="s4_external" placeholder="Who does this role interact with externally? Client counterparts, vendor contacts, regulatory bodies, subcontractors."></textarea>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 5: EXPERIENCE & KNOWLEDGE -->
+  <div class="jsp-section">
+    <div class="section-label">Section 5 — Experience & Knowledge Requirements</div>
+    <div class="meta-grid">
+      <div class="meta-field">
+        <label class="field-label">Essential Experience</label>
+        <textarea class="field-textarea tall" id="s5_exp" placeholder="Minimum years and type of experience required. Be specific — 'telecoms experience' is not useful. Name the technical environments, tools, scale of work.&#10;&#10;e.g. — 3+ years field experience in RAN installation & commissioning&#10;— Worked on ZTE or Nokia equipment at the MNO level&#10;— Managed teams of ≥5 technical staff"></textarea>
+      </div>
+      <div class="meta-field">
+        <label class="field-label">Required Knowledge & Qualifications</label>
+        <textarea class="field-textarea tall" id="s5_know" placeholder="Formal qualifications required (degree, certification), and specific knowledge domains.&#10;&#10;e.g. — BSc Electrical Engineering or equivalent&#10;— CCNA or relevant telecom certification&#10;— Knowledge of NCC regulatory requirements&#10;— Familiarity with project management tools"></textarea>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 6: FUNCTIONAL COMPETENCIES -->
+  <div class="jsp-section">
+    <div class="section-label">Section 6 — Functional Competencies</div>
+    <div class="section-desc">List the technical and functional competencies required for this role. Set the desired proficiency level using the Telinno scale: <strong>1 = Awareness</strong> | <strong>2 = Basic</strong> | <strong>3 = Proficient (with support)</strong> | <strong>4 = Proficient (independent)</strong> | <strong>5 = Can train others / Expert</strong></div>
+    <table class="competency-table" id="comp-table">
+      <thead>
+        <tr>
+          <th style="width:65%">Competency</th>
+          <th style="width:35%">Desired Level for this Role</th>
+        </tr>
+      </thead>
+      <tbody id="comp-body">
+        <tr>
+          <td><input class="competency-name-input" placeholder="e.g. RAN installation & commissioning"></td>
+          <td>
+            <select class="level-select">
+              <option value="">Select level…</option>
+              <option value="1">1 — Awareness</option>
+              <option value="2">2 — Basic</option>
+              <option value="3">3 — Proficient (with support)</option>
+              <option value="4">4 — Proficient (independent)</option>
+              <option value="5">5 — Expert / Can train others</option>
+            </select>
+          </td>
+        </tr>
+        <tr>
+          <td><input class="competency-name-input" placeholder=""></td>
+          <td><select class="level-select"><option value="">Select level…</option><option value="1">1 — Awareness</option><option value="2">2 — Basic</option><option value="3">3 — Proficient (with support)</option><option value="4">4 — Proficient (independent)</option><option value="5">5 — Expert / Can train others</option></select></td>
+        </tr>
+        <tr>
+          <td><input class="competency-name-input" placeholder=""></td>
+          <td><select class="level-select"><option value="">Select level…</option><option value="1">1 — Awareness</option><option value="2">2 — Basic</option><option value="3">3 — Proficient (with support)</option><option value="4">4 — Proficient (independent)</option><option value="5">5 — Expert / Can train others</option></select></td>
+        </tr>
+        <tr>
+          <td><input class="competency-name-input" placeholder=""></td>
+          <td><select class="level-select"><option value="">Select level…</option><option value="1">1 — Awareness</option><option value="2">2 — Basic</option><option value="3">3 — Proficient (with support)</option><option value="4">4 — Proficient (independent)</option><option value="5">5 — Expert / Can train others</option></select></td>
+        </tr>
+        <tr>
+          <td><input class="competency-name-input" placeholder=""></td>
+          <td><select class="level-select"><option value="">Select level…</option><option value="1">1 — Awareness</option><option value="2">2 — Basic</option><option value="3">3 — Proficient (with support)</option><option value="4">4 — Proficient (independent)</option><option value="5">5 — Expert / Can train others</option></select></td>
+        </tr>
+      </tbody>
+    </table>
+    <button class="add-row-btn" onclick="addCompRow()">+ Add competency</button>
+  </div>
+
+  <!-- SECTION 7: LEADERSHIP BEHAVIOURS -->
+  <div class="jsp-section">
+    <div class="section-label">Section 7 — Telinno Leadership Behaviours</div>
+    <div class="section-desc">Select the behaviours required for this role and add the specific expectations for this grade level. All roles require at minimum the first four.</div>
+    <div class="behaviour-grid">
+      <div class="behaviour-card">
+        <div class="behaviour-title"><div class="behaviour-dot"></div>Understand the Business</div>
+        <textarea class="field-textarea" style="min-height:60px" placeholder="e.g. Understands KAD goals, client deliverables, and how their work connects to Telinno revenue." id="b1"></textarea>
+      </div>
+      <div class="behaviour-card">
+        <div class="behaviour-title"><div class="behaviour-dot"></div>Practice What You Preach</div>
+        <textarea class="field-textarea" style="min-height:60px" placeholder="e.g. Takes ownership of commitments. Does not pass problems upward without a proposed solution." id="b2"></textarea>
+      </div>
+      <div class="behaviour-card">
+        <div class="behaviour-title"><div class="behaviour-dot"></div>Results Focus</div>
+        <textarea class="field-textarea" style="min-height:60px" placeholder="e.g. Meets deadlines. Plans and prioritises effectively. Delivers on client SLAs without daily supervision." id="b3"></textarea>
+      </div>
+      <div class="behaviour-card">
+        <div class="behaviour-title"><div class="behaviour-dot"></div>Know Yourself</div>
+        <textarea class="field-textarea" style="min-height:60px" placeholder="e.g. Actively seeks feedback. Acknowledges mistakes and learns from them. Does not repeat the same errors." id="b4"></textarea>
+      </div>
+      <div class="behaviour-card">
+        <div class="behaviour-title"><div class="behaviour-dot"></div>Proactive Cooperation</div>
+        <textarea class="field-textarea" style="min-height:60px" placeholder="e.g. Works across KAD lines when required. Shares knowledge. Does not hoard information." id="b5"></textarea>
+      </div>
+      <div class="behaviour-card">
+        <div class="behaviour-title"><div class="behaviour-dot"></div>Initiative & Judgement</div>
+        <textarea class="field-textarea" style="min-height:60px" placeholder="e.g. Acts before being told when the situation is clear. Anticipates problems. Escalates early — not late." id="b6"></textarea>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 8: SUCCESS LOOKS LIKE -->
+  <div class="jsp-section">
+    <div class="section-label">Section 8 — What Excellent Performance Looks Like</div>
+    <div class="section-desc">This is the section that distinguishes a Job Success Profile from a standard job description. Write in plain language what a person in this role looks like when they are genuinely excelling — not just "meeting expectations."</div>
+    <div class="meta-grid">
+      <div class="meta-field">
+        <label class="field-label">At 90 Days — Fully Integrated</label>
+        <textarea class="field-textarea tall" id="s8_90d" placeholder="What does good look like at 90 days? What has the person learned, delivered, and built? Who knows them and trusts them?"></textarea>
+      </div>
+      <div class="meta-field">
+        <label class="field-label">At 12 Months — Demonstrably High Performing</label>
+        <textarea class="field-textarea tall" id="s8_12m" placeholder="What does high performance look like after a full year? What client outcomes have they produced? What has their team said? What have they built that wasn't there before?"></textarea>
+      </div>
+    </div>
+    <div class="meta-field" style="margin-top:10px;">
+      <label class="field-label">Red Flags — What Failure Looks Like (first 90 days)</label>
+      <textarea class="field-textarea" id="s8_fail" placeholder="What behaviours or patterns would indicate early that this hire is not working? Be honest and specific. This is not about the person — it is about protecting the KAD."></textarea>
+    </div>
+  </div>
+
+  <!-- SECTION 9: APPROVAL -->
+  <div class="jsp-section">
+    <div class="section-label">Section 9 — Sign-Off</div>
+    <div class="meta-grid three">
+      <div class="meta-field">
+        <label class="field-label">Prepared By (HRBP)</label>
+        <input class="field-input" id="s9_hrbp" placeholder="Name">
+      </div>
+      <div class="meta-field">
+        <label class="field-label">Approved By (KAD Leader)</label>
+        <input class="field-input" id="s9_kad" placeholder="Name">
+      </div>
+      <div class="meta-field">
+        <label class="field-label">Date Approved</label>
+        <input class="field-input" id="s9_date" placeholder="DD/MM/YYYY">
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+function selectGrade(el, val) {
+  document.querySelectorAll('.grade-opt').forEach(o => o.classList.remove('selected'));
+  el.classList.add('selected');
+  document.getElementById('s1_grade').value = val;
+}
+
+function addOutputRow() {
+  const tbody = document.getElementById('outputs-body');
+  const tr = document.createElement('tr');
+  tr.innerHTML = `<td><input class="output-cell-input" placeholder=""></td><td><input class="output-cell-input" placeholder=""></td>`;
+  tbody.appendChild(tr);
+}
+
+function addCompRow() {
+  const tbody = document.getElementById('comp-body');
+  const tr = document.createElement('tr');
+  tr.innerHTML = `
+    <td><input class="competency-name-input" placeholder=""></td>
+    <td><select class="level-select"><option value="">Select level…</option><option value="1">1 — Awareness</option><option value="2">2 — Basic</option><option value="3">3 — Proficient (with support)</option><option value="4">4 — Proficient (independent)</option><option value="5">5 — Expert / Can train others</option></select></td>`;
+  tbody.appendChild(tr);
+}
+
+function clearForm() {
+  if (!confirm('Clear all fields? This cannot be undone.')) return;
+  document.querySelectorAll('.field-input, .field-textarea, .field-select, .competency-name-input, .output-cell-input').forEach(el => el.value = '');
+  document.querySelectorAll('.grade-opt').forEach(o => o.classList.remove('selected'));
+  document.getElementById('s1_grade').value = '';
+}
+
+function exportJSON() {
+  // Collect competencies
+  const comps = [];
+  document.querySelectorAll('#comp-body tr').forEach(tr => {
+    const name = tr.querySelector('.competency-name-input')?.value?.trim();
+    const level = tr.querySelector('.level-select')?.value;
+    if (name) comps.push({ competency: name, desired_level: level });
+  });
+
+  // Collect outputs
+  const outputs = [];
+  document.querySelectorAll('#outputs-body tr').forEach(tr => {
+    const inputs = tr.querySelectorAll('input');
+    const output = inputs[0]?.value?.trim();
+    const measure = inputs[1]?.value?.trim();
+    if (output) outputs.push({ output, measure });
+  });
+
+  const data = {
+    role_identity: {
+      title: document.getElementById('s1_title').value,
+      kad: document.getElementById('s1_kad').value,
+      service_area: document.getElementById('s1_service').value,
+      department: document.getElementById('s1_dept').value,
+      direct_report: document.getElementById('s1_direct').value,
+      indirect_report: document.getElementById('s1_indirect').value,
+      location: document.getElementById('s1_location').value,
+      grade: document.getElementById('s1_grade').value,
+      clients: document.getElementById('s1_clients').value,
+      date_version: document.getElementById('s1_date').value,
+    },
+    purpose: document.getElementById('s2_purpose').value,
+    key_outputs: outputs,
+    relationships: {
+      internal: document.getElementById('s4_internal').value,
+      external: document.getElementById('s4_external').value,
+    },
+    experience_knowledge: {
+      experience: document.getElementById('s5_exp').value,
+      knowledge: document.getElementById('s5_know').value,
+    },
+    functional_competencies: comps,
+    leadership_behaviours: {
+      understand_business: document.getElementById('b1').value,
+      practice_what_you_preach: document.getElementById('b2').value,
+      results_focus: document.getElementById('b3').value,
+      know_yourself: document.getElementById('b4').value,
+      proactive_cooperation: document.getElementById('b5').value,
+      initiative: document.getElementById('b6').value,
+    },
+    success_profile: {
+      at_90_days: document.getElementById('s8_90d').value,
+      at_12_months: document.getElementById('s8_12m').value,
+      failure_signals: document.getElementById('s8_fail').value,
+    },
+    sign_off: {
+      hrbp: document.getElementById('s9_hrbp').value,
+      kad_leader: document.getElementById('s9_kad').value,
+      date: document.getElementById('s9_date').value,
+    }
+  };
+
+  const title = data.role_identity.title || 'JSP';
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `telinno_JSP_${title.replace(/\s+/g,'_')}_${new Date().toISOString().slice(0,10)}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+</script>
+</body>
+</html>
