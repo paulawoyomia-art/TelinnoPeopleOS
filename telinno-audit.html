@@ -1,0 +1,1212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Telinno — People Infrastructure Audit</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink: #0c1018;
+  --ink-2: #131924;
+  --ink-3: #1a2235;
+  --surface: #1e293b;
+  --border: rgba(255,255,255,0.06);
+  --border-mid: rgba(255,255,255,0.11);
+  --text: #e2ddd5;
+  --text-muted: #7a7570;
+  --text-dim: #3d3a36;
+  --gold: #c9ab47;
+  --gold-bg: rgba(201,171,71,0.09);
+  --gold-border: rgba(201,171,71,0.22);
+  --red: #e05555;
+  --red-bg: rgba(224,85,85,0.09);
+  --red-border: rgba(224,85,85,0.2);
+  --amber: #d4922a;
+  --amber-bg: rgba(212,146,42,0.09);
+  --amber-border: rgba(212,146,42,0.22);
+  --green: #4d9e82;
+  --green-bg: rgba(77,158,130,0.09);
+  --green-border: rgba(77,158,130,0.22);
+  --blue: #4a85c8;
+}
+
+*{margin:0;padding:0;box-sizing:border-box;}
+
+body {
+  font-family:'DM Sans',sans-serif;
+  background:var(--ink);
+  color:var(--text);
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+}
+
+/* ── TOP BAR ── */
+#topbar {
+  background:var(--ink-2);
+  border-bottom:1px solid var(--border);
+  padding:0 28px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  height:52px;
+  flex-shrink:0;
+  position:sticky;
+  top:0;
+  z-index:100;
+}
+
+.topbar-brand {
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+
+.brand-name {
+  font-family:'DM Mono',monospace;
+  font-size:10px;
+  letter-spacing:0.12em;
+  text-transform:uppercase;
+  color:var(--gold);
+}
+
+.brand-sep { color:var(--text-dim); font-size:12px; }
+
+.brand-title {
+  font-size:12px;
+  font-weight:500;
+  color:var(--text-muted);
+  letter-spacing:0.02em;
+}
+
+.topbar-stats {
+  display:flex;
+  align-items:center;
+  gap:20px;
+}
+
+.topbar-stat {
+  display:flex;
+  align-items:baseline;
+  gap:5px;
+}
+
+.ts-num {
+  font-family:'DM Mono',monospace;
+  font-size:15px;
+  color:var(--text);
+}
+
+.ts-label {
+  font-size:10px;
+  color:var(--text-dim);
+  letter-spacing:0.03em;
+}
+
+.ts-num.red { color:var(--red); }
+.ts-num.amber { color:var(--amber); }
+.ts-num.green { color:var(--green); }
+.ts-num.gold { color:var(--gold); }
+
+/* ── LAYOUT ── */
+#layout {
+  display:flex;
+  flex:1;
+  overflow:hidden;
+  height:calc(100vh - 52px);
+}
+
+/* ── LEFT PANEL — ROSTER ── */
+#roster-panel {
+  width:320px;
+  min-width:320px;
+  background:var(--ink-2);
+  border-right:1px solid var(--border);
+  display:flex;
+  flex-direction:column;
+  overflow:hidden;
+}
+
+#roster-header {
+  padding:14px 16px 10px;
+  border-bottom:1px solid var(--border);
+  flex-shrink:0;
+}
+
+.roster-controls {
+  display:flex;
+  gap:6px;
+  margin-bottom:8px;
+}
+
+#search-input {
+  flex:1;
+  background:var(--ink-3);
+  border:1px solid var(--border-mid);
+  border-radius:4px;
+  padding:6px 10px;
+  font-family:'DM Sans',sans-serif;
+  font-size:11.5px;
+  color:var(--text);
+  outline:none;
+  transition:border-color 0.15s;
+}
+
+#search-input::placeholder { color:var(--text-dim); }
+#search-input:focus { border-color:var(--gold-border); }
+
+#filter-kad {
+  background:var(--ink-3);
+  border:1px solid var(--border-mid);
+  border-radius:4px;
+  padding:6px 8px;
+  font-family:'DM Mono',monospace;
+  font-size:9.5px;
+  color:var(--text-muted);
+  outline:none;
+  cursor:pointer;
+  letter-spacing:0.04em;
+}
+
+#filter-status {
+  background:var(--ink-3);
+  border:1px solid var(--border-mid);
+  border-radius:4px;
+  padding:6px 8px;
+  font-family:'DM Mono',monospace;
+  font-size:9.5px;
+  color:var(--text-muted);
+  outline:none;
+  cursor:pointer;
+}
+
+.roster-count {
+  font-family:'DM Mono',monospace;
+  font-size:9px;
+  color:var(--text-dim);
+  letter-spacing:0.06em;
+}
+
+#roster-list {
+  flex:1;
+  overflow-y:auto;
+}
+
+#roster-list::-webkit-scrollbar { width:3px; }
+#roster-list::-webkit-scrollbar-thumb { background:var(--border); border-radius:2px; }
+
+.person-row {
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:10px 16px;
+  cursor:pointer;
+  border-bottom:1px solid var(--border);
+  transition:background 0.12s;
+  position:relative;
+}
+
+.person-row:hover { background:rgba(255,255,255,0.03); }
+.person-row.active { background:rgba(201,171,71,0.07); border-left:2px solid var(--gold); padding-left:14px; }
+
+.person-completion {
+  width:28px;
+  height:28px;
+  border-radius:50%;
+  flex-shrink:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-family:'DM Mono',monospace;
+  font-size:9px;
+  font-weight:500;
+}
+
+.person-info { flex:1; min-width:0; }
+
+.person-name {
+  font-size:12px;
+  font-weight:500;
+  color:var(--text);
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+
+.person-meta {
+  font-size:10px;
+  color:var(--text-muted);
+  margin-top:1px;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+
+.person-kad-badge {
+  font-family:'DM Mono',monospace;
+  font-size:8px;
+  letter-spacing:0.05em;
+  padding:2px 5px;
+  border-radius:2px;
+  flex-shrink:0;
+}
+
+/* ── CENTRE — AUDIT FORM ── */
+#audit-panel {
+  flex:1;
+  display:flex;
+  flex-direction:column;
+  overflow:hidden;
+  min-width:0;
+}
+
+#audit-header {
+  padding:20px 28px 16px;
+  border-bottom:1px solid var(--border);
+  flex-shrink:0;
+  background:var(--ink);
+}
+
+.audit-person-name {
+  font-family:'Playfair Display',serif;
+  font-size:22px;
+  font-weight:700;
+  color:var(--text);
+  margin-bottom:4px;
+}
+
+.audit-person-meta {
+  display:flex;
+  gap:10px;
+  align-items:center;
+  flex-wrap:wrap;
+}
+
+.meta-chip {
+  font-family:'DM Mono',monospace;
+  font-size:9px;
+  letter-spacing:0.06em;
+  text-transform:uppercase;
+  padding:3px 8px;
+  border-radius:2px;
+  border:1px solid var(--border-mid);
+  color:var(--text-muted);
+}
+
+#audit-body {
+  flex:1;
+  overflow-y:auto;
+  padding:20px 28px 40px;
+}
+
+#audit-body::-webkit-scrollbar { width:4px; }
+#audit-body::-webkit-scrollbar-thumb { background:var(--border); border-radius:2px; }
+
+/* Audit sections */
+.audit-section {
+  margin-bottom:28px;
+}
+
+.audit-section-header {
+  display:flex;
+  align-items:center;
+  gap:10px;
+  margin-bottom:12px;
+  padding-bottom:8px;
+  border-bottom:1px solid var(--border);
+}
+
+.section-phase-tag {
+  font-family:'DM Mono',monospace;
+  font-size:8px;
+  letter-spacing:0.08em;
+  text-transform:uppercase;
+  padding:2px 7px;
+  border-radius:2px;
+}
+
+.audit-section-title {
+  font-size:13px;
+  font-weight:600;
+  color:var(--text);
+}
+
+.section-criticality {
+  font-family:'DM Mono',monospace;
+  font-size:8px;
+  letter-spacing:0.06em;
+  margin-left:auto;
+  padding:2px 7px;
+  border-radius:2px;
+}
+
+.crit-critical { background:var(--red-bg); color:var(--red); border:1px solid var(--red-border); }
+.crit-important { background:var(--amber-bg); color:var(--amber); border:1px solid var(--amber-border); }
+.crit-building { background:var(--green-bg); color:var(--green); border:1px solid var(--green-border); }
+
+/* Audit fields */
+.audit-fields {
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+
+.audit-field {
+  background:var(--ink-2);
+  border:1px solid var(--border);
+  border-radius:6px;
+  padding:12px 14px;
+  transition:border-color 0.15s;
+}
+
+.audit-field:hover { border-color:var(--border-mid); }
+
+.field-top {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  margin-bottom:6px;
+  gap:8px;
+}
+
+.field-label {
+  font-size:12px;
+  font-weight:500;
+  color:var(--text);
+  flex:1;
+}
+
+.field-status-toggle {
+  display:flex;
+  gap:0;
+  border-radius:4px;
+  overflow:hidden;
+  flex-shrink:0;
+}
+
+.toggle-btn {
+  font-family:'DM Mono',monospace;
+  font-size:8.5px;
+  letter-spacing:0.05em;
+  padding:4px 9px;
+  cursor:pointer;
+  border:1px solid var(--border-mid);
+  background:var(--ink-3);
+  color:var(--text-dim);
+  transition:all 0.12s;
+  border-radius:0;
+  user-select:none;
+}
+
+.toggle-btn:first-child { border-radius:3px 0 0 3px; }
+.toggle-btn:last-child { border-radius:0 3px 3px 0; border-left:none; }
+
+.toggle-btn.active-yes { background:var(--green-bg); color:var(--green); border-color:var(--green-border); }
+.toggle-btn.active-partial { background:var(--amber-bg); color:var(--amber); border-color:var(--amber-border); }
+.toggle-btn.active-no { background:var(--red-bg); color:var(--red); border-color:var(--red-border); }
+
+.field-hint {
+  font-size:10.5px;
+  color:var(--text-muted);
+  line-height:1.5;
+}
+
+.field-note-input {
+  width:100%;
+  background:var(--ink-3);
+  border:1px solid var(--border);
+  border-radius:4px;
+  padding:6px 8px;
+  font-family:'DM Sans',sans-serif;
+  font-size:11px;
+  color:var(--text);
+  outline:none;
+  resize:none;
+  margin-top:6px;
+  min-height:32px;
+  transition:border-color 0.12s;
+  line-height:1.5;
+}
+
+.field-note-input::placeholder { color:var(--text-dim); }
+.field-note-input:focus { border-color:var(--gold-border); }
+
+/* Save indicator */
+#save-indicator {
+  position:fixed;
+  bottom:20px;
+  right:28px;
+  font-family:'DM Mono',monospace;
+  font-size:9px;
+  letter-spacing:0.08em;
+  color:var(--green);
+  opacity:0;
+  transition:opacity 0.3s;
+  z-index:200;
+}
+
+#save-indicator.visible { opacity:1; }
+
+/* ── RIGHT PANEL — PROGRESS ── */
+#progress-panel {
+  width:260px;
+  min-width:260px;
+  background:var(--ink-2);
+  border-left:1px solid var(--border);
+  display:flex;
+  flex-direction:column;
+  overflow:hidden;
+}
+
+#progress-header {
+  padding:14px 16px 10px;
+  border-bottom:1px solid var(--border);
+  flex-shrink:0;
+}
+
+.progress-header-title {
+  font-family:'DM Mono',monospace;
+  font-size:9px;
+  letter-spacing:0.1em;
+  text-transform:uppercase;
+  color:var(--text-dim);
+  margin-bottom:8px;
+}
+
+#progress-body {
+  flex:1;
+  overflow-y:auto;
+  padding:12px 16px;
+}
+
+#progress-body::-webkit-scrollbar { width:3px; }
+#progress-body::-webkit-scrollbar-thumb { background:var(--border); border-radius:2px; }
+
+/* Completion ring */
+.completion-ring-wrap {
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:16px 0 12px;
+}
+
+.ring-svg { transform:rotate(-90deg); }
+
+.ring-track { fill:none; stroke:var(--border-mid); stroke-width:6; }
+.ring-fill { fill:none; stroke-width:6; stroke-linecap:round; transition:stroke-dashoffset 0.5s ease; }
+
+.ring-label {
+  position:absolute;
+  text-align:center;
+}
+
+.ring-num {
+  font-family:'DM Mono',monospace;
+  font-size:24px;
+  font-weight:500;
+  display:block;
+  line-height:1;
+}
+
+.ring-sub {
+  font-size:9px;
+  color:var(--text-muted);
+  display:block;
+  margin-top:2px;
+}
+
+/* Section breakdown */
+.section-progress {
+  margin-bottom:10px;
+}
+
+.sp-header {
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:4px;
+}
+
+.sp-label {
+  font-size:10px;
+  color:var(--text-muted);
+}
+
+.sp-pct {
+  font-family:'DM Mono',monospace;
+  font-size:10px;
+  color:var(--text-dim);
+}
+
+.sp-bar {
+  height:3px;
+  background:var(--border-mid);
+  border-radius:2px;
+  overflow:hidden;
+}
+
+.sp-fill {
+  height:100%;
+  border-radius:2px;
+  transition:width 0.4s ease;
+}
+
+/* Org-wide stats */
+.org-stat-block {
+  background:var(--ink-3);
+  border-radius:6px;
+  padding:10px 12px;
+  margin-top:12px;
+}
+
+.osb-title {
+  font-family:'DM Mono',monospace;
+  font-size:8px;
+  letter-spacing:0.08em;
+  text-transform:uppercase;
+  color:var(--text-dim);
+  margin-bottom:8px;
+}
+
+.osb-row {
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:4px 0;
+  border-bottom:1px solid var(--border);
+}
+
+.osb-row:last-child { border-bottom:none; }
+
+.osb-label { font-size:10px; color:var(--text-muted); }
+.osb-val { font-family:'DM Mono',monospace; font-size:11px; color:var(--text); }
+.osb-val.red { color:var(--red); }
+.osb-val.green { color:var(--green); }
+
+/* Export button */
+#export-btn {
+  margin:12px 16px;
+  padding:9px 14px;
+  background:var(--gold-bg);
+  border:1px solid var(--gold-border);
+  border-radius:5px;
+  color:var(--gold);
+  font-family:'DM Mono',monospace;
+  font-size:9px;
+  letter-spacing:0.08em;
+  text-transform:uppercase;
+  cursor:pointer;
+  text-align:center;
+  transition:all 0.15s;
+  flex-shrink:0;
+}
+
+#export-btn:hover { background:rgba(201,171,71,0.15); }
+
+/* Empty state */
+.empty-state {
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  height:100%;
+  gap:10px;
+  color:var(--text-dim);
+  padding:28px;
+  text-align:center;
+}
+
+.empty-state-icon { font-size:32px; opacity:0.4; }
+.empty-state-text { font-size:12px; line-height:1.6; }
+
+/* KAD colours */
+.kad-KAD1 { background:rgba(201,171,71,0.12); color:#c9ab47; }
+.kad-KAD2 { background:rgba(74,133,200,0.12); color:#4a85c8; }
+.kad-KAD3 { background:rgba(224,112,96,0.12); color:#e07060; }
+.kad-KAD4 { background:rgba(77,158,130,0.12); color:#4d9e82; }
+.kad-SS  { background:rgba(139,127,212,0.12); color:#8b7fd4; }
+
+::-webkit-scrollbar { width:4px; }
+::-webkit-scrollbar-track { background:transparent; }
+::-webkit-scrollbar-thumb { background:rgba(255,255,255,0.08); border-radius:2px; }
+
+/* Phase summary table */
+.phase-table { width:100%; margin-top:8px; }
+.phase-table td { font-size:10px; padding:3px 0; color:var(--text-muted); }
+.phase-table td:last-child { text-align:right; font-family:'DM Mono',monospace; font-size:10px; }
+
+/* Animations */
+@keyframes fadeIn { from{opacity:0;transform:translateX(8px)} to{opacity:1;transform:translateX(0)} }
+#audit-header, #audit-body { animation:fadeIn 0.2s ease both; }
+</style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<div id="topbar">
+  <div class="topbar-brand">
+    <span class="brand-name">Telinno</span>
+    <span class="brand-sep">·</span>
+    <span class="brand-title">People Infrastructure Audit</span>
+  </div>
+  <div class="topbar-stats">
+    <div class="topbar-stat">
+      <span class="ts-num" id="stat-total">148</span>
+      <span class="ts-label">people</span>
+    </div>
+    <div class="topbar-stat">
+      <span class="ts-num red" id="stat-not-started">—</span>
+      <span class="ts-label">not started</span>
+    </div>
+    <div class="topbar-stat">
+      <span class="ts-num amber" id="stat-in-progress">—</span>
+      <span class="ts-label">in progress</span>
+    </div>
+    <div class="topbar-stat">
+      <span class="ts-num green" id="stat-complete">—</span>
+      <span class="ts-label">complete</span>
+    </div>
+  </div>
+</div>
+
+<!-- LAYOUT -->
+<div id="layout">
+
+  <!-- ROSTER -->
+  <div id="roster-panel">
+    <div id="roster-header">
+      <div class="roster-controls">
+        <input type="text" id="search-input" placeholder="Search name or role…">
+        <select id="filter-kad">
+          <option value="">All KADs</option>
+          <option value="KAD1">KAD 1</option>
+          <option value="KAD2">KAD 2</option>
+          <option value="KAD3">KAD 3</option>
+          <option value="KAD4">KAD 4</option>
+          <option value="SS">Shared Svcs</option>
+        </select>
+      </div>
+      <div class="roster-controls">
+        <select id="filter-status" style="flex:1">
+          <option value="">All statuses</option>
+          <option value="0">Not started</option>
+          <option value="partial">In progress</option>
+          <option value="100">Complete</option>
+        </select>
+      </div>
+      <div class="roster-count" id="roster-count">148 people</div>
+    </div>
+    <div id="roster-list"></div>
+  </div>
+
+  <!-- AUDIT FORM -->
+  <div id="audit-panel">
+    <div class="empty-state" id="empty-state">
+      <div class="empty-state-icon">◎</div>
+      <div class="empty-state-text">Select a person from the roster<br>to begin their audit</div>
+    </div>
+    <div id="audit-content" style="display:none;flex:1;display:none;flex-direction:column;overflow:hidden;">
+      <div id="audit-header">
+        <div class="audit-person-name" id="audit-name"></div>
+        <div class="audit-person-meta" id="audit-meta"></div>
+      </div>
+      <div id="audit-body"></div>
+    </div>
+  </div>
+
+  <!-- PROGRESS PANEL -->
+  <div id="progress-panel">
+    <div id="progress-header">
+      <div class="progress-header-title">Audit Progress</div>
+      <div style="position:relative;display:flex;align-items:center;justify-content:center;height:100px;">
+        <svg class="ring-svg" width="90" height="90" viewBox="0 0 90 90">
+          <circle class="ring-track" cx="45" cy="45" r="38"/>
+          <circle class="ring-fill" id="ring-fill" cx="45" cy="45" r="38"
+            stroke="#4d9e82"
+            stroke-dasharray="238.76"
+            stroke-dashoffset="238.76"/>
+        </svg>
+        <div class="ring-label" style="position:absolute;text-align:center;">
+          <span class="ring-num" id="ring-pct" style="color:var(--green)">0%</span>
+          <span class="ring-sub">complete</span>
+        </div>
+      </div>
+    </div>
+    <div id="progress-body">
+      <div style="margin-bottom:14px;">
+        <div class="sp-header"><span class="sp-label">Phase 1 — Legal & Identity</span><span class="sp-pct" id="pct-p1">0%</span></div>
+        <div class="sp-bar"><div class="sp-fill" id="bar-p1" style="width:0%;background:var(--red)"></div></div>
+      </div>
+      <div style="margin-bottom:14px;">
+        <div class="sp-header"><span class="sp-label">Phase 2 — Role Clarity</span><span class="sp-pct" id="pct-p2">0%</span></div>
+        <div class="sp-bar"><div class="sp-fill" id="bar-p2" style="width:0%;background:var(--amber)"></div></div>
+      </div>
+      <div style="margin-bottom:14px;">
+        <div class="sp-header"><span class="sp-label">Phase 3 — Performance</span><span class="sp-pct" id="pct-p3">0%</span></div>
+        <div class="sp-bar"><div class="sp-fill" id="bar-p3" style="width:0%;background:var(--gold)"></div></div>
+      </div>
+      <div style="margin-bottom:14px;">
+        <div class="sp-header"><span class="sp-label">Phase 4 — Pay & Grading</span><span class="sp-pct" id="pct-p4">0%</span></div>
+        <div class="sp-bar"><div class="sp-fill" id="bar-p4" style="width:0%;background:var(--blue)"></div></div>
+      </div>
+      <div style="margin-bottom:14px;">
+        <div class="sp-header"><span class="sp-label">Phase 5 — Experience</span><span class="sp-pct" id="pct-p5">0%</span></div>
+        <div class="sp-bar"><div class="sp-fill" id="bar-p5" style="width:0%;background:var(--green)"></div></div>
+      </div>
+
+      <div class="org-stat-block">
+        <div class="osb-title">Org-Wide Gap Flags</div>
+        <div class="osb-row"><span class="osb-label">No signed contract</span><span class="osb-val red" id="flag-contract">—</span></div>
+        <div class="osb-row"><span class="osb-label">No job description</span><span class="osb-val red" id="flag-jd">—</span></div>
+        <div class="osb-row"><span class="osb-label">No payslip issued</span><span class="osb-val red" id="flag-payslip">—</span></div>
+        <div class="osb-row"><span class="osb-label">No performance goals</span><span class="osb-val red" id="flag-goals">—</span></div>
+        <div class="osb-row"><span class="osb-label">Grade unknown</span><span class="osb-val red" id="flag-grade">—</span></div>
+        <div class="osb-row"><span class="osb-label">Flight risk flagged</span><span class="osb-val amber" id="flag-flight">—</span></div>
+      </div>
+    </div>
+    <div id="export-btn" onclick="exportData()">↓ Export Audit CSV</div>
+  </div>
+
+</div>
+
+<div id="save-indicator">✓ Saved</div>
+
+<script>
+// ══════════════════════════════════════════
+// PEOPLE DATA — 148 Telinno employees
+// ══════════════════════════════════════════
+const PEOPLE = [{"kad":"KAD1","name":"Kingsley Okougha","org_role":"Technical Operations Manager","location":"Nigeria","kad_role":"KAD","client1":"Huawei"},{"kad":"KAD1","name":"Amadou Guindo","org_role":"HRBP","location":"Mali","kad_role":"HRBP","client1":""},{"kad":"KAD1","name":"Sadio Sissoko","org_role":"Commercial Manager","location":"Mali","kad_role":"Account Manager","client1":""},{"kad":"KAD1","name":"Yamoussa Traore","org_role":"Associate Project Manager","location":"Mali","kad_role":"SME-RAN","client1":"Nokia"},{"kad":"KAD1","name":"Djenebou SOW","org_role":"Finance Manager","location":"Mali","kad_role":"Finance Manager","client1":"Nokia"},{"kad":"KAD1","name":"Mohammed Abubakar","org_role":"Procurement Manager","location":"Nigeria","kad_role":"Procurement Manager","client1":"Nokia"},{"kad":"KAD1","name":"Ahmed Olaitan","org_role":"ProjectManagement Intern","location":"Nigeria","kad_role":"Project Coordinator (Intern)","client1":""},{"kad":"KAD1","name":"Abang Juvert Ebotashu","org_role":"Project Manager","location":"Cameroon","kad_role":"Project Manager","client1":"ZTE"},{"kad":"KAD1","name":"Ali Samuel Ojodomo","org_role":"Key Account Manager","location":"Nigeria","kad_role":"Account Manager","client1":"Huawei"},{"kad":"KAD1","name":"Kouadio Yoa Theophile","org_role":"Country Finance Officer","location":"CIV","kad_role":"Account Manager","client1":"ZTE"},{"kad":"KAD1","name":"Janet Akwi","org_role":"Country Finance Officer","location":"Cameroon","kad_role":"Account Manager","client1":"ZTE"},{"kad":"KAD1","name":"Kevin Bissong Bissong","org_role":"Project Coordinator","location":"Cameroon","kad_role":"Project coordinator","client1":"ZTE"},{"kad":"KAD1","name":"Njirinze Ebuka Frankyn","org_role":"Field Engineer - I&C","location":"Cameroon","kad_role":"I&C Technician","client1":"ZTE"},{"kad":"KAD1","name":"Fanta Fomba","org_role":"Back Office Analyst","location":"Mali","kad_role":"RNO Engineer","client1":"Nokia"},{"kad":"KAD1","name":"Djeneba Ba","org_role":"Back Office Analyst","location":"Mali","kad_role":"RNO Engineer","client1":"Nokia"},{"kad":"KAD1","name":"Kadidia Coulibaly","org_role":"Back Office Analyst","location":"Mali","kad_role":"RNO Engineer","client1":"Nokia"},{"kad":"KAD1","name":"Oumou Diallo","org_role":"Back Office Analyst","location":"Mali","kad_role":"RNO Engineer","client1":"Nokia"},{"kad":"KAD1","name":"Bassiaka Guindo","org_role":"Associate Project Manager","location":"Mali","kad_role":"Project Manager","client1":"Nokia"},{"kad":"KAD1","name":"N'Zi Jose Marc Devine","org_role":"Team Lead, Back Office Engineers","location":"CIV","kad_role":"I&C Engineeer","client1":"Nokia"},{"kad":"KAD1","name":"Kafando Youssouf","org_role":"Field Technician (Rigger)","location":"CIV","kad_role":"I&C Technician","client1":"Nokia"},{"kad":"KAD1","name":"EFE Nomouja","org_role":"Project Manager -RNO","location":"CIV","kad_role":"Project Manager","client1":"Nokia"},{"kad":"KAD1","name":"Guy Marcel Mondoleba Mouili","org_role":"Project Manager -I&C","location":"CIV","kad_role":"Project coordinator","client1":"Nokia"},{"kad":"KAD1","name":"MONNET AHOU ERIC FRANCIS","org_role":"Team Lead, Back Office Engineers","location":"CIV","kad_role":"I&C Engineeer","client1":"Nokia"},{"kad":"KAD1","name":"Andoh Lokoko","org_role":"Driver","location":"CIV","kad_role":"Driver","client1":"Nokia"},{"kad":"KAD1","name":"Koffitolat Joseph","org_role":"Driver","location":"CIV","kad_role":"Driver","client1":"Nokia"},{"kad":"KAD1","name":"Korahi Didier","org_role":"Driver","location":"CIV","kad_role":"Driver","client1":"Nokia"},{"kad":"KAD1","name":"Kindo Boureima","org_role":"Driver","location":"CIV","kad_role":"Driver","client1":"Nokia"},{"kad":"KAD1","name":"Mamadou BAH","org_role":"Field Technician (Rigger)","location":"Mali","kad_role":"I&C Technician","client1":"Nokia"},{"kad":"KAD1","name":"Bima Coulibaly","org_role":"Team Lead, Field Technicians - I&C","location":"Mali","kad_role":"I&C Engineeer","client1":"Nokia"},{"kad":"KAD1","name":"Jean Apporte Kounan Koffi","org_role":"QHSE Officer","location":"Mali","kad_role":"QHSE Officer","client1":"Nokia"},{"kad":"KAD2","name":"Dayo Oyeniyi","org_role":"Technical Operations Manager","location":"SA","kad_role":"KAD","client1":"Huawei"},{"kad":"KAD2","name":"Luvie Mafotsang","org_role":"HRBP","location":"Cameroon","kad_role":"HRBP","client1":""},{"kad":"KAD2","name":"Umar Masud","org_role":"Technical Operations Manager","location":"Niger","kad_role":"SME-RNO","client1":"Moov"},{"kad":"KAD2","name":"Mohammed Ibrahim","org_role":"Project Manager","location":"Nigeria","kad_role":"Senior Account Manager","client1":"Huawei (Airtel)"},{"kad":"KAD2","name":"Ojebuovboh Frederick Ailohi","org_role":"QHSE Manager","location":"Nigeria","kad_role":"QHSE Manager","client1":""},{"kad":"KAD2","name":"Adedayo Adeyemi","org_role":"Project Manager","location":"SA","kad_role":"Project Manager","client1":"Huawei"},{"kad":"KAD2","name":"Nwonkwo Donald","org_role":"Procurement Manager","location":"Nigeria","kad_role":"Procurement Manager","client1":"Huawei"},{"kad":"KAD2","name":"Samuel Mauyon","org_role":"ProjectManagement Intern","location":"Nigeria","kad_role":"Project Coordinator (Intern)","client1":""},{"kad":"KAD2","name":"Haastrup Adeniyi .D.","org_role":"Finance Manager","location":"Nigeria","kad_role":"Finance manager","client1":""},{"kad":"KAD2","name":"Adegboye Adeola","org_role":"commercial Intern","location":"Nigeria","kad_role":"Account Officer (Intern)","client1":""},{"kad":"KAD2","name":"Yakubu Isyaku Success","org_role":"Project Manager","location":"Nigeria","kad_role":"Project Manager ( Kano & Abuja)","client1":"Huawei (MTN)"},{"kad":"KAD2","name":"Joel Abuganto","org_role":"Project Coordinator.","location":"Nigeria","kad_role":"Project Coordinator","client1":"Huawei (MTN Wireles)"},{"kad":"KAD2","name":"Komolafe Adedamola  Elkanah","org_role":"Project Coordinator.","location":"Nigeria","kad_role":"Project Coordinator","client1":"Huawei (MTN MW)"},{"kad":"KAD2","name":"Oguntona Ibukun","org_role":"Project Support Officer -Finance","location":"Nigeria","kad_role":"Account Manager","client1":""},{"kad":"KAD2","name":"NNANNA MARTINS","org_role":"Drive test Engineer.","location":"Nigeria","kad_role":"RNO Technician","client1":"NCC"},{"kad":"KAD2","name":"Samuel Amogu","org_role":"Post Processing Officer","location":"Nigeria","kad_role":"RNO Technician","client1":"NCC"},{"kad":"KAD2","name":"Oye Reuben Ojo","org_role":"Drive test Engineer.","location":"Nigeria","kad_role":"RNO Technician","client1":"NCC"},{"kad":"KAD2","name":"Jacob Ezekiel","org_role":"Drive test Engineer.","location":"Nigeria","kad_role":"RNO Technician","client1":"NCC"},{"kad":"KAD2","name":"Oyewale  Babatunde  simon","org_role":"Drive test Engineer.","location":"Nigeria","kad_role":"RNO Technician","client1":"NCC"},{"kad":"KAD2","name":"Akinrinade Emmanuel Adeyinka","org_role":"Post Processing Officer","location":"Nigeria","kad_role":"RNO Technician","client1":"NCC"},{"kad":"KAD2","name":"Micheal Akindehin","org_role":"Project Manager","location":"Nigeria","kad_role":"Project Manager","client1":"NCC"},{"kad":"KAD3","name":"Chikezie Nwogu","org_role":"COO","location":"Nigeria","kad_role":"KAD","client1":"Huawei"},{"kad":"KAD3","name":"Adeniyi Oluwadimimu","org_role":"HRBP","location":"Nigeria","kad_role":"HRBP","client1":""},{"kad":"KAD3","name":"Shuaibu Mohammed","org_role":"Group Operations Manager","location":"Nigeria","kad_role":"SME-Fiber","client1":"GICL"},{"kad":"KAD3","name":"Ebube Peace","org_role":"Procurement Intern","location":"Nigeria","kad_role":"Procurement Officer(Intern)","client1":""},{"kad":"KAD3","name":"Yunus Salim Ayotomiwa","org_role":"Commercial Intern","location":"Nigeria","kad_role":"Account Officer(Intern)","client1":"ATC"},{"kad":"KAD3","name":"Bashiru isah","org_role":"Fibre Optics Team Lead","location":"Nigeria","kad_role":"Fiber Engineer","client1":"GICL"},{"kad":"KAD3","name":"Usman Abubakar","org_role":"Fibre Optics Team Lead","location":"Nigeria","kad_role":"Fiber Engineer","client1":"GICL"},{"kad":"KAD3","name":"Ibrahim Babatunde","org_role":"Fibre Optics Team Lead","location":"Nigeria","kad_role":"Fiber Engineer","client1":"GICL"},{"kad":"KAD3","name":"Nazing Garba","org_role":"Fibre Optics Technician","location":"Nigeria","kad_role":"Fiber Technician","client1":"GICL"},{"kad":"KAD3","name":"Balogun Francis Onimisi","org_role":"Fibre Optics Team Lead","location":"Nigeria","kad_role":"Fiber Engineer","client1":"GICL"},{"kad":"KAD3","name":"Shuaibu  Abdulrasak","org_role":"Fibre Optics Team Lead","location":"Nigeria","kad_role":"Fiber Technician","client1":"GICL"},{"kad":"KAD3","name":"Ekeoha Christopher  Chukwuemeka","org_role":"Project Coordinator.","location":"Nigeria","kad_role":"Project Manager","client1":"I H S"},{"kad":"KAD3","name":"Enyiorji Chinonso","org_role":"QHSE Officer","location":"Nigeria","kad_role":"Fiber Technician","client1":"GICL"},{"kad":"KAD3","name":"Onyeaku Okechukwu Henry","org_role":"QHSE Officer","location":"Nigeria","kad_role":"Fiber Technician","client1":"GICL"},{"kad":"KAD3","name":"Lukas Daniel","org_role":"","location":"Nigeria","kad_role":"Fiber Engineer","client1":"GICL"},{"kad":"KAD3","name":"Agunbiade Sulaimon","org_role":"","location":"Nigeria","kad_role":"Project Support Officer","client1":"GICL"},{"kad":"KAD3","name":"Adeoye Oladele Adesola","org_role":"Project Manager Fibre implementation","location":"Nigeria","kad_role":"Project Manager","client1":"GICL"},{"kad":"KAD3","name":"Obateru Tosin Mary","org_role":"Key Account Manager","location":"Nigeria","kad_role":"Account Manager","client1":"GICL"},{"kad":"KAD3","name":"Suleiman Abdulmalik","org_role":"Project Manager Fibre Managed service","location":"Nigeria","kad_role":"Project Manager","client1":"GICL"},{"kad":"KAD3","name":"Agbamuche Chris","org_role":"QHSE Officer","location":"Nigeria","kad_role":"Fiber Technician","client1":"GICL"},{"kad":"KAD4","name":"Issaka Djibo Abdoul Aziz","org_role":"Commercial Manager","location":"Niger","kad_role":"KAD","client1":"Moov"},{"kad":"KAD4","name":"Bassira Abdou Laouali","org_role":"HRBP","location":"Niger","kad_role":"HRBP","client1":""},{"kad":"KAD4","name":"Ubon Ukpong Augustine","org_role":"Technical operations Manager","location":"Liberia","kad_role":"SME-Infrastructure","client1":"Orange"},{"kad":"KAD4","name":"Latifa Maman Sani","org_role":"Key Account Manager","location":"Niger","kad_role":"Account Manager","client1":"Moov"},{"kad":"KAD4","name":"Aissata Dicko","org_role":"Key Account Manager","location":"Mali","kad_role":"Account Manager","client1":"Orange"},{"kad":"KAD4","name":"Bintou Gnamba","org_role":"Procurement Manager","location":"Mali","kad_role":"procurement Manger","client1":"Orange"},{"kad":"KAD4","name":"Monthe Christelle Djuimo","org_role":"Key Account Manager","location":"Cameroon","kad_role":"Account Manager","client1":"Orange"},{"kad":"KAD4","name":"Ali Iddrissa","org_role":"Finance Manager","location":"Niger","kad_role":"Finanance manager","client1":"Moov"},{"kad":"KAD4","name":"Garvis Ifeanyi Mukoro","org_role":"Drive Test Engineer","location":"Cameroon","kad_role":"RNO Technician","client1":"Orange"},{"kad":"KAD4","name":"Tchounga Tankeu Simon","org_role":"Drive Test Engineer","location":"Cameroon","kad_role":"RNO Technician","client1":"Orange"},{"kad":"KAD4","name":"Mimbah Sonia Lum","org_role":"Post Processing Engineer","location":"Cameroon","kad_role":"RNO Technician","client1":"Orange"},{"kad":"KAD4","name":"Moussa traore","org_role":"Team Lead, Field Engineers","location":"Mali","kad_role":"Fiber Technician","client1":"Orange"},{"kad":"KAD4","name":"Mahamadou Gassama","org_role":"Team Lead, Field Engineers","location":"Mali","kad_role":"Fiber Technician","client1":"Orange"},{"kad":"KAD4","name":"Kakoin Diarra","org_role":"Team Lead, Field Engineers","location":"Mali","kad_role":"Fiber Technician","client1":"Orange"},{"kad":"KAD4","name":"Maxime Ibrahima Kamara","org_role":"Team Lead, Field Engineers","location":"Mali","kad_role":"Fiber Technician","client1":"Orange"},{"kad":"KAD4","name":"Ibourahima KOITA","org_role":"Team Lead, Field Engineers","location":"Mali","kad_role":"Fiber Technician","client1":"Orange"},{"kad":"KAD4","name":"Mohamadou Diakite","org_role":"Associate Project Manager","location":"Mali","kad_role":"Project manager","client1":"Orange"},{"kad":"KAD4","name":"Oumar Tounkara","org_role":"Driver","location":"Mali","kad_role":"Driver","client1":"Orange"},{"kad":"KAD4","name":"Abdoulaye Sissoko","org_role":"Driver","location":"Mali","kad_role":"Driver","client1":"Orange"},{"kad":"KAD4","name":"Mamadou Traore","org_role":"Driver","location":"Mali","kad_role":"Driver","client1":"Orange"},{"kad":"KAD4","name":"Lassina CISSE","org_role":"Driver","location":"Mali","kad_role":"Driver","client1":"Orange"},{"kad":"KAD4","name":"Assa Coulibaly","org_role":"Field Engineer","location":"Mali","kad_role":"I&C Technician","client1":"Orange"},{"kad":"KAD4","name":"Hadjara Coulibaly","org_role":"Field Engineer","location":"Mali","kad_role":"I&C Technician","client1":"Orange"},{"kad":"KAD4","name":"Adeboye Sunday David","org_role":"Field Engineer (SMILE)","location":"Nigeria","kad_role":"Maintenance Engineer","client1":"Smile"},{"kad":"KAD4","name":"Mgbachi Julius","org_role":"Field Engineer(SMILE)","location":"Nigeria","kad_role":"Maintenance Engineer","client1":"Smile"},{"kad":"KAD4","name":"Edota Francis","org_role":"Field Engineer(SMILE)","location":"Nigeria","kad_role":"Maintenance Engineer","client1":"Smile"},{"kad":"KAD4","name":"Ajala Abraham Adura","org_role":"Field Engineer(SMILE)","location":"Nigeria","kad_role":"Maintenance Engineer","client1":"Smile"},{"kad":"KAD4","name":"Osanebe Ifeanyi","org_role":"Field Engineer(SMILE)","location":"Nigeria","kad_role":"Maintenance Engineer","client1":"Smile"},{"kad":"KAD4","name":"Iribogbe Peter","org_role":"Field Technician (Rigger)SMILE","location":"Nigeria","kad_role":"Maintenance Technician","client1":"Smile"},{"kad":"KAD4","name":"Ukpong Nsikan Daniel","org_role":"Field Technician (Rigger)SMILE","location":"Nigeria","kad_role":"Maintenance Technician","client1":"Smile"},{"kad":"KAD4","name":"Ojo Paul Olajide","org_role":"Field Technician (Rigger)SMILE","location":"Nigeria","kad_role":"Maintenance Technician","client1":"Smile"},{"kad":"KAD4","name":"Taiwo Hassan Olatunji","org_role":"Field Technician (Rigger)SMILE","location":"Nigeria","kad_role":"Maintenance Technician","client1":"Smile"},{"kad":"KAD4","name":"Ushene Favour Lucky","org_role":"Field Technician (Rigger)SMILE","location":"Nigeria","kad_role":"Maintenance Technician","client1":"Smile"},{"kad":"KAD4","name":"Adeyemi Glory","org_role":"Bo RAN engineer(SMILE)","location":"Nigeria","kad_role":"Maintenance Engineer","client1":"Smile"},{"kad":"KAD4","name":"Uche Martins Amobi","org_role":"Transmission Engineer(SMILE)","location":"Nigeria","kad_role":"Maintenance Engineer","client1":"Smile"},{"kad":"KAD4","name":"Yohanna Ruth","org_role":"Front office(SMILE)","location":"Nigeria","kad_role":"Maintenance Technician","client1":"Smile"},{"kad":"KAD4","name":"Odume thomas Ogbona","org_role":"QHSE Officer/PM","location":"Nigeria","kad_role":"Project manager","client1":"MTN"},{"kad":"KAD4","name":"Abdoul Nasser Bello Issoufou","org_role":"Project Manager","location":"Niger","kad_role":"Project manager","client1":"Moov"},{"kad":"KAD4","name":"Saley Sode Oumarou","org_role":"Field Active","location":"Niger","kad_role":"Maintenance Engineer","client1":"Moov"},{"kad":"KAD4","name":"Souley Mahaman Nourou","org_role":"Field Passive","location":"Niger","kad_role":"Maintenance Engineer","client1":"Moov"},{"kad":"KAD4","name":"Boubacar Amadou","org_role":"Rigger","location":"Niger","kad_role":"Maintenance Technician","client1":"Moov"},{"kad":"KAD4","name":"Galiou Khamed","org_role":"Field Active","location":"Niger","kad_role":"Maintenance Engineer","client1":"Moov"},{"kad":"KAD4","name":"Mihiradji Zabeirou Souley","org_role":"Field Passive","location":"Niger","kad_role":"Maintenance Engineer","client1":"Moov"},{"kad":"KAD4","name":"Acho Askoumi Moussa","org_role":"Field Passive& Active","location":"Niger","kad_role":"Maintenance Engineer","client1":"Moov"},{"kad":"KAD4","name":"Akim Assani","org_role":"Rigger","location":"Niger","kad_role":"Maintenance Technician","client1":"Moov"},{"kad":"KAD4","name":"Abdoul Razak Mahaman Issa","org_role":"Field Passive","location":"Niger","kad_role":"Maintenance Engineer","client1":"Moov"},{"kad":"KAD4","name":"Kiari Mamada","org_role":"Field Active","location":"Niger","kad_role":"Maintenance Engineer","client1":"Moov"},{"kad":"KAD4","name":"Amadou Tidjani","org_role":"Rigger","location":"Niger","kad_role":"Maintenance Technician","client1":"Moov"},{"kad":"KAD4","name":"Midjitapha Souley","org_role":"Field Passive","location":"Niger","kad_role":"Maintenance Engineer","client1":"Moov"},{"kad":"KAD4","name":"Abdourahamane Elhadj Bilal","org_role":"Field Passice&Active","location":"Niger","kad_role":"Maintenance Engineer","client1":"Moov"},{"kad":"KAD4","name":"Boubacar Ango","org_role":"Field Passive&Active","location":"Niger","kad_role":"Maintenance Engineer","client1":"Moov"},{"kad":"KAD4","name":"Nadia Boubakar","org_role":"Back Office","location":"Niger","kad_role":"Maintenance Engineer","client1":"Moov"},{"kad":"KAD4","name":"Mohamed Harou","org_role":"Back Office","location":"Niger","kad_role":"Maintenance Engineer","client1":"Moov"},{"kad":"KAD4","name":"Ibrahim Birgui","org_role":"Back Office","location":"Niger","kad_role":"Maintenance Engineer","client1":"Moov"},{"kad":"KAD4","name":"Abdoulaye Djibo","org_role":"Dispatcher","location":"Niger","kad_role":"Maintenance Engineer","client1":"Moov"},{"kad":"KAD4","name":"Salifou Oumarou","org_role":"Back Office","location":"Niger","kad_role":"Maintenance Engineer","client1":"Moov"},{"kad":"KAD4","name":"Ismaheel Quadri","org_role":"Drive Test Engineer","location":"Niger","kad_role":"RNO Technician","client1":"Airtel"},{"kad":"KAD4","name":"Abdulshakur Abdulazeez","org_role":"Drive Test Engineer","location":"Niger","kad_role":"RNO Technician","client1":"Airtel"},{"kad":"SS","name":"Babatunde Edward Adeyemi","org_role":"Information Technology","location":"Nigeria","kad_role":"Group Head IT","client1":""},{"kad":"SS","name":"Mutiat Bamidele","org_role":"IT","location":"Nigeria","kad_role":"Product Manager","client1":""},{"kad":"SS","name":"David Adediran","org_role":"IT","location":"Nigeria","kad_role":"Data Analyst","client1":""},{"kad":"SS","name":"Nnamdi Nwonye","org_role":"Admin","location":"Nigeria","kad_role":"Chief of Staff","client1":""},{"kad":"SS","name":"Eloisa Ibok","org_role":"Commercial","location":"Nigeria","kad_role":"Commercial Support Analyst","client1":""},{"kad":"SS","name":"Jima Potias","org_role":"Finance","location":"Nigeria","kad_role":"Finance Operations","client1":""},{"kad":"SS","name":"Alpha Diallo","org_role":"Finance","location":"Nigeria","kad_role":"Treasury & Tax","client1":""},{"kad":"SS","name":"Awoyomi Akintomiwa","org_role":"HR Intern","location":"Nigeria","kad_role":"HR Officer (Intern)","client1":""},{"kad":"SS","name":"Isiaq Krusheed","org_role":"PMO","location":"Nigeria","kad_role":"Project Manager","client1":""},{"kad":"SS","name":"Adewale Emmanuel","org_role":"Finance Support Officer","location":"Nigeria","kad_role":"Logistics & Resources","client1":""},{"kad":"SS","name":"Mustapha Ayoola Wasiu","org_role":"Warehouse Logistic Officer","location":"Nigeria","kad_role":"Warehouse Logistics","client1":""},{"kad":"SS","name":"Ahmed Zekeri","org_role":"Logistics officer","location":"Nigeria","kad_role":"Logistics Officer","client1":""},{"kad":"SS","name":"Ayunwi meme Fuh","org_role":"QHSE Officer","location":"Cameroon","kad_role":"QHSE Officer","client1":""},{"kad":"SS","name":"Emmanuel Oboho","org_role":"QHSE Officer","location":"CIV","kad_role":"QHSE Officer","client1":""},{"kad":"SS","name":"Shhukura Opeyemi Abdulrazak","org_role":"Information Technology","location":"Nigeria","kad_role":"Social Media Manager","client1":""},{"kad":"SS","name":"Jogunomi Oluwatimilehin","org_role":"Information Technology","location":"Nigeria","kad_role":"Youth Corper","client1":""},{"kad":"SS","name":"Ileaboya Emmanuel","org_role":"Information Technology","location":"Nigeria","kad_role":"Youth Corper","client1":""},{"kad":"SS","name":"Elimian Caleb","org_role":"Information Technology","location":"Nigeria","kad_role":"Youth Corper","client1":""},{"kad":"SS","name":"Adewoyin Blessing","org_role":"Information Technology","location":"Nigeria","kad_role":"Youth Corper","client1":""}];
+
+// ══════════════════════════════════════════
+// AUDIT SCHEMA — 5 phases, sequenced by criticality
+// ══════════════════════════════════════════
+const AUDIT_PHASES = [
+  {
+    id:'p1', label:'Phase 1 — Legal & Identity', color:'var(--red)', criticality:'critical',
+    pvcRef:'Phase 3 (Compliance) → Phase 9 (HR Ops)',
+    intro:'The non-negotiable floor. Until each person has a valid contract, a verified identity on payroll, and a right-to-work check, nothing else is safe to build on top of.',
+    fields:[
+      { id:'contract', label:'Employment contract signed & current', hint:'Does a signed contract exist that reflects their current role, KAD, and country? Post-restructure contracts must be updated.' },
+      { id:'righttowork', label:'Right-to-work / work permit verified', hint:'Particularly critical for cross-border staff. Nigeria, Mali, Niger, CIV, Cameroon, SA and Liberia all have different requirements.' },
+      { id:'payroll', label:'On payroll system with correct details', hint:'Name, bank details, location, and role on payroll match the staff mapping.' },
+      { id:'payslip', label:'Payslip issued last month', hint:'Has a payslip been issued? "Paid but no payslip" is not the same as "payroll exists". Payslips are a legal requirement in most jurisdictions.' },
+    ]
+  },
+  {
+    id:'p2', label:'Phase 2 — Role Clarity', color:'var(--amber)', criticality:'critical',
+    pvcRef:'Phase 1 (Labour & Job Analysis) → Phase 3 (Selection)',
+    intro:'Ambiguity about what a person is supposed to do is the root cause of most performance problems. Role clarity must come before performance management.',
+    fields:[
+      { id:'jd', label:'Job description exists and is current', hint:'Does a written job description exist for this specific role? Not a generic title — a document describing accountabilities, deliverables, and scope.' },
+      { id:'successprofile', label:'Success profile / competency expectations defined', hint:'Does the person and their manager have a shared understanding of what excellent performance looks like in this role?' },
+      { id:'reporting', label:'Reporting line confirmed and communicated', hint:'Is the KAD reporting line clear to the employee? Restructure-induced ambiguity about who they report to.' },
+      { id:'kadassignment', label:'KAD assignment formally communicated', hint:'Has the person received written confirmation of which KAD they belong to and what that means for their day-to-day?' },
+    ]
+  },
+  {
+    id:'p3', label:'Phase 3 — Performance Management', color:'var(--gold)', criticality:'important',
+    pvcRef:'Phase 5 (Performance & Development) in PVC',
+    intro:'No goals, no accountability, no consequence management — this is the current reality. Phase 3 builds the structures that make performance manageable and fair.',
+    fields:[
+      { id:'goals', label:'Performance goals set & documented', hint:'Does the person have written, specific goals for the current period? Connected to KAD objectives, not just generic.' },
+      { id:'onetoone', label:'Regular 1:1 with manager in place', hint:'Is there a weekly or bi-weekly 1:1 happening? Not just ad hoc conversations — a structured cadence.' },
+      { id:'feedback', label:'Received specific performance feedback in last 30 days', hint:'Has the person received behavioural, specific feedback (not just "keep it up") in the last month?' },
+      { id:'conduct', label:'No open conduct or performance concerns', hint:'Is there an active or unresolved conduct/performance issue? Flag here if yes.' },
+    ]
+  },
+  {
+    id:'p4', label:'Phase 4 — Pay & Grading', color:'var(--blue)', criticality:'important',
+    pvcRef:'Phase 6 (Reward & Recognition) in PVC',
+    intro:'"Compensation on vibes" is the fastest way to lose good people and attract the wrong ones. Grade and pay must be documented, market-anchored, and defensible.',
+    fields:[
+      { id:'grade', label:'Grade / level assigned and documented', hint:'Does this person have a formal grade? KAD roles have a taxonomy — KAD leader, SME, Manager, Coordinator, Technician, Intern. Has this been formally applied?' },
+      { id:'salary_known', label:'Salary documented and on file', hint:'Is the agreed salary documented? Not just in payroll — in a formal compensation record per person.' },
+      { id:'market_check', label:'Pay position checked against market', hint:'Has the salary been compared to market data for this role in this country? Especially critical for roles in competitive markets.' },
+      { id:'payequity', label:'No known pay equity concern for this person', hint:'Is this person paid comparably to peers in equivalent roles? Flag if there is a known or suspected disparity.' },
+    ]
+  },
+  {
+    id:'p5', label:'Phase 5 — Experience & Retention', color:'var(--green)', criticality:'building',
+    pvcRef:'Phases 7 & 8 (Employee Experience & Retention) in PVC',
+    intro:'With the foundations built, this phase assesses the human reality — how this person actually feels, whether they are engaged, and whether they are a flight risk.',
+    fields:[
+      { id:'onboarded', label:'Properly onboarded to their role and KAD', hint:'Did this person receive a proper onboarding — not just "here is your desk"? Do they understand the organisation, their KAD, their team, their purpose?' },
+      { id:'development', label:'Development goal or learning opportunity in place', hint:'Does the person have at least one active development opportunity — a skill being built, a course, a stretch project, a mentor?' },
+      { id:'morale', label:'Morale assessed — engaged and not at flight risk', hint:'Based on the HRBP\'s knowledge: is this person engaged? Do they show up with intent? Or are they going through the motions?' },
+      { id:'flight_risk', label:'Not identified as flight risk', hint:'Is there specific intelligence — from conversations, behaviour, market signals — that this person may be actively looking elsewhere? Flag if yes.' },
+    ]
+  }
+];
+
+// ══════════════════════════════════════════
+// STATE
+// ══════════════════════════════════════════
+const KEY = 'telinno_audit_v3';
+let auditData = {};
+let currentPerson = null;
+let saveTimer = null;
+
+function loadData() {
+  try {
+    const raw = localStorage.getItem(KEY);
+    if (raw) auditData = JSON.parse(raw);
+  } catch(e) {}
+}
+
+function saveData() {
+  try {
+    localStorage.setItem(KEY, JSON.stringify(auditData));
+  } catch(e) {}
+  const ind = document.getElementById('save-indicator');
+  ind.classList.add('visible');
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(() => ind.classList.remove('visible'), 1500);
+}
+
+function getPersonKey(person) {
+  return person.kad + '::' + person.name;
+}
+
+function getPersonData(person) {
+  const k = getPersonKey(person);
+  if (!auditData[k]) auditData[k] = {};
+  return auditData[k];
+}
+
+function getFieldValue(person, fieldId) {
+  return getPersonData(person)[fieldId] || null;
+}
+
+function setFieldValue(person, fieldId, value) {
+  getPersonData(person)[fieldId] = value;
+  saveData();
+  updateTopbarStats();
+  updateProgressPanel();
+  updateRosterRow(person);
+}
+
+function getFieldNote(person, fieldId) {
+  return getPersonData(person)[fieldId + '_note'] || '';
+}
+
+function setFieldNote(person, fieldId, value) {
+  getPersonData(person)[fieldId + '_note'] = value;
+  saveData();
+}
+
+// ══════════════════════════════════════════
+// COMPLETION SCORING
+// ══════════════════════════════════════════
+function getPersonCompletion(person) {
+  const data = getPersonData(person);
+  const allFields = AUDIT_PHASES.flatMap(p => p.fields.map(f => f.id));
+  const answered = allFields.filter(fid => data[fid] && data[fid] !== null).length;
+  return { answered, total: allFields.length, pct: Math.round((answered / allFields.length) * 100) };
+}
+
+function getPhaseCompletion(phaseId) {
+  const phase = AUDIT_PHASES.find(p => p.id === phaseId);
+  let answered = 0, total = 0;
+  PEOPLE.forEach(person => {
+    const data = getPersonData(person);
+    phase.fields.forEach(f => {
+      total++;
+      if (data[f.id]) answered++;
+    });
+  });
+  return total > 0 ? Math.round((answered / total) * 100) : 0;
+}
+
+function getOrgCompletion() {
+  let answered = 0, total = 0;
+  PEOPLE.forEach(person => {
+    const c = getPersonCompletion(person);
+    answered += c.answered;
+    total += c.total;
+  });
+  return total > 0 ? Math.round((answered / total) * 100) : 0;
+}
+
+function getGapFlags() {
+  const flags = { contract:0, jd:0, payslip:0, goals:0, grade:0, flight:0 };
+  PEOPLE.forEach(p => {
+    const d = getPersonData(p);
+    if (d.contract === 'no') flags.contract++;
+    if (d.jd === 'no') flags.jd++;
+    if (d.payslip === 'no') flags.payslip++;
+    if (d.goals === 'no') flags.goals++;
+    if (d.grade === 'no') flags.grade++;
+    if (d.flight_risk === 'no') flags.flight++; // 'no' = IS a flight risk
+  });
+  return flags;
+}
+
+// ══════════════════════════════════════════
+// RENDER ROSTER
+// ══════════════════════════════════════════
+function renderRoster(filtered) {
+  const list = document.getElementById('roster-list');
+  const people = filtered || PEOPLE;
+  
+  document.getElementById('roster-count').textContent = `${people.length} people`;
+  
+  list.innerHTML = people.map(p => {
+    const { pct } = getPersonCompletion(p);
+    let ringColor = pct === 0 ? '#3d3a36' : pct === 100 ? 'var(--green)' : 'var(--amber)';
+    let bgColor = pct === 0 ? 'rgba(61,58,54,0.15)' : pct === 100 ? 'var(--green-bg)' : 'var(--amber-bg)';
+    
+    return `<div class="person-row${currentPerson && currentPerson.name === p.name && currentPerson.kad === p.kad ? ' active' : ''}" 
+      data-name="${p.name}" data-kad="${p.kad}"
+      onclick="selectPerson('${p.name.replace(/'/g,"\\'")}','${p.kad}')">
+      <div class="person-completion" style="background:${bgColor};color:${ringColor};border:1px solid ${ringColor}40;">
+        ${pct}
+      </div>
+      <div class="person-info">
+        <div class="person-name">${p.name}</div>
+        <div class="person-meta">${p.kad_role || p.org_role} · ${p.location}</div>
+      </div>
+      <span class="person-kad-badge kad-${p.kad}">${p.kad}</span>
+    </div>`;
+  }).join('');
+}
+
+function updateRosterRow(person) {
+  const row = document.querySelector(`.person-row[data-name="${person.name}"][data-kad="${person.kad}"]`);
+  if (!row) return;
+  const { pct } = getPersonCompletion(person);
+  let ringColor = pct === 0 ? '#3d3a36' : pct === 100 ? 'var(--green)' : 'var(--amber)';
+  let bgColor = pct === 0 ? 'rgba(61,58,54,0.15)' : pct === 100 ? 'var(--green-bg)' : 'var(--amber-bg)';
+  const ring = row.querySelector('.person-completion');
+  if (ring) {
+    ring.style.background = bgColor;
+    ring.style.color = ringColor;
+    ring.style.borderColor = ringColor + '40';
+    ring.textContent = pct;
+  }
+}
+
+// ══════════════════════════════════════════
+// SELECT PERSON
+// ══════════════════════════════════════════
+function selectPerson(name, kad) {
+  currentPerson = PEOPLE.find(p => p.name === name && p.kad === kad);
+  if (!currentPerson) return;
+
+  // Update roster highlight
+  document.querySelectorAll('.person-row').forEach(r => {
+    r.classList.toggle('active', r.dataset.name === name && r.dataset.kad === kad);
+  });
+
+  // Hide/show
+  document.getElementById('empty-state').style.display = 'none';
+  const content = document.getElementById('audit-content');
+  content.style.display = 'flex';
+
+  // Header
+  document.getElementById('audit-name').textContent = currentPerson.name;
+  const meta = document.getElementById('audit-meta');
+  meta.innerHTML = `
+    <span class="meta-chip kad-${currentPerson.kad}">${currentPerson.kad}</span>
+    <span class="meta-chip">${currentPerson.kad_role || currentPerson.org_role}</span>
+    <span class="meta-chip">${currentPerson.location}</span>
+    ${currentPerson.client1 ? `<span class="meta-chip">${currentPerson.client1}</span>` : ''}
+    ${currentPerson.org_role && currentPerson.org_role !== currentPerson.kad_role ? `<span class="meta-chip" style="color:var(--text-dim)">Org: ${currentPerson.org_role}</span>` : ''}
+  `;
+
+  // Body
+  renderAuditBody();
+  updateProgressPanel();
+}
+
+// ══════════════════════════════════════════
+// RENDER AUDIT BODY
+// ══════════════════════════════════════════
+function renderAuditBody() {
+  const body = document.getElementById('audit-body');
+  body.innerHTML = AUDIT_PHASES.map(phase => `
+    <div class="audit-section">
+      <div class="audit-section-header">
+        <span class="section-phase-tag" style="background:${phase.color}20;color:${phase.color};border:1px solid ${phase.color}30;">${phase.id.toUpperCase()}</span>
+        <span class="audit-section-title">${phase.label}</span>
+        <span class="section-criticality crit-${phase.criticality}">${phase.criticality}</span>
+      </div>
+      <div style="font-size:11px;color:var(--text-muted);line-height:1.6;margin-bottom:12px;padding:8px 12px;background:var(--ink-2);border-radius:5px;border-left:2px solid ${phase.color}40;">${phase.intro}</div>
+      <div class="audit-fields">
+        ${phase.fields.map(field => renderField(phase, field)).join('')}
+      </div>
+    </div>
+  `).join('');
+
+  // Attach events
+  body.querySelectorAll('.toggle-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const fieldId = btn.closest('.audit-field').dataset.field;
+      const val = btn.dataset.val;
+      setFieldValue(currentPerson, fieldId, val);
+      // Re-render just the toggles
+      const field = btn.closest('.audit-field');
+      const group = field.querySelector('.field-status-toggle');
+      group.querySelectorAll('.toggle-btn').forEach(b => {
+        b.className = 'toggle-btn';
+        if (b.dataset.val === val) {
+          b.classList.add(val === 'yes' ? 'active-yes' : val === 'partial' ? 'active-partial' : 'active-no');
+        }
+      });
+    });
+  });
+
+  body.querySelectorAll('.field-note-input').forEach(input => {
+    input.addEventListener('input', () => {
+      const fieldId = input.dataset.field;
+      setFieldNote(currentPerson, fieldId, input.value);
+    });
+  });
+}
+
+function renderField(phase, field) {
+  const val = getFieldValue(currentPerson, field.id);
+  const note = getFieldNote(currentPerson, field.id);
+  const isInvert = field.id === 'flight_risk' || field.id === 'conduct'; // "no" = bad for these
+  
+  return `<div class="audit-field" data-field="${field.id}">
+    <div class="field-top">
+      <div class="field-label">${field.label}</div>
+      <div class="field-status-toggle">
+        <div class="toggle-btn${val==='yes'?' active-yes':''}" data-val="yes">Yes</div>
+        <div class="toggle-btn${val==='partial'?' active-partial':''}" data-val="partial">Partial</div>
+        <div class="toggle-btn${val==='no'?' active-no':''}" data-val="no">No</div>
+      </div>
+    </div>
+    <div class="field-hint">${field.hint}</div>
+    <textarea class="field-note-input" data-field="${field.id}" placeholder="Notes (optional)…" rows="1">${note}</textarea>
+  </div>`;
+}
+
+// ══════════════════════════════════════════
+// UPDATE PROGRESS PANEL
+// ══════════════════════════════════════════
+function updateProgressPanel() {
+  // Ring
+  const pct = getOrgCompletion();
+  const circ = 238.76;
+  const offset = circ - (circ * pct / 100);
+  document.getElementById('ring-fill').style.strokeDashoffset = offset;
+  document.getElementById('ring-pct').textContent = pct + '%';
+
+  // Phase bars
+  AUDIT_PHASES.forEach(phase => {
+    const p = getPhaseCompletion(phase.id);
+    const numId = phase.id.replace('p','');
+    const pctEl = document.getElementById('pct-p' + numId);
+    const barEl = document.getElementById('bar-p' + numId);
+    if (pctEl) pctEl.textContent = p + '%';
+    if (barEl) barEl.style.width = p + '%';
+  });
+
+  // Gap flags
+  const flags = getGapFlags();
+  const setFlag = (id, val, threshold) => {
+    const el = document.getElementById(id);
+    if (el) {
+      el.textContent = val;
+      el.className = 'osb-val ' + (val >= threshold ? 'red' : val > 0 ? 'amber' : 'green');
+    }
+  };
+  setFlag('flag-contract', flags.contract, 10);
+  setFlag('flag-jd', flags.jd, 10);
+  setFlag('flag-payslip', flags.payslip, 10);
+  setFlag('flag-goals', flags.goals, 10);
+  setFlag('flag-grade', flags.grade, 10);
+  document.getElementById('flag-flight').textContent = flags.flight;
+  document.getElementById('flag-flight').className = 'osb-val ' + (flags.flight > 5 ? 'red' : flags.flight > 0 ? 'amber' : 'green');
+}
+
+function updateTopbarStats() {
+  let notStarted = 0, inProgress = 0, complete = 0;
+  PEOPLE.forEach(p => {
+    const { pct } = getPersonCompletion(p);
+    if (pct === 0) notStarted++;
+    else if (pct === 100) complete++;
+    else inProgress++;
+  });
+  document.getElementById('stat-not-started').textContent = notStarted;
+  document.getElementById('stat-in-progress').textContent = inProgress;
+  document.getElementById('stat-complete').textContent = complete;
+}
+
+// ══════════════════════════════════════════
+// SEARCH & FILTER
+// ══════════════════════════════════════════
+function applyFilters() {
+  const query = document.getElementById('search-input').value.toLowerCase();
+  const kadFilter = document.getElementById('filter-kad').value;
+  const statusFilter = document.getElementById('filter-status').value;
+
+  const filtered = PEOPLE.filter(p => {
+    const matchSearch = !query || 
+      p.name.toLowerCase().includes(query) || 
+      (p.org_role && p.org_role.toLowerCase().includes(query)) ||
+      (p.kad_role && p.kad_role.toLowerCase().includes(query)) ||
+      (p.location && p.location.toLowerCase().includes(query));
+    
+    const matchKad = !kadFilter || p.kad === kadFilter;
+    
+    let matchStatus = true;
+    if (statusFilter !== '') {
+      const { pct } = getPersonCompletion(p);
+      if (statusFilter === '0') matchStatus = pct === 0;
+      else if (statusFilter === '100') matchStatus = pct === 100;
+      else if (statusFilter === 'partial') matchStatus = pct > 0 && pct < 100;
+    }
+    
+    return matchSearch && matchKad && matchStatus;
+  });
+
+  renderRoster(filtered);
+}
+
+// ══════════════════════════════════════════
+// EXPORT
+// ══════════════════════════════════════════
+function exportData() {
+  const allFields = AUDIT_PHASES.flatMap(ph => ph.fields.map(f => ({ phase: ph.label, ...f })));
+  const headers = ['Name','KAD','Org Role','KAD Role','Location','Completion%',
+    ...allFields.map(f => f.label),
+    ...allFields.map(f => f.label + ' (note)')
+  ];
+
+  const rows = PEOPLE.map(p => {
+    const { pct } = getPersonCompletion(p);
+    const d = getPersonData(p);
+    return [
+      p.name, p.kad, p.org_role, p.kad_role, p.location, pct,
+      ...allFields.map(f => d[f.id] || ''),
+      ...allFields.map(f => d[f.id + '_note'] || '')
+    ];
+  });
+
+  const csv = [headers, ...rows].map(r => r.map(v => `"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
+  const blob = new Blob([csv], { type:'text/csv' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `telinno_people_audit_${new Date().toISOString().slice(0,10)}.csv`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+// ══════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════
+loadData();
+renderRoster();
+updateTopbarStats();
+updateProgressPanel();
+
+document.getElementById('search-input').addEventListener('input', applyFilters);
+document.getElementById('filter-kad').addEventListener('change', applyFilters);
+document.getElementById('filter-status').addEventListener('change', applyFilters);
+</script>
+</body>
+</html>

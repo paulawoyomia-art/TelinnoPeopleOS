@@ -1,0 +1,2024 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The People Value Chain — Practitioner's Codex v2</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink: #0d1117;
+  --ink-2: #161b22;
+  --ink-3: #1f2937;
+  --surface: #1a1f2e;
+  --border: rgba(255,255,255,0.07);
+  --border-light: rgba(255,255,255,0.04);
+  --text: #e8e4dc;
+  --text-muted: #8b8680;
+  --text-dim: #5a5550;
+  --gold: #c8a840;
+  --gold-dim: rgba(200,168,64,0.15);
+  --critical: #e05555;
+  --important: #c8a840;
+  --optimising: #5a9e8e;
+  --sidebar-w: 270px;
+  --panel-w: 540px;
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+
+body {
+  font-family:'DM Sans',sans-serif;
+  background:var(--ink);
+  color:var(--text);
+  height:calc(100vh - 38px);
+  overflow:hidden;margin-top:0;
+  display:flex;
+  flex-direction:column;
+}
+
+/* ── MANIFESTO BANNER ── */
+#manifesto-bar {
+  background: linear-gradient(135deg, #0d1117 0%, #161b22 100%);
+  border-bottom: 1px solid var(--border);
+  padding: 10px 28px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap: 20px;
+  flex-shrink:0;
+}
+
+#manifesto-statement {
+  font-family:'Playfair Display',serif;
+  font-size:11px;
+  font-style:italic;
+  color:var(--text-muted);
+  letter-spacing:0.02em;
+  line-height:1.5;
+  flex:1;
+}
+
+#manifesto-statement strong {
+  color:var(--gold);
+  font-style:normal;
+  font-weight:600;
+}
+
+#entry-pills {
+  display:flex;
+  gap:6px;
+  flex-shrink:0;
+}
+
+.entry-pill {
+  font-family:'DM Mono',monospace;
+  font-size:9px;
+  letter-spacing:0.06em;
+  text-transform:uppercase;
+  padding:4px 10px;
+  border-radius:3px;
+  border:1px solid var(--border);
+  color:var(--text-dim);
+  cursor:pointer;
+  transition:all 0.15s;
+  white-space:nowrap;
+}
+
+.entry-pill:hover, .entry-pill.active {
+  border-color:var(--gold);
+  color:var(--gold);
+  background:var(--gold-dim);
+}
+
+/* ── BODY LAYOUT ── */
+#app-body {
+  flex:1;
+  display:flex;
+  overflow:hidden;
+}
+
+/* ── SIDEBAR ── */
+#sidebar {
+  width:var(--sidebar-w);
+  min-width:var(--sidebar-w);
+  height:100%;
+  background:var(--ink-2);
+  border-right:1px solid var(--border);
+  display:flex;
+  flex-direction:column;
+  overflow:hidden;
+}
+
+#sidebar-header {
+  padding:20px 20px 14px;
+  border-bottom:1px solid var(--border);
+  flex-shrink:0;
+}
+
+#sidebar-header h1 {
+  font-family:'Playfair Display',serif;
+  font-size:13px;
+  font-weight:700;
+  letter-spacing:0.08em;
+  text-transform:uppercase;
+  color:var(--gold);
+  line-height:1.3;
+}
+
+#sidebar-header p {
+  font-size:10px;
+  color:var(--text-muted);
+  margin-top:3px;
+  letter-spacing:0.04em;
+}
+
+/* severity legend */
+#severity-legend {
+  display:flex;
+  gap:10px;
+  margin-top:10px;
+  flex-wrap:wrap;
+}
+.sev-pill {
+  display:flex;
+  align-items:center;
+  gap:5px;
+  font-family:'DM Mono',monospace;
+  font-size:8px;
+  letter-spacing:0.05em;
+  text-transform:uppercase;
+  color:var(--text-dim);
+}
+.sev-dot {
+  width:6px; height:6px; border-radius:50%;
+}
+
+#phase-nav {
+  flex:1;
+  overflow-y:auto;
+  padding:8px 0;
+}
+#phase-nav::-webkit-scrollbar { width:3px; }
+#phase-nav::-webkit-scrollbar-track { background:transparent; }
+#phase-nav::-webkit-scrollbar-thumb { background:var(--border); border-radius:2px; }
+
+.phase-nav-item {
+  padding:0;
+  cursor:pointer;
+  transition:background 0.15s;
+  position:relative;
+}
+.phase-nav-item:hover .phase-nav-inner { background:rgba(255,255,255,0.04); }
+.phase-nav-item.active .phase-nav-inner { background:rgba(255,255,255,0.06); }
+
+.phase-nav-inner {
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:10px 16px;
+  transition:background 0.15s;
+}
+
+.phase-dot {
+  width:8px; height:8px; border-radius:50%; flex-shrink:0;
+}
+
+.phase-nav-text { flex:1; min-width:0; }
+
+.phase-nav-num {
+  font-family:'DM Mono',monospace;
+  font-size:9px;
+  color:var(--text-dim);
+  letter-spacing:0.06em;
+  line-height:1;
+}
+
+.phase-nav-name {
+  font-size:12px;
+  font-weight:500;
+  color:var(--text);
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  margin-top:2px;
+}
+
+.phase-nav-count {
+  font-size:10px;
+  color:var(--text-dim);
+  font-family:'DM Mono',monospace;
+}
+
+/* ── MAIN ── */
+#main {
+  flex:1;
+  display:flex;
+  flex-direction:column;
+  height:100%;
+  overflow:hidden;
+  min-width:0;
+}
+
+#phase-header {
+  padding:22px 32px 18px;
+  border-bottom:1px solid var(--border);
+  flex-shrink:0;
+}
+
+#phase-header-top {
+  display:flex;
+  align-items:flex-start;
+  gap:14px;
+  margin-bottom:10px;
+}
+
+#phase-badge {
+  font-family:'DM Mono',monospace;
+  font-size:10px;
+  letter-spacing:0.1em;
+  text-transform:uppercase;
+  padding:4px 10px;
+  border-radius:3px;
+  flex-shrink:0;
+  margin-top:4px;
+}
+
+#phase-title {
+  font-family:'Playfair Display',serif;
+  font-size:26px;
+  font-weight:700;
+  line-height:1.15;
+}
+
+#phase-summary {
+  font-size:12.5px;
+  line-height:1.7;
+  color:var(--text-muted);
+  max-width:680px;
+}
+
+/* BU relevance row */
+#phase-bu-row {
+  display:flex;
+  align-items:center;
+  gap:8px;
+  margin-top:10px;
+  flex-wrap:wrap;
+}
+
+.bu-tag {
+  font-family:'DM Mono',monospace;
+  font-size:9px;
+  letter-spacing:0.06em;
+  text-transform:uppercase;
+  padding:3px 8px;
+  border-radius:3px;
+  color:var(--text-dim);
+  border:1px solid var(--border);
+}
+
+.bu-label {
+  font-size:10px;
+  color:var(--text-dim);
+  font-family:'DM Mono',monospace;
+  letter-spacing:0.04em;
+}
+
+/* ── CONTENT AREA ── */
+#content-area {
+  flex:1;
+  display:flex;
+  overflow:hidden;
+}
+
+#tp-grid-wrap {
+  flex:1;
+  overflow-y:auto;
+  padding:24px 32px;
+}
+#tp-grid-wrap::-webkit-scrollbar { width:4px; }
+#tp-grid-wrap::-webkit-scrollbar-track { background:transparent; }
+#tp-grid-wrap::-webkit-scrollbar-thumb { background:var(--border); border-radius:2px; }
+
+#tp-grid {
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(280px,1fr));
+  gap:12px;
+}
+
+.tp-card {
+  background:var(--ink-2);
+  border:1px solid var(--border);
+  border-radius:8px;
+  padding:16px 18px;
+  cursor:pointer;
+  transition:all 0.2s;
+  position:relative;
+  overflow:hidden;
+}
+
+.tp-card::before {
+  content:'';
+  position:absolute;
+  top:0;left:0;right:0;
+  height:2px;
+  background:var(--card-accent, #666);
+  opacity:0;
+  transition:opacity 0.2s;
+}
+
+.tp-card:hover {
+  border-color:var(--card-accent-border, rgba(255,255,255,0.15));
+  transform:translateY(-1px);
+  box-shadow:0 8px 24px rgba(0,0,0,0.3);
+}
+.tp-card:hover::before { opacity:1; }
+.tp-card.active { border-color:var(--card-accent-border, rgba(255,255,255,0.25)); background:var(--card-accent-bg); }
+.tp-card.active::before { opacity:1; }
+
+.tp-card-header {
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  margin-bottom:8px;
+  gap:8px;
+}
+
+.tp-card-badges {
+  display:flex;
+  align-items:center;
+  gap:6px;
+  flex-wrap:wrap;
+}
+
+.tp-card-tag {
+  display:inline-flex;
+  align-items:center;
+  gap:4px;
+  font-size:8.5px;
+  font-weight:500;
+  letter-spacing:0.08em;
+  text-transform:uppercase;
+  padding:3px 7px;
+  border-radius:3px;
+}
+
+.tp-severity-badge {
+  font-family:'DM Mono',monospace;
+  font-size:8px;
+  letter-spacing:0.06em;
+  text-transform:uppercase;
+  padding:2px 7px;
+  border-radius:2px;
+}
+
+.sev-critical { background:rgba(224,85,85,0.15); color:var(--critical); border:1px solid rgba(224,85,85,0.25); }
+.sev-important { background:rgba(200,168,64,0.12); color:var(--important); border:1px solid rgba(200,168,64,0.25); }
+.sev-optimising { background:rgba(90,158,142,0.12); color:var(--optimising); border:1px solid rgba(90,158,142,0.25); }
+
+.tp-card-id {
+  font-family:'DM Mono',monospace;
+  font-size:9px;
+  color:var(--text-dim);
+  flex-shrink:0;
+}
+
+.tp-card-name {
+  font-family:'Playfair Display',serif;
+  font-size:15px;
+  font-weight:600;
+  line-height:1.3;
+  margin-bottom:7px;
+}
+
+.tp-card-what {
+  font-size:11.5px;
+  color:var(--text-muted);
+  line-height:1.6;
+  display:-webkit-box;
+  -webkit-line-clamp:3;
+  -webkit-box-orient:vertical;
+  overflow:hidden;
+}
+
+.tp-card-arrow {
+  position:absolute;
+  bottom:12px;
+  right:14px;
+  font-size:13px;
+  color:var(--text-dim);
+  transition:all 0.2s;
+}
+.tp-card:hover .tp-card-arrow { color:var(--text-muted); transform:translateX(2px); }
+
+/* ── DETAIL PANEL ── */
+#detail-panel {
+  width:0;
+  min-width:0;
+  overflow:hidden;
+  transition:width 0.3s cubic-bezier(0.4,0,0.2,1);
+  border-left:1px solid transparent;
+  display:flex;
+  flex-direction:column;
+  background:var(--surface);
+}
+
+#detail-panel.open {
+  width:var(--panel-w);
+  min-width:var(--panel-w);
+  border-left-color:var(--border);
+}
+
+#detail-inner {
+  width:var(--panel-w);
+  height:100%;
+  display:flex;
+  flex-direction:column;
+  overflow:hidden;
+}
+
+#detail-header {
+  padding:18px 22px 0;
+  flex-shrink:0;
+  border-bottom:1px solid var(--border);
+}
+
+#detail-close {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  margin-bottom:10px;
+}
+
+#detail-close-btn {
+  background:none;
+  border:1px solid var(--border);
+  color:var(--text-muted);
+  cursor:pointer;
+  padding:4px 10px;
+  border-radius:4px;
+  font-size:11px;
+  font-family:'DM Sans',sans-serif;
+  transition:all 0.15s;
+}
+#detail-close-btn:hover { border-color:var(--text-dim); color:var(--text); }
+
+#detail-tp-id {
+  font-family:'DM Mono',monospace;
+  font-size:10px;
+  color:var(--text-dim);
+}
+
+#detail-name {
+  font-family:'Playfair Display',serif;
+  font-size:19px;
+  font-weight:700;
+  line-height:1.25;
+  margin-bottom:8px;
+}
+
+#detail-severity-row {
+  display:flex;
+  align-items:center;
+  gap:8px;
+  margin-bottom:10px;
+}
+
+#detail-severity-label {
+  font-size:10.5px;
+  color:var(--text-muted);
+}
+
+/* HRBP context strip */
+#detail-hrbp-strip {
+  background:var(--ink-2);
+  border:1px solid var(--border);
+  border-radius:5px;
+  padding:9px 12px;
+  margin-bottom:10px;
+  display:none;
+}
+#detail-hrbp-strip.visible { display:block; }
+
+#detail-hrbp-label {
+  font-family:'DM Mono',monospace;
+  font-size:8.5px;
+  letter-spacing:0.08em;
+  text-transform:uppercase;
+  color:var(--text-dim);
+  margin-bottom:5px;
+}
+
+#detail-hrbp-text {
+  font-size:11.5px;
+  color:var(--text-muted);
+  line-height:1.6;
+}
+
+/* Tabs */
+#detail-tabs {
+  display:flex;
+  gap:0;
+  overflow-x:auto;
+  padding-top:2px;
+}
+#detail-tabs::-webkit-scrollbar { display:none; }
+
+.detail-tab {
+  padding:7px 13px;
+  font-size:10.5px;
+  font-weight:500;
+  letter-spacing:0.03em;
+  color:var(--text-dim);
+  cursor:pointer;
+  border-bottom:2px solid transparent;
+  white-space:nowrap;
+  transition:all 0.15s;
+}
+.detail-tab:hover { color:var(--text-muted); }
+.detail-tab.active { color:var(--text); border-bottom-color:var(--tab-accent, #c8a840); }
+
+/* Detail body */
+#detail-body {
+  flex:1;
+  overflow-y:auto;
+  padding:20px 22px;
+}
+#detail-body::-webkit-scrollbar { width:4px; }
+#detail-body::-webkit-scrollbar-track { background:transparent; }
+#detail-body::-webkit-scrollbar-thumb { background:var(--border); border-radius:2px; }
+
+.detail-section { display:none; }
+.detail-section.active { display:block; }
+
+/* What section */
+.what-text {
+  font-size:12.5px;
+  line-height:1.75;
+  color:var(--text-muted);
+  margin-bottom:18px;
+}
+
+.why-box {
+  background:var(--ink-2);
+  border:1px solid var(--border);
+  border-left:3px solid var(--section-accent, #c8a840);
+  border-radius:0 6px 6px 0;
+  padding:14px 16px;
+  margin-bottom:14px;
+}
+.why-box-label {
+  font-family:'DM Mono',monospace;
+  font-size:9px;
+  letter-spacing:0.1em;
+  text-transform:uppercase;
+  color:var(--text-dim);
+  margin-bottom:7px;
+}
+.why-text {
+  font-size:12px;
+  line-height:1.7;
+  color:var(--text-muted);
+}
+
+/* Scenario boxes */
+.scenario-grid {
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+  margin-top:14px;
+}
+.scenario-box {
+  border-radius:6px;
+  padding:12px 14px;
+}
+.scenario-box.failure {
+  background:rgba(200,80,80,0.06);
+  border:1px solid rgba(200,80,80,0.15);
+}
+.scenario-box.excellence {
+  background:rgba(90,158,142,0.06);
+  border:1px solid rgba(90,158,142,0.18);
+}
+.scenario-label {
+  font-family:'DM Mono',monospace;
+  font-size:8px;
+  letter-spacing:0.1em;
+  text-transform:uppercase;
+  margin-bottom:6px;
+}
+.scenario-box.failure .scenario-label { color:#e08080; }
+.scenario-box.excellence .scenario-label { color:var(--optimising); }
+.scenario-text {
+  font-size:11px;
+  line-height:1.6;
+  color:var(--text-muted);
+}
+
+/* How section */
+.how-step {
+  margin-bottom:14px;
+  padding-bottom:14px;
+  border-bottom:1px solid var(--border-light);
+}
+.how-step:last-child { border-bottom:none; margin-bottom:0; padding-bottom:0; }
+.how-step-header {
+  display:flex;
+  align-items:flex-start;
+  gap:10px;
+  margin-bottom:5px;
+}
+.how-step-num {
+  font-family:'DM Mono',monospace;
+  font-size:10px;
+  color:var(--step-accent, #c8a840);
+  min-width:20px;
+  margin-top:2px;
+}
+.how-step-title {
+  font-size:12.5px;
+  font-weight:500;
+  color:var(--text);
+  line-height:1.4;
+}
+.how-step-desc {
+  font-size:11.5px;
+  line-height:1.7;
+  color:var(--text-muted);
+  margin-left:30px;
+}
+
+/* Who/When */
+.who-when-grid {
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+  margin-bottom:14px;
+}
+.who-when-box {
+  background:var(--ink-2);
+  border:1px solid var(--border);
+  border-radius:6px;
+  padding:12px 14px;
+}
+.who-when-label {
+  font-family:'DM Mono',monospace;
+  font-size:9px;
+  letter-spacing:0.1em;
+  text-transform:uppercase;
+  color:var(--text-dim);
+  margin-bottom:7px;
+}
+.who-when-text {
+  font-size:11.5px;
+  line-height:1.65;
+  color:var(--text-muted);
+}
+
+/* HRBP context in panel tab */
+.hrbp-panel-box {
+  background:rgba(200,168,64,0.06);
+  border:1px solid rgba(200,168,64,0.18);
+  border-radius:6px;
+  padding:14px 16px;
+  margin-top:14px;
+}
+.hrbp-panel-label {
+  font-family:'DM Mono',monospace;
+  font-size:8.5px;
+  letter-spacing:0.08em;
+  text-transform:uppercase;
+  color:var(--gold);
+  margin-bottom:7px;
+}
+.hrbp-panel-text {
+  font-size:11.5px;
+  line-height:1.65;
+  color:var(--text-muted);
+}
+
+/* Multi-country note */
+.multicountry-box {
+  background:rgba(74,159,212,0.06);
+  border:1px solid rgba(74,159,212,0.18);
+  border-radius:6px;
+  padding:12px 14px;
+  margin-top:10px;
+}
+.multicountry-label {
+  font-family:'DM Mono',monospace;
+  font-size:8.5px;
+  letter-spacing:0.08em;
+  text-transform:uppercase;
+  color:#4a9fd4;
+  margin-bottom:6px;
+}
+.multicountry-text {
+  font-size:11px;
+  line-height:1.6;
+  color:var(--text-muted);
+}
+
+/* Docs */
+.docs-list { list-style:none; }
+.docs-list li {
+  display:flex;
+  align-items:flex-start;
+  gap:8px;
+  padding:7px 0;
+  border-bottom:1px solid var(--border-light);
+  font-size:11.5px;
+  color:var(--text-muted);
+  line-height:1.4;
+}
+.docs-list li:last-child { border-bottom:none; }
+.docs-list li::before { content:'↳'; color:var(--text-dim); flex-shrink:0; margin-top:1px; }
+
+/* Mistakes */
+.mistake-item {
+  background:rgba(200,80,80,0.06);
+  border:1px solid rgba(200,80,80,0.12);
+  border-radius:6px;
+  padding:12px 14px;
+  margin-bottom:9px;
+}
+.mistake-item:last-child { margin-bottom:0; }
+.mistake-title {
+  font-size:12px;
+  font-weight:500;
+  color:#e08080;
+  margin-bottom:5px;
+  display:flex;
+  align-items:flex-start;
+  gap:7px;
+}
+.mistake-title::before { content:'✕'; font-size:10px; margin-top:2px; flex-shrink:0; }
+.mistake-desc { font-size:11px; line-height:1.65; color:var(--text-muted); }
+
+/* Metrics */
+.metric-item {
+  display:flex;
+  align-items:flex-start;
+  gap:9px;
+  padding:7px 0;
+  border-bottom:1px solid var(--border-light);
+  font-size:11.5px;
+  color:var(--text-muted);
+  line-height:1.5;
+}
+.metric-item:last-child { border-bottom:none; }
+.metric-dot {
+  width:6px; height:6px; border-radius:50%;
+  background:var(--metric-accent, #c8a840);
+  flex-shrink:0; margin-top:5px;
+}
+
+/* System map view */
+#system-map-view {
+  display:none;
+  flex:1;
+  overflow-y:auto;
+  padding:28px 32px;
+}
+#system-map-view.visible { display:block; }
+#tp-grid-wrap.hidden { display:none; }
+
+.system-map-title {
+  font-family:'Playfair Display',serif;
+  font-size:22px;
+  font-weight:700;
+  margin-bottom:6px;
+}
+.system-map-sub {
+  font-size:12.5px;
+  color:var(--text-muted);
+  line-height:1.6;
+  max-width:600px;
+  margin-bottom:28px;
+}
+
+.system-phases {
+  display:flex;
+  flex-direction:column;
+  gap:3px;
+}
+
+.system-phase-row {
+  display:flex;
+  align-items:stretch;
+  gap:0;
+  cursor:pointer;
+}
+
+.system-phase-row:hover .sp-content { background:rgba(255,255,255,0.04); }
+
+.sp-num {
+  width:36px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-family:'DM Mono',monospace;
+  font-size:9px;
+  color:var(--text-dim);
+  flex-shrink:0;
+}
+
+.sp-connector {
+  width:20px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  flex-shrink:0;
+  position:relative;
+}
+
+.sp-line {
+  width:2px;
+  background:var(--border);
+  position:absolute;
+  top:0;
+  bottom:0;
+}
+
+.sp-arrow {
+  width:8px;
+  height:8px;
+  border-right:1px solid var(--border);
+  border-bottom:1px solid var(--border);
+  transform:rotate(45deg);
+  position:relative;
+  z-index:1;
+  background:var(--ink);
+}
+
+.sp-content {
+  flex:1;
+  background:var(--ink-2);
+  border:1px solid var(--border);
+  border-radius:6px;
+  padding:12px 16px;
+  margin:2px 0;
+  transition:background 0.15s;
+}
+
+.sp-header {
+  display:flex;
+  align-items:center;
+  gap:10px;
+  margin-bottom:5px;
+}
+
+.sp-dot {
+  width:8px; height:8px; border-radius:50%; flex-shrink:0;
+}
+
+.sp-phase-name {
+  font-size:13px;
+  font-weight:500;
+  color:var(--text);
+}
+
+.sp-phase-summary {
+  font-size:11px;
+  color:var(--text-muted);
+  line-height:1.5;
+  margin-left:18px;
+}
+
+.sp-break-indicator {
+  margin-left:18px;
+  margin-top:6px;
+  font-size:10px;
+  color:var(--critical);
+  font-family:'DM Mono',monospace;
+  letter-spacing:0.04em;
+}
+
+.failure-loop {
+  background:rgba(200,80,80,0.06);
+  border:1px solid rgba(200,80,80,0.15);
+  border-radius:6px;
+  padding:14px 18px;
+  margin-top:22px;
+}
+.failure-loop-title {
+  font-family:'DM Mono',monospace;
+  font-size:9px;
+  letter-spacing:0.08em;
+  text-transform:uppercase;
+  color:var(--critical);
+  margin-bottom:8px;
+}
+.failure-loop-text {
+  font-size:12px;
+  line-height:1.7;
+  color:var(--text-muted);
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity:0; transform:translateY(6px); }
+  to { opacity:1; transform:translateY(0); }
+}
+.tp-card { animation:fadeIn 0.22s ease both; }
+.tp-card:nth-child(1){animation-delay:0.02s}
+.tp-card:nth-child(2){animation-delay:0.04s}
+.tp-card:nth-child(3){animation-delay:0.06s}
+.tp-card:nth-child(4){animation-delay:0.08s}
+.tp-card:nth-child(5){animation-delay:0.10s}
+.tp-card:nth-child(6){animation-delay:0.12s}
+.tp-card:nth-child(7){animation-delay:0.14s}
+.tp-card:nth-child(8){animation-delay:0.16s}
+#detail-body > .detail-section.active { animation:fadeIn 0.18s ease both; }
+
+/* scrollbar global */
+::-webkit-scrollbar { width:4px; height:4px; }
+::-webkit-scrollbar-track { background:transparent; }
+::-webkit-scrollbar-thumb { background:rgba(255,255,255,0.1); border-radius:2px; }
+
+/* Phase nav active line */
+.phase-nav-item { position:relative; }
+.phase-nav-item.active .phase-nav-inner { position:relative; }
+</style>
+</head>
+<body>
+
+<!-- PORTAL NAV -->
+<div id="portal-nav" style="background:#0b0f18;border-bottom:1px solid rgba(255,255,255,0.06);padding:0 20px;height:38px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:9999;flex-shrink:0;">
+  <a href="index.html" style="font-family:'DM Mono',monospace;font-size:9.5px;letter-spacing:0.12em;text-transform:uppercase;color:#c9ab47;text-decoration:none;display:flex;align-items:center;gap:6px;">
+    <span style="font-size:11px;">←</span> Telinno Portal
+  </a>
+  <div style="display:flex;gap:2px;align-items:center;">
+    <a href="telinno-audit-v2.html" style="font-family:'DM Mono',monospace;font-size:8.5px;letter-spacing:0.06em;text-transform:uppercase;padding:4px 10px;border-radius:3px;color:#6b6660;text-decoration:none;transition:color 0.15s;" onmouseover="this.style.color='#e4dfd7'" onmouseout="this.style.color='#6b6660'">Audit</a>
+    <a href="telinno-jsp.html" style="font-family:'DM Mono',monospace;font-size:8.5px;letter-spacing:0.06em;text-transform:uppercase;padding:4px 10px;border-radius:3px;color:#6b6660;text-decoration:none;" onmouseover="this.style.color='#e4dfd7'" onmouseout="this.style.color='#6b6660'">JSP</a>
+    <a href="telinno-matrix.html" style="font-family:'DM Mono',monospace;font-size:8.5px;letter-spacing:0.06em;text-transform:uppercase;padding:4px 10px;border-radius:3px;color:#6b6660;text-decoration:none;" onmouseover="this.style.color='#e4dfd7'" onmouseout="this.style.color='#6b6660'">Matrix</a>
+    <a href="telinno-hr-plan.html" style="font-family:'DM Mono',monospace;font-size:8.5px;letter-spacing:0.06em;text-transform:uppercase;padding:4px 10px;border-radius:3px;color:#6b6660;text-decoration:none;" onmouseover="this.style.color='#e4dfd7'" onmouseout="this.style.color='#6b6660'">Plan</a>
+    <a href="pvc-v2.html" style="font-family:'DM Mono',monospace;font-size:8.5px;letter-spacing:0.06em;text-transform:uppercase;padding:4px 10px;border-radius:3px;color:#6b6660;text-decoration:none;" onmouseover="this.style.color='#e4dfd7'" onmouseout="this.style.color='#6b6660'">PVC</a>
+  </div>
+</div>
+
+
+<!-- MANIFESTO BAR -->
+<div id="manifesto-bar">
+  <div id="manifesto-statement">
+    HR is a <strong>business unit</strong> — delivering <strong>employee experience</strong> to talent as its customer, and a <strong>competent, engaged, loyal workforce</strong> to the company as its return on investment.
+  </div>
+  <div id="entry-pills">
+    <div class="entry-pill active" onclick="setView('codex')">Codex</div>
+    <div class="entry-pill" onclick="setView('system')">System Map</div>
+    <div class="entry-pill" id="pill-founder" onclick="setEntryPath('founder')">Founder</div>
+    <div class="entry-pill" id="pill-hrbp" onclick="setEntryPath('hrbp')">HRBP</div>
+    <div class="entry-pill" id="pill-hod" onclick="setEntryPath('hod')">Head of BU</div>
+  </div>
+</div>
+
+<!-- APP BODY -->
+<div id="app-body">
+
+<!-- SIDEBAR -->
+<aside id="sidebar">
+  <div id="sidebar-header">
+    <h1>People Value<br>Chain</h1>
+    <p>Practitioner's Reference · 9 Phases</p>
+    <div id="severity-legend">
+      <span class="sev-pill"><span class="sev-dot" style="background:var(--critical)"></span>Critical</span>
+      <span class="sev-pill"><span class="sev-dot" style="background:var(--important)"></span>Important</span>
+      <span class="sev-pill"><span class="sev-dot" style="background:var(--optimising)"></span>Optimising</span>
+    </div>
+  </div>
+  <nav id="phase-nav"></nav>
+</aside>
+
+<!-- MAIN -->
+<div id="main">
+  <div id="phase-header">
+    <div id="phase-header-top">
+      <span id="phase-badge"></span>
+      <h2 id="phase-title"></h2>
+    </div>
+    <p id="phase-summary"></p>
+    <div id="phase-bu-row"></div>
+  </div>
+  <div id="content-area">
+    <!-- Touchpoint Grid -->
+    <div id="tp-grid-wrap">
+      <div id="tp-grid"></div>
+    </div>
+
+    <!-- System Map (alternate view) -->
+    <div id="system-map-view">
+      <div class="system-map-title">The People Value Chain — System Map</div>
+      <div class="system-map-sub">Each phase depends on the one before it. Failure in early phases doesn't show up as a problem until months later — in a bad hire, a disengaged employee, or a retention crisis. This is the full dependency chain.</div>
+      <div class="system-phases" id="system-phases-list"></div>
+      <div class="failure-loop">
+        <div class="failure-loop-title">The Reactive HR Loop — What Breaks When the System Is Skipped</div>
+        <div class="failure-loop-text">
+          No workforce planning → reactive hiring → wrong roles filled → poor selection → misaligned hires → weak onboarding → slow contribution → no performance clarity → unmanaged underperformance → disengagement → attrition → emergency hiring → repeat. For a 100–200 person organisation across four business units, this loop is expensive and compounding. The HRBP embedded in each BU is the circuit-breaker — but only when the system exists for them to operate within.
+        </div>
+      </div>
+    </div>
+
+    <!-- Detail Panel -->
+    <div id="detail-panel">
+      <div id="detail-inner">
+        <div id="detail-header">
+          <div id="detail-close">
+            <span id="detail-tp-id"></span>
+            <button id="detail-close-btn" onclick="closePanel()">✕ Close</button>
+          </div>
+          <div id="detail-name"></div>
+          <div id="detail-severity-row">
+            <span id="detail-severity-badge"></span>
+            <span id="detail-severity-label"></span>
+          </div>
+          <div id="detail-hrbp-strip">
+            <div id="detail-hrbp-label">HRBP Context — 4 BU / 100–200 Employees / Multi-Country</div>
+            <div id="detail-hrbp-text"></div>
+          </div>
+          <div id="detail-tabs">
+            <div class="detail-tab active" data-tab="what">What & Why</div>
+            <div class="detail-tab" data-tab="how">How</div>
+            <div class="detail-tab" data-tab="who">Who & When</div>
+            <div class="detail-tab" data-tab="docs">Documents</div>
+            <div class="detail-tab" data-tab="mistakes">Pitfalls</div>
+            <div class="detail-tab" data-tab="metrics">Metrics</div>
+          </div>
+        </div>
+        <div id="detail-body">
+          <div class="detail-section active" id="tab-what"></div>
+          <div class="detail-section" id="tab-how"></div>
+          <div class="detail-section" id="tab-who"></div>
+          <div class="detail-section" id="tab-docs"></div>
+          <div class="detail-section" id="tab-mistakes"></div>
+          <div class="detail-section" id="tab-metrics"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div><!-- end app-body -->
+
+<script>
+// ══════════════════════════════════════════════════════
+// DATA — 9 PHASES (severity + hrbpContext + scenarios added)
+// ══════════════════════════════════════════════════════
+const PHASES = [
+{
+  id:0, phase:"Phase 1", name:"Labour & Job Analysis", short:"Labour", accent:"#b8936a",
+  accentBg:"rgba(184,147,106,0.12)", accentBorder:"rgba(184,147,106,0.3)",
+  summary:"The strategic foundation. Before opening a requisition, understand the external labour market, design work intelligently, and define what success looks like. Skipping this phase is the root cause of most downstream hiring failures.",
+  buRelevance:"Shared function led by central HR. HRBPs input BU-specific role requirements. Critical for multi-country roles where market conditions differ significantly.",
+  touchpoints:[
+    {
+      id:"1-1", name:"Labour market analysis", tag:"Strategic", tagColor:"#b8936a", severity:"critical",
+      what:"Labour Market Analysis (LMA) is the systematic study of the external talent environment — who is available, at what cost, under what conditions, and how that landscape is shifting. It answers the most important pre-hire question: is what we need actually findable, and what will it realistically cost?",
+      why:"Organisations that skip LMA discover its findings six months into a failed search. Salary bands are wrong, the pool is thinner than expected, competitors are running parallel searches, and the hiring manager is blaming the recruiter for a problem baked in before the job was posted.",
+      how:[
+        {t:"Define the scope and the decision it must inform",d:"Every LMA starts with a specific question tied to a real decision. 'What is the market for data engineers in Lagos?' is a good question. 'How is the talent market?' is not. Name the decision the brief will support before collecting any data."},
+        {t:"Calculate the demand-to-supply ratio",d:"Divide active job postings for the target role by the estimated pool of qualified candidates. Above 1.5 = candidate's market. Below 0.8 = employer's market. This ratio gates all other planning assumptions."},
+        {t:"Benchmark total compensation",d:"Pull market data at P25, P50, P75 and P90 for base salary at the relevant level. Cross-reference at least two sources. Extend to total reward — bonus norms, equity prevalence, benefits benchmarks, and any flexibility premium."},
+        {t:"Identify the competitive landscape",d:"Which organisations are actively hiring for the same skills? At what velocity? Glassdoor, LinkedIn job alerts reveal competitor hiring intensity. Flag any recent large-scale hirings or redundancies that are about to flood or drain the local pool."},
+        {t:"Produce the brief with a clear recommendation",d:"The deliverable is a 1–2 page brief ending in a specific action: 'Approve the band at this range', 'Extend the search geography', or 'Shift to a contract model'. No recommendation = no intelligence."}
+      ],
+      who:"Talent Intelligence or senior TA lead. In the absence of a TI function, the HRBP should own it per BU. Never delegate to the hiring manager — they will use intuition rather than data.",
+      when:"Before any headcount approval is signed off. Refreshed quarterly for critical roles. On-demand when entering a new market.",
+      documents:["LMA brief (role-specific, 1–2 pages)","Role market scorecard (quarterly refresh)","Demand-to-supply ratio tracker","Compensation benchmarking summary"],
+      mistakes:[
+        {t:"Using internal data as the market benchmark",d:"Your past pay decisions reflect your history, not the market. Always anchor to external survey data."},
+        {t:"Ignoring the multi-country dimension",d:"For a company operating across multiple countries, a single LMA is insufficient. Labour markets differ significantly — pool depth, salary norms, and competition all vary. Each country of hire requires a country-specific brief."},
+        {t:"Not connecting the output to a decision",d:"LMA produced for its own sake has no value. Every brief must end with a recommendation that could change what happens next."}
+      ],
+      metrics:["Demand-to-supply ratio by critical role","LMA brief utilisation rate: % that change a decision (target: >60%)","Salary band accuracy: % of offers within recommended range (target: >85%)","Time-to-fill forecast accuracy (target: within ±20%)"],
+      hrbpContext:"With four BUs, each HRBP should flag upcoming hires to central HR minimum 8 weeks before headcount sign-off, so LMA can be commissioned. Without this lead time, the organisation consistently hires into markets it doesn't understand. For multi-country roles, the HRBP in-country is the primary intelligence source — they know the local competitive landscape that LinkedIn data won't surface.",
+      scenario:{failure:"Finance BU opens a senior risk analyst role without LMA. The salary band was benchmarked against internal pay history. Four months in, every offer is rejected. Market rate is 35% above band. The HRBP is blamed. The problem was designed in before the job was posted.",excellence:"Commercial BU HRBP flags a technology leadership hire 10 weeks ahead. LMA confirms the pool in-country is thin but strong candidates are reachable remotely across two markets. Band is adjusted, search geography is expanded before posting. Role is filled in 9 weeks."},
+      multicountry:"Employment law, salary expectations, and talent pool depth vary significantly across countries. LMA must be run per country for any cross-border hire. What constitutes a competitive package in Lagos will not apply in London or Nairobi."
+    },
+    {
+      id:"1-2", name:"Workforce planning", tag:"Strategic", tagColor:"#b8936a", severity:"critical",
+      what:"Workforce planning analyses current capability, models future requirements, and identifies gaps — then develops strategies to close them through hiring, development, redeployment, or technology. It translates business strategy into people requirements before the need becomes urgent.",
+      why:"Without workforce planning, organisations hire reactively — filling vacancies rather than building capability. The result is a workforce perpetually one step behind the business, with chronic skills gaps and no pipeline for future leaders.",
+      how:[
+        {t:"Anchor to business strategy",d:"Start from the 3–5 year business plan. What markets will the organisation be in? What capabilities does that require? Every workforce planning exercise must begin with strategic intent, not historical headcount."},
+        {t:"Audit current workforce supply",d:"What skills, capabilities and capacity does the current workforce have? Use HRIS data, competency assessments, and manager input. Identify critical roles, key person dependencies, and capability concentrations."},
+        {t:"Model demand scenarios",d:"Build at least three scenarios: base case, upside, and downside. For each, model the headcount, skill profile, and timing of need. Scenario planning prepares for optionality, not just the plan."},
+        {t:"Develop gap-closing strategies",d:"For each prioritised gap, determine the optimal combination of: build (internal development), buy (external hire), borrow (contract/consulting), or bot (automation). Cost, timeline, and risk all influence the choice."},
+        {t:"Translate into a resourcing plan",d:"Convert gap-closing strategies into a practical hiring, development, and redeployment plan with timelines, budget estimates, and ownership. This plan feeds directly into the annual headcount budget process."}
+      ],
+      who:"Workforce Planning lead or HR Business Partners, co-owned with Finance and each BU head. Workforce plans without business leader sponsorship are quickly abandoned when budgets are cut.",
+      when:"Annual headcount planning cycle (Q3/Q4 for following year). Mid-year refresh. On-demand for M&A, product launches, market entry, restructuring.",
+      documents:["Strategic workforce plan (annual)","Headcount gap analysis by BU and function","Make/buy/borrow decision log","Critical role dependency map","Resourcing roadmap"],
+      mistakes:[
+        {t:"Planning from last year's headcount",d:"Workforce planning that starts with 'same as last year plus X%' is budget extrapolation, not planning. The baseline must be business strategy."},
+        {t:"One plan for all four BUs",d:"With four distinct business units, each BU's workforce requirements differ. The central plan must be modular — a consolidated view assembled from BU-level inputs, not a top-down headcount allocation."},
+        {t:"Keeping the plan in HR",d:"Workforce plans that never reach the business become HR documents. The final plan must be co-owned and signed off by BU heads."}
+      ],
+      metrics:["Plan vs actual variance at 6 and 12 months","Critical role vacancy rate (target: <5%)","Time-to-fill: planned vs unplanned hires","Workforce plan adoption rate: % of planned hires that proceed as modelled"],
+      hrbpContext:"Each HRBP should own the workforce plan input for their BU — understanding the BU's 12-month growth trajectory, the skills it will need, and the roles most likely to turn over. These BU-level inputs are assembled by central HR into the organisation-wide plan. The HRBP is the translator between business strategy and people requirements.",
+      scenario:{failure:"A technology BU grows 40% faster than planned. No workforce plan existed for the capability this required. The business hires urgently, using whoever is available, at inflated rates. 18 months later, 30% of those hires have left.",excellence:"Each BU HRBP submits their workforce input in Q3. Central HR assembles the consolidated view. Three critical skill gaps are identified 9 months before they become urgent. Internal development programmes fill two; one targeted hire fills the third. No reactive hiring."},
+      multicountry:"For a multi-country business, workforce planning must account for different employment laws around headcount reductions, different lead times for hiring in different markets, and different cost-of-workforce profiles. A role that costs X in one country may cost 2X in another — the plan must reflect this."
+    },
+    {
+      id:"1-3", name:"Job analysis & job design", tag:"Foundational", tagColor:"#7a8fa0", severity:"important",
+      what:"Job analysis is the systematic process of documenting a job's duties, responsibilities, required skills, and outcomes. Job design is the deliberate structuring of work to maximise both performance and the quality of experience for the person doing it.",
+      why:"Without job analysis, organisations write job descriptions based on what the previous person happened to be good at, not what the role actually requires. This produces misaligned hires, unclear performance expectations, and compensation inconsistencies.",
+      how:[
+        {t:"Define the purpose of the analysis",d:"Is it for a new job description? Role grading? Performance standards? Selection design? The purpose determines the depth required."},
+        {t:"Collect the data",d:"Gather: major duties and tasks, frequency and importance of each task, knowledge and skills required, decision-making authority, relationships and interdependencies, and accountabilities. Interview current jobholders and managers."},
+        {t:"Separate the role from the person",d:"Job analysis describes the role as it should be designed, not how the current incumbent happens to perform it. Avoid the trap of writing a job description that only one person could fulfil."},
+        {t:"Produce the job description and success profile",d:"The job description covers what the role does and is accountable for. The success profile defines what excellent performance looks like — the competencies, skills, and behaviours that distinguish good from great in this specific role."}
+      ],
+      who:"Line manager initiates. HRBP facilitates and quality-assures. Central HR maintains the job architecture. For new roles or major redesigns, HR leads.",
+      when:"Before any new role is posted. Reviewed annually as part of the performance cycle. Triggered by significant role change.",
+      documents:["Job description template","Success profile framework","Competency model","Job family architecture","Role grading criteria"],
+      mistakes:[
+        {t:"Writing the job description after the interview process begins",d:"Job descriptions written in a rush after a requisition is approved produce vague, committee-crafted documents that do not reflect the actual role."},
+        {t:"Four identical job descriptions across four BUs",d:"Even where roles share a title across BUs, the context, pace, and expectations often differ significantly. A 'Commercial Manager' in a high-growth BU and a mature BU are not the same role."}
+      ],
+      metrics:["% of open roles with current, signed-off job descriptions (target: 100%)","Hiring manager satisfaction with job description quality","Time from role approval to job description sign-off","% of roles with documented success profiles"],
+      hrbpContext:"The HRBP is often the only person who ensures the job description reflects the actual role rather than a copy-paste from three years ago. For a four-BU structure, the HRBP's role is to adapt the central job architecture to BU-specific context — maintaining consistency in grading while reflecting differences in scope and accountability.",
+      scenario:{failure:"A BU posts a 'Senior Operations Lead' role with a job description copied from a different BU's operations context. Three months of interviews produce candidates who are right for the wrong role. The search restarts.",excellence:"HRBP facilitates a 60-minute job design session with the BU head before the role is posted. The success profile is agreed. The first three candidates are immediately shortlisted."},
+      multicountry:"Job titles and levels carry different market signals in different countries. A 'Manager' in one market is a 'Director' in another for the same scope of work. Job analysis must include a market benchmarking step for every country in which the role will be posted."
+    }
+  ]
+},
+{
+  id:1, phase:"Phase 2", name:"Talent Attraction", short:"Attraction", accent:"#6a9fd4",
+  accentBg:"rgba(106,159,212,0.12)", accentBorder:"rgba(106,159,212,0.3)",
+  summary:"Attraction is not advertising. It is the deliberate construction of the company's presence in the talent market — building an employer brand that makes the right people want to work here before they see a job posting.",
+  buRelevance:"Central HR owns the EVP and employer brand architecture. HRBPs translate the organisational EVP into BU-specific narratives. Especially important where BUs serve different talent markets.",
+  touchpoints:[
+    {
+      id:"2-1", name:"Employer Value Proposition (EVP)", tag:"Brand", tagColor:"#6a9fd4", severity:"critical",
+      what:"The Employer Value Proposition is the complete set of reasons a talented person would choose to work here over all other options — and the reasons they would stay. It is not a tagline. It is the truthful articulation of what working here actually gives you.",
+      why:"In a talent market where candidates research employers as thoroughly as they research products, the organisation without a clear, authentic EVP loses before the first conversation. The EVP is also the primary retention mechanism — when the lived experience matches the promise, people stay.",
+      how:[
+        {t:"Research before you claim",d:"Conduct listening sessions with current employees, exit interview analysis, and candidate perception research. The EVP must reflect what people actually experience, not what leadership hopes they experience. An aspirational EVP that misrepresents reality produces hires who leave within 12 months."},
+        {t:"Identify what is genuinely distinctive",d:"What does working here offer that the competition genuinely cannot match? Growth pace? Mission? Learning quality? Team calibre? Identify the 2–3 authentic differentiators — and build the EVP around those."},
+        {t:"Build BU-specific EVP narratives",d:"With four business units, the organisation likely offers different value to different talent markets. A technology BU EVP will emphasise different elements than a commercial BU EVP. The central EVP sets the architecture; BU narratives adapt the messaging."},
+        {t:"Translate the EVP into every touchpoint",d:"The EVP must show up consistently in: job adverts, career site content, recruiter conversations, interview process design, and the first 90 days. Inconsistency between what was promised and what is experienced is the most common EVP failure."}
+      ],
+      who:"CHRO and central HR own the EVP architecture. HRBPs co-own the BU-specific narratives. Marketing/Internal Comms supports production. Senior leaders are the EVP's most powerful advocates.",
+      when:"EVP developed or refreshed every 2–3 years. BU narratives reviewed annually. Validated after each engagement survey.",
+      documents:["EVP research summary","EVP messaging framework","BU-specific EVP narratives","Career site content guide","Recruiter talking points"],
+      mistakes:[
+        {t:"Aspirational EVP that employees contradict",d:"If your EVP says 'we invest in your development' and your L&D budget is the first line to be cut, your employees will say so on Glassdoor. The EVP must be evidenced, not aspirational."},
+        {t:"One EVP for 4 different talent markets",d:"The same EVP messaging will not resonate equally with a software engineer and a sales director. Segment the EVP by talent market and adapt the emphasis accordingly."}
+      ],
+      metrics:["Glassdoor rating and trend","Offer acceptance rate (a proxy for EVP pull)","Candidate source satisfaction: 'the role matched what I was told' (survey at 90 days)","EVP message recall: % of new hires who can articulate why they chose the company"],
+      hrbpContext:"The HRBP is the EVP's ground-level validator. They hear what candidates are actually attracted by, what disappointments arise in the first 90 days, and where the promise and the reality diverge. This intelligence should flow back to central HR to refine the EVP. HRBPs should also be equipped with a 2-minute BU-specific narrative they can share confidently with candidates and hiring managers.",
+      scenario:{failure:"The company's career site describes an 'entrepreneurial, fast-paced environment.' The BU the candidate joins operates with heavy process and slow decision-making. Three of the last five senior hires leave within 18 months citing culture mismatch. The EVP was not wrong — but it was not BU-specific.",excellence:"The technology BU HRBP facilitates an EVP workshop with the BU team. Three genuine differentiators emerge: rapid internal mobility, access to emerging technology, and flat decision-making hierarchy. These become the BU's hiring story. Offer acceptance rate improves from 68% to 84% within two recruitment cycles."},
+      multicountry:"The EVP must be adapted for each country market. What motivates talent in one market (stability, brand prestige) may differ significantly from another (growth opportunity, equity). Research per market before deploying EVP content."
+    },
+    {
+      id:"2-2", name:"Job advertising & sourcing strategy", tag:"Attraction", tagColor:"#6a9fd4", severity:"important",
+      what:"A sourcing strategy defines how the organisation will reach the right talent for each role — the combination of channels, communities, timing, and messaging used to build a candidate pipeline. Job advertising is one component of sourcing, not a synonym for it.",
+      why:"Posting a job and waiting produces whoever happened to be actively looking at that moment. Sourcing proactively reaches the best candidates — who are typically not actively looking.",
+      how:[
+        {t:"Build a channel strategy by role type",d:"Not all roles recruit the same way. Critical or specialist roles require proactive sourcing (LinkedIn recruiter, targeted community outreach, headhunting). High-volume or generalist roles can rely more on job board advertising. Define the channel mix before posting."},
+        {t:"Write job adverts for the candidate, not the organisation",d:"Job adverts written as exhaustive requirement lists attract compliant candidates. Adverts written around what the role offers — the opportunity, the impact, the development — attract motivated candidates. Restructure every advert around the EVP."},
+        {t:"Build talent pipelines for critical roles",d:"For roles that recur or are strategically critical, the organisation should maintain a warm pipeline of potential candidates — even when there is no active vacancy. A six-week time-to-fill is only possible if the pipeline exists before the vacancy opens."},
+        {t:"Track source quality, not just source volume",d:"Measure which channels produce candidates who are eventually hired and who perform well, not just which channels produce the most applications. Source quality data over time reveals which investment is producing returns."}
+      ],
+      who:"Talent Acquisition leads sourcing strategy. HRBPs advise on BU-specific talent market dynamics. Hiring managers contribute to role-specific messaging.",
+      when:"Sourcing strategy defined before each role is posted. Talent pipelines for critical roles maintained continuously.",
+      documents:["Channel strategy by role type","Job advert template and guidelines","Talent pipeline tracker","Source quality analysis"],
+      mistakes:[
+        {t:"Using the same sourcing strategy for all four BUs",d:"A technology BU and a commercial BU do not recruit from the same talent pools. Sourcing strategy must be calibrated per BU and per role type."},
+        {t:"Measuring applications rather than quality-of-hire",d:"A high volume of applications that do not convert is a sourcing failure. The metric that matters is the % of applications that reach shortlist, not the total volume."}
+      ],
+      metrics:["Source-to-hire ratio by channel","Time-to-fill by sourcing method","Cost-per-hire by channel","Quality-of-hire: 12-month performance rating of channel-sourced hires","Offer acceptance rate"],
+      hrbpContext:"HRBPs are often closer to the passive candidate market than central TA — they attend industry events, know the sector's talent flows, and can identify potential hires before a vacancy exists. This intelligence should be formalised into a talent pipeline process, not left as informal knowledge.",
+      scenario:{failure:"Operations BU advertises a specialist logistics role on three generalist job boards. 180 applications, 4 relevant. 11 weeks to fill. The right candidates were in a specialist logistics network the company had no presence in.",excellence:"The HRBP flags a likely leadership vacancy 6 months ahead. Central TA begins proactive sourcing in the relevant community. When the vacancy is confirmed, there are already 4 warm candidates. Role filled in 3 weeks."},
+      multicountry:"Sourcing channels vary significantly by country. LinkedIn penetration, job board dominance, and the relevance of referrals all differ. Build a country-specific channel map for each market you hire in regularly."
+    }
+  ]
+},
+{
+  id:2, phase:"Phase 3", name:"Selection", short:"Selection", accent:"#8b7fd4",
+  accentBg:"rgba(139,127,212,0.12)", accentBorder:"rgba(139,127,212,0.3)",
+  summary:"Selection is the organisation's most consequential investment decision. A rigorous, structured process consistently predicts performance. An unstructured one produces expensive guesses.",
+  buRelevance:"Selection frameworks owned by central HR, deployed by HRBPs per BU. Consistency in approach is the non-negotiable; BU-specific competencies are the variable.",
+  touchpoints:[
+    {
+      id:"3-1", name:"Structured interviewing", tag:"Assessment", tagColor:"#8b7fd4", severity:"critical",
+      what:"Structured interviewing means: all candidates asked the same predetermined questions, responses evaluated against a consistent rating scale, assessment based on job-relevant competencies from the job analysis. The evidence is unambiguous: unstructured interviews have a predictive validity of ~0.2. Structured interviews reach 0.51–0.58.",
+      why:"Using unstructured interviews is a deliberate choice to make expensive, poor-quality decisions. The best-performing organisations treat interview structure as non-negotiable, not optional.",
+      how:[
+        {t:"Design competency-based questions from the job analysis",d:"Each question probes a specific competency identified as critical. Behavioural questions (STAR format) for evidence of past performance. Scenario questions for judgement-based assessment. Never improvise questions in the interview room."},
+        {t:"Standardise the question set and rating scale",d:"Every candidate for the same role is asked the same questions in the same order. The rating scale (1–5 with behavioural anchors) is defined before interviews begin. This standardisation enables meaningful comparison."},
+        {t:"Train all interviewers before they assess",d:"Most managers have never been taught how to conduct a structured interview: how to probe, how to avoid leading the candidate, how to distinguish evidence from inference. Untrained interviewers undermine structure even when questions are right."},
+        {t:"Independent scoring before panel calibration",d:"Every interviewer independently completes their scorecard before discussing with the panel. Group discussion before independent scoring anchors everyone to the first person who speaks."}
+      ],
+      who:"TA designs the framework. All interviewers trained by TA or L&D. Panel composition agreed in advance. HRBP quality-assures the process per BU.",
+      when:"For every role above a defined level. Process reviewed annually.",
+      documents:["Competency-based interview question bank","Interview scorecard template","Interviewer calibration guide","Interview record retention policy"],
+      mistakes:[
+        {t:"Each BU running different interview processes",d:"Without a common structured interview framework, you cannot compare quality of hire across BUs, cannot identify which BUs have poor selection accuracy, and cannot protect the organisation legally."},
+        {t:"Treating the interview as a conversation",d:"An enjoyable conversation is not a selection process. Interviewers who follow the candidate's lead rather than the structure are not generating decision-relevant information."}
+      ],
+      metrics:["Structured interview completion rate (target: 100% above defined level)","Interviewer inter-rater reliability across panel","Predictive validity: interview score vs 12-month performance rating","Offer-to-hire rate"],
+      hrbpContext:"The HRBP's role in selection is quality assurance — ensuring the process is being run with rigour by hiring managers who may be in a hurry. This means being present at panel calibrations, reviewing interview scorecards, and pushing back when a hiring manager wants to 'go with their gut' without documented evidence.",
+      scenario:{failure:"A BU head runs an informal conversation-style interview process for a leadership hire. The chosen candidate 'felt right'. 8 months later, the hire is on a PIP. The interview process produced no predictive data.","excellence":"HRBP introduces structured interviewing for all manager-level hires in their BU. 3-point improvement in 12-month performance ratings for that cohort. The BU head requests the same process for all hires above BU coordinator level."},
+      multicountry:"Employment law in some jurisdictions restricts certain interview questions. What is permissible in one country may not be in another. Central HR must maintain a jurisdiction-specific question guidance document for HRBPs operating across borders."
+    },
+    {
+      id:"3-2", name:"Psychometric & technical assessment", tag:"Assessment", tagColor:"#8b7fd4", severity:"important",
+      what:"Psychometric assessments are standardised, validated instruments measuring cognitive ability, personality traits, or specific aptitudes. Technical assessments test job-specific knowledge. Together, they supplement interview evidence with objective data.",
+      why:"Cognitive ability tests have a predictive validity of 0.51 — among the highest of any selection method. Combined with structured interviews, they significantly improve selection accuracy. Technical assessments verify claims that would otherwise be taken on faith.",
+      how:[
+        {t:"Select validated instruments appropriate to the role",d:"Use only instruments with published validation evidence — normative data, reliability coefficients (Cronbach's alpha >0.8), and criterion-related validity. Avoid tools that lack a technical manual."},
+        {t:"Design technical assessments around real work samples",d:"Work sample tests — where candidates complete a task representative of the actual job — have higher validity and better candidate experience than abstract tests. A case study, presentation, or coding exercise is more relevant than an abstract problem."},
+        {t:"Use assessments as part of a process, not a screen",d:"Psychometric data is most valuable combined with interview evidence. Using a test to screen candidates before any human interaction removes contextual richness."},
+        {t:"Analyse for adverse impact annually",d:"Every assessment must not produce differential adverse impact against protected groups without justification. Annual adverse impact analysis is non-negotiable."}
+      ],
+      who:"TA selects and administers assessments. Occupational psychology input for instrument selection. Line managers review technical outputs.",
+      when:"Assessment stage designed before role is advertised. Individual assessments at second or third stage.",
+      documents:["Assessment instrument library (with validation evidence)","Adverse impact analysis report","Technical assessment design guide","Candidate assessment feedback template"],
+      mistakes:[
+        {t:"Using assessments without validation evidence",d:"Many commercially marketed tools have weak validation. Selecting on unvalidated instruments is no better than random selection and creates legal exposure."},
+        {t:"Over-relying on personality profiles",d:"Personality profiles provide useful context but have lower predictive validity than cognitive tests or work samples. They inform conversation; they do not determine outcomes."}
+      ],
+      metrics:["Adverse impact ratio by demographic group (trigger review if <0.8)","Predictive validity: correlation with 12-month performance (target: >0.3)","Candidate assessment completion rate","Assessment-to-offer conversion rate by demographic group"],
+      hrbpContext:"For a 100–200 person company, full psychometric assessment for every hire is neither necessary nor proportionate. The HRBP's role is to advise on which roles justify the investment. As a guide: use validated assessments for senior roles (head of BU and above), specialist technical roles, and roles with significant financial or people management accountability.",
+      scenario:{failure:"A company deploys a personality profile assessment as the primary selection tool for all roles. No validation evidence. The assessment produces a demographic skew in shortlisting that is not detected for 18 months.",excellence:"Technical lead hires include a work sample assessment — candidates complete a 2-hour technical task similar to the actual work. Time-to-productive-performance drops by 6 weeks. The assessment self-selects for candidates who understand what they're joining."},
+      multicountry:"Data privacy laws vary by country regarding the storage and use of psychometric data. GDPR in Europe, POPIA in South Africa, and equivalent legislation in other markets impose specific requirements. Ensure your assessment provider is compliant in every jurisdiction you hire in."
+    },
+    {
+      id:"3-3", name:"Background verification & references", tag:"Compliance", tagColor:"#70a870", severity:"important",
+      what:"Pre-employment verification validates the accuracy of candidate-provided information and identifies relevant concerns — employment history, qualifications, criminal record checks for regulated roles, and professional references.",
+      why:"A significant proportion of CVs contain inaccuracies, from embellished job titles to fabricated qualifications. Checks protect the organisation, protect vulnerable populations in regulated roles, and provide final due diligence before binding commitment.",
+      how:[
+        {t:"Define the check profile for each role type",d:"Not every role requires the same checks. Define a check profile: minimum for all employees (right-to-work, basic reference), enhanced for regulated roles, specialist for senior or sensitive roles. The check profile must be proportionate and documented."},
+        {t:"Conduct structured reference calls, not written references",d:"Written references are almost universally positive and contain no useful information. A structured reference call — asking specific behavioural questions — produces genuinely useful intelligence."},
+        {t:"Set a clear decision framework for adverse findings",d:"Define in advance what finding levels are actionable and how. Not all adverse findings warrant withdrawal — severity, relevance, and recency all matter. A framework prevents reactive decisions under pressure."}
+      ],
+      who:"HR Operations owns the process. Legal advises on permissibility per jurisdiction. Hiring manager informed of outcomes, not raw data.",
+      when:"After conditional offer. Completed before start date.",
+      documents:["Background check policy","Check profile by role type","Adverse finding decision framework","Reference call question guide"],
+      mistakes:[
+        {t:"Only checking referee nominees",d:"Candidates nominate referees who will speak positively. For senior roles, consider independent back-channel references with former colleagues not nominated by the candidate."},
+        {t:"Ignoring adverse findings under hiring pressure",d:"When a significant adverse finding arrives late in the process and the organisation is desperate to fill the role, there is a temptation to rationalise it. The defined decision framework must prevail."}
+      ],
+      metrics:["% of regulated role hires with completed checks before start date (target: 100%)","Background check turnaround time","Adverse finding rate and outcome analysis","Qualification discrepancy rate"],
+      hrbpContext:"Right-to-work checks are legally mandatory in most jurisdictions and are the one check that must never be skipped. In a multi-country business, the HRBP must ensure right-to-work compliance for every jurisdiction in which they operate — and that each country's check is appropriate to local law.",
+      scenario:{failure:"Senior operations hire joins without a completed reference process. Three months in, a pattern of misconduct from a previous role emerges via informal network. The organisation did not ask the right questions to the right referees.",excellence:"Reference call framework includes: 'In what areas would you encourage them to continue developing?' and 'Is there anything that would give you pause about working with them again?' These questions consistently surface information that direct questions do not."},
+      multicountry:"Right-to-work, criminal record check permissions, and data privacy requirements all vary significantly by country. The HRBP must maintain a jurisdiction-by-jurisdiction compliance checklist for pre-employment checks."
+    }
+  ]
+},
+{
+  id:3, phase:"Phase 4", name:"Onboarding", short:"Onboarding", accent:"#60a8a0",
+  accentBg:"rgba(96,168,160,0.12)", accentBorder:"rgba(96,168,160,0.3)",
+  summary:"Onboarding is the organisation's first major test of its employer promise. Done well, it produces contribution in half the time and loyalty that lasts years. Done poorly, it creates regret — in both directions.",
+  buRelevance:"Onboarding is split between central (culture, company-wide) and BU (role-specific, team integration). HRBPs own the experience layer; line managers own the day-to-day. Without HRBP oversight, onboarding becomes an admin checklist.",
+  touchpoints:[
+    {
+      id:"4-1", name:"Pre-boarding & first week experience", tag:"Experience", tagColor:"#60a8a0", severity:"critical",
+      what:"Pre-boarding is the period between offer acceptance and start date. The first week is the period when the new hire forms their most lasting first impression. Both are high-risk windows for attrition — and high-leverage opportunities to create early connection.",
+      why:"15–20% of new hires report doubts within the first week. In a 100–200 person organisation, that represents real departure risk on every cohort. The organisation that makes a new hire feel expected, welcomed, and prepared is making an investment with a high return.",
+      how:[
+        {t:"Design the pre-boarding journey",d:"Between offer acceptance and start date: send a welcome communication from the BU head, share context about the team, clarify day-one logistics, provide any pre-reading that is genuinely useful (not compliance documents). The goal is anticipation, not administration."},
+        {t:"Ensure day one is ready",d:"The single most common onboarding failure: the new hire arrives and their laptop isn't set up, their access isn't provisioned, and no one is expecting them. This is an operations failure with a disproportionate psychological cost. Make readiness a hard deliverable."},
+        {t:"Structure the first week for connection",d:"Day one: meet the team, understand the BU's mission and current priorities. Week one: 1:1 with manager, 1:1 with 2–3 key stakeholders, team lunch or equivalent. The first week should create social capital, not just complete compliance training."}
+      ],
+      who:"HR/People Ops coordinates pre-boarding logistics. HRBP designs the experience framework. Line manager owns the day-one and first-week schedule. BU head provides the welcome communication.",
+      when:"Pre-boarding begins immediately on offer acceptance. First week plan is completed by end of day one.",
+      documents:["Pre-boarding journey template","Day-one readiness checklist","First week schedule template","Welcome communication guide"],
+      mistakes:[
+        {t:"Treating pre-boarding as HR paperwork",d:"A new hire who receives only DocuSign requests and compliance documents in the gap between offer and start date has been onboarded before they arrive — but badly. The pre-boarding window is a relationship window, not an admin window."},
+        {t:"No BU-specific onboarding",d:"Central onboarding covers the company. The HRBP and line manager must ensure the BU layer exists — context about the BU's strategy, team dynamics, and immediate priorities. Without this, the new hire knows the company but not their world."}
+      ],
+      metrics:["Day-one readiness completion rate (laptop, access, desk — target: 100%)","New hire 30-day experience score (survey: 'I felt welcomed and prepared')","Pre-boarding engagement rate: % who engage with pre-boarding content","30-day retention rate"],
+      hrbpContext:"The HRBP's onboarding role is quality assurance and early signal monitoring. Check in with every new hire at day 7 and day 30. Ask specifically: 'Is the role what you expected?' and 'What would have made your first week better?' This feedback loop identifies both individual at-risk hires and systemic onboarding failures.",
+      scenario:{failure:"New hire joins a commercial BU. Laptop not ready on day one. Manager is travelling. No structured first-week plan. By week two, the hire is questioning their decision. They leave at month 3, citing 'lack of support'. Time-to-fill was 11 weeks. The organisation just lost that investment entirely.",excellence:"A structured pre-boarding journey means the new hire arrives knowing their manager's communication style, having already read the BU's strategy deck, and with a clear first-week schedule. At day 30, they score 9/10 on the experience survey. At month 6, they are already identified as a high contributor."},
+      multicountry:"Onboarding content — compliance training, policies, benefits, working norms — varies significantly by country. A central onboarding programme must have country-specific modules for legal, benefits, and HR policy content. The HRBP is responsible for ensuring the country-specific layer exists and is current."
+    },
+    {
+      id:"4-2", name:"90-day integration plan", tag:"Integration", tagColor:"#60a8a0", severity:"critical",
+      what:"The 90-day integration plan is the structured roadmap that takes a new hire from arrival to early contribution — defining what they need to learn, who they need to know, and what they need to deliver in the first 30, 60, and 90 days.",
+      why:"The 90 days between joining and becoming genuinely productive represents a significant cost — the organisation is paying full salary for partial contribution. A structured plan compresses this window. It also prevents the most common integration failure: the new hire who drifts for three months without clarity, and then leaves.",
+      how:[
+        {t:"Co-create the 90-day plan with the hire, not for them",d:"A plan imposed on a new hire is less effective than one built in conversation with them. In the first week, the manager and new hire should co-create the 30/60/90 plan together. This builds ownership and reveals any gaps between what the organisation expects and what the hire understood they were joining to do."},
+        {t:"Define clear deliverables for each milestone",d:"30 days: understand the landscape — key stakeholders, current priorities, team dynamics, processes. 60 days: begin contributing to specific workstreams with support. 90 days: operating independently on core responsibilities, with a first performance conversation completed."},
+        {t:"HRBP check-in at 30 and 60 days",d:"The HRBP should conduct a structured check-in at 30 and 60 days — separate from the manager conversation. This creates a safe channel for the new hire to surface concerns they may not raise with their manager. Early signal monitoring prevents late-stage attrition."}
+      ],
+      who:"Line manager leads the 90-day plan. HRBP supports design and quality-assures through check-ins. New hire co-creates and owns their commitments.",
+      when:"Plan co-created in week one. Reviewed formally at 30, 60, and 90 days.",
+      documents:["90-day integration plan template","30/60/90 milestone framework","HRBP check-in question guide","Early performance conversation framework"],
+      mistakes:[
+        {t:"No 90-day plan at all",d:"Many organisations believe 'smart people figure it out'. They don't — or they do, after three months of inefficiency and frustration that erodes early engagement."},
+        {t:"Plan that is only activity, not contribution",d:"A 90-day plan full of 'meet these people' and 'read these documents' without any early contribution deliverables fails the new hire and the business. Even in month one, there should be something they own."}
+      ],
+      metrics:["90-day plan completion rate (target: >90% of hires above coordinator level)","30-day and 90-day new hire experience scores","Time-to-first-contribution: average weeks to first measurable deliverable","90-day retention rate","Manager satisfaction with new hire readiness at 90 days"],
+      hrbpContext:"The 90-day check-in is one of the highest-value 30 minutes an HRBP spends. It catches misalignment before it becomes departure, identifies management quality issues, and builds the HRBP's relationship with the employee as a trusted advisor. Make it standard practice for every hire above entry level.",
+      scenario:{failure:"Senior hire joins without a 90-day plan. Manager assumes they'll 'hit the ground running'. At month 3, the hire still doesn't fully understand their mandate. Frustration sets in on both sides. A performance conversation happens — the first one — at month 5. It is defensive and unproductive.",excellence:"90-day plan co-created in week one. Clear 30/60/90 deliverables. HRBP check-in at day 30 surfaces a misalignment between the hire's understanding of their decision-making authority and the manager's. Resolved in week 5. By month 3, the hire is operating at full contribution."},
+      multicountry:"In some cultures, the expectation of a highly structured and directive 90-day plan may feel at odds with local norms around autonomy and hierarchy. The HRBP should adapt the level of structure and formality to what will land well in each country context, while maintaining the substance."
+    }
+  ]
+},
+{
+  id:4, phase:"Phase 5", name:"Performance & Development", short:"Performance", accent:"#6aa84f",
+  accentBg:"rgba(106,168,79,0.12)", accentBorder:"rgba(106,168,79,0.3)",
+  summary:"Performance management is not what happens at the annual review. It is what happens every week in every 1:1. The review is the formal record of an ongoing conversation — not the conversation itself.",
+  buRelevance:"Performance management is the HRBP's core ongoing function. They are the quality assurance layer for all four BUs — ensuring managers have the capability, the tools, and the accountability to manage performance continuously.",
+  touchpoints:[
+    {
+      id:"5-1", name:"Goal-setting & performance contracting", tag:"Performance", tagColor:"#6aa84f", severity:"critical",
+      what:"Performance contracting is the process by which each employee understands precisely what they are expected to deliver — in quantifiable terms — and what behaviours and competencies are expected alongside those deliverables. It is the foundation from which all performance management flows.",
+      why:"An employee without clear goals cannot be fairly assessed. A manager without clear performance contracts for their team cannot manage performance — they can only react to outcomes. Goal-setting is not a bureaucratic exercise: it is the organisation's most basic management contract.",
+      how:[
+        {t:"Cascade from BU goals to individual goals",d:"Individual goals must connect explicitly to the BU's quarterly and annual objectives. This connection is what makes individual performance management feel meaningful rather than arbitrary."},
+        {t:"Set SMART goals but also define behavioural expectations",d:"Deliverables tell people what to achieve. Competencies tell people how to achieve it. Both are required — particularly in a culture where the how matters as much as the what."},
+        {t:"Document and agree, not just communicate",d:"Goals that are documented and signed off by both manager and employee carry more weight than verbal direction. The documentation creates shared accountability."},
+        {t:"Review at least quarterly",d:"Annual goals set in January are irrelevant by March if the business pivots. Build a quarterly goal review into the performance cycle — formally updating goals when the business context changes."}
+      ],
+      who:"Line managers set goals in consultation with employees. HRBPs quality-assure goal quality and BU-alignment. BU heads sign off leadership-level goals.",
+      when:"Annual goal-setting at the start of the performance year. Quarterly review and update. Goals reviewed informally in monthly 1:1s.",
+      documents:["Goal-setting template (SMART framework)","BU objectives cascade","Competency expectations by level","Goal review record"],
+      mistakes:[
+        {t:"Goals set in January and not reviewed until December",d:"Business reality changes. Goals that are not updated to reflect changes become demotivating and unfair assessment criteria."},
+        {t:"Goals disconnected from BU strategy",d:"'Improve communication skills' as a goal for a commercial director is not a goal — it is a development aspiration. Goals must connect to business outcomes that matter to the BU."}
+      ],
+      metrics:["Goal-setting completion rate by deadline (target: >95%)","Goal quality score (HRBP assessment of specificity and alignment)","% of goals updated at mid-year review","Employee clarity on goals (survey: 'I understand what is expected of me' — target: >80%)"],
+      hrbpContext:"The HRBP's role is to review a sample of goals per BU each cycle and flag quality issues — goals that are vague, disconnected from BU strategy, or set at an inappropriate level of ambition. This quality assurance function prevents the performance cycle from becoming a box-ticking exercise.",
+      scenario:{failure:"Goals set in January. Business pivots significantly in March. Goals are not updated. December review is spent arguing about whether criteria that no longer apply were met. Performance conversations are defensive and unproductive.",excellence:"HRBP reviews 20 goals from each BU in January. Flags 8 as too vague. Works with managers to sharpen them. Mid-year review updates 30% of goals to reflect changed priorities. December reviews are substantive conversations about impact, not arguments about fairness."},
+      multicountry:"In some jurisdictions, performance contracts have specific legal significance — particularly if they form the basis of variable pay or disciplinary action. Legal review of the goal-setting framework is advisable for each country of operation."
+    },
+    {
+      id:"5-2", name:"Continuous feedback & 1:1 culture", tag:"Development", tagColor:"#5a9e8e", severity:"critical",
+      what:"Continuous feedback is the regular, specific, timely exchange of information about performance between manager and employee. The 1:1 is the primary vehicle for this exchange — a dedicated, recurring conversation that is the manager's most important management tool.",
+      why:"Organisations that rely on the annual review for all performance feedback are managing with a 12-month delay. By the time feedback is given, the behaviour that prompted it is long past correction. Continuous feedback changes behaviour in real time.",
+      how:[
+        {t:"Establish a non-negotiable 1:1 cadence",d:"Weekly or bi-weekly 1:1s for every direct report. These are not status updates — they are feedback, coaching, and development conversations. The meeting belongs to the employee; the agenda is primarily theirs."},
+        {t:"Train managers in SBI feedback",d:"Situation-Behaviour-Impact: 'In [situation], when you [behaviour], the impact was [impact].' This structure makes feedback specific, observable, and actionable. Without training, most managers give feedback that is either too vague or too personal."},
+        {t:"Build peer feedback into the rhythm",d:"360-degree insight reveals what the direct manager cannot see. Lightweight peer feedback mechanisms — project retrospectives, end-of-sprint reviews — build a culture of continuous developmental feedback."}
+      ],
+      who:"Line managers own the feedback relationship. HR/People team provides training and tools. HRBPs monitor feedback quality through engagement data.",
+      when:"Weekly or bi-weekly 1:1s. Formal 360 feedback twice yearly. Informal feedback as close to the relevant event as possible.",
+      documents:["1:1 meeting template","SBI feedback guide","360 feedback tool","Manager feedback quality assessment"],
+      mistakes:[
+        {t:"Saving all feedback for the annual review",d:"Feedback about a behaviour in February that is communicated in December is neither useful nor fair. Feedback must be timely."},
+        {t:"Only giving feedback when something goes wrong",d:"Organisations where feedback is associated exclusively with problems create cultures of anxiety. Positive feedback should be more frequent than developmental feedback."}
+      ],
+      metrics:["1:1 frequency rate (target: weekly or bi-weekly, 100% compliance)","Employee experience of feedback quality (survey: target >65% agree)","Time between performance concern identification and feedback conversation (target: same week)"],
+      hrbpContext:"The HRBP cannot be in every 1:1 — but they can audit feedback culture through engagement survey data and through direct conversations with employees. High variation in feedback satisfaction scores across BUs is a signal that some managers are not holding 1:1s at all. The HRBP should name this directly with the relevant manager and BU head.",
+      scenario:{failure:"A high performer in the operations BU never receives specific positive feedback. Their 1:1s are status updates. They don't know they're considered high potential. A competitor calls with an offer; the employee is surprised the company wants to retain them. They leave.",excellence:"Manager feedback training produces measurable shift. 360 scores for 'quality of feedback I receive' increase by 1.2 points in the next engagement cycle. Two employees who were previously flagged as flight risks cite improved manager quality as the reason they chose to stay."},
+      multicountry:"Directness of feedback varies significantly across cultures. In some markets, indirect feedback is the norm — and what a manager interprets as 'understood' may not have landed. The HRBP should advise managers on culturally appropriate feedback styles for the markets they manage across."
+    },
+    {
+      id:"5-3", name:"Performance reviews & calibration", tag:"Performance", tagColor:"#6aa84f", severity:"important",
+      what:"Performance reviews are structured, formal evaluations of contribution, development, and potential — conducted at defined intervals and used to inform pay decisions, promotion discussions, and succession planning. Calibration is the process that makes ratings meaningful and fair across the organisation.",
+      why:"Without calibration, manager ratings are arbitrary. One manager's 'exceeds expectations' is another's 'meets expectations'. This inconsistency produces pay inequity, succession decisions based on different standards, and employee experience of unfairness.",
+      how:[
+        {t:"Separate the development conversation from the pay conversation",d:"When employees know pay depends on the review outcome, they become defensive rather than reflective. Conduct the development-focused review first; run pay decisions through a separate calibration process."},
+        {t:"Run calibration before final ratings are shared",d:"Calibration brings managers together to compare assessments against shared evidence. It ensures that ratings mean the same thing across all four BUs. Without calibration, the review data is not comparable."},
+        {t:"Use review data at the organisational level",d:"Aggregate review data is one of the richest sources of organisational intelligence available. Where are the development needs concentrated? Where are the pipeline gaps for critical roles? This data should inform L&D investment and succession planning."}
+      ],
+      who:"Line managers conduct reviews. HR/People team designs the process and facilitates calibration. BU heads participate in leadership-level calibration. HRBPs quality-assure across their BU.",
+      when:"Formal annual review plus mid-year review. Calibration runs 2–4 weeks before ratings are communicated.",
+      documents:["Performance review form","Cross-BU calibration guide","Rating scale anchor descriptions","Manager review conversation guide","Self-assessment template"],
+      mistakes:[
+        {t:"Separate calibration for each BU",d:"If each BU runs its own calibration in isolation, rating standards will drift. Cross-BU calibration — particularly for equivalent levels — is what makes the review data usable for organisation-wide succession and pay decisions."},
+        {t:"Rating inflation without challenge",d:"Without a senior HR or CHRO presence in calibration, managers will not push back on each other's ratings. Someone must hold the standard."}
+      ],
+      metrics:["Review completion rate (target: >95%)","Rating distribution by BU and level (monitors for grade inflation)","Employee satisfaction with review quality (survey: target >60%)","Cross-BU rating consistency score","Calibration session completion rate (target: 100%)"],
+      hrbpContext:"The HRBP's calibration role is critical. They are the only person who sees rating patterns across their entire BU — and the only person positioned to flag when a manager is systematically over- or under-rating their team. This requires the HRBP to know the employees well enough to assess whether ratings are credible.",
+      scenario:{failure:"Four BUs run separate calibrations. The technology BU's 'exceptional' standard is materially lower than the commercial BU's. When cross-BU pay decisions are made, apparent inequity emerges. Employee relations cases follow.",excellence:"First cross-BU calibration run by central HR with all BU HRBPs. 12 ratings challenged and recalibrated. Three employees identified as high potential who had not been previously visible. Two succession pipeline gaps surfaced."},
+      multicountry:"In some jurisdictions, performance ratings have specific legal weight — particularly where they support disciplinary or redundancy decisions. Ensure the review framework is legally sound in every country of operation."
+    }
+  ]
+},
+{
+  id:5, phase:"Phase 6", name:"Reward & Recognition", short:"Reward", accent:"#a87fd4",
+  accentBg:"rgba(168,127,212,0.12)", accentBorder:"rgba(168,127,212,0.3)",
+  summary:"Reward is the organisation's most expensive and least appreciated people investment — when it's wrong. When it's right, it is invisible. The goal is not to excite people with pay; it is to remove pay as a reason to leave.",
+  buRelevance:"Reward strategy is central. Application is BU-aware. HRBPs manage the translation between the central reward framework and the BU-specific market conditions, particularly in multi-country contexts where market rates vary significantly.",
+  touchpoints:[
+    {
+      id:"6-1", name:"Compensation strategy & pay equity", tag:"Reward", tagColor:"#a87fd4", severity:"critical",
+      what:"Compensation strategy defines the organisation's position relative to the market — at what percentile it aims to pay, for which skills, at which career levels — and the principles that govern pay decisions. Pay equity analysis ensures that pay differences within the organisation are explained by legitimate factors, not demographic ones.",
+      why:"A compensation strategy that is reactive and inconsistent produces an organisation where two people doing comparable work at comparable performance levels are paid materially differently — based on when they were hired, who negotiated harder, or which manager they report to. This produces attrition among those who discover they are underpaid, and legal risk in markets with pay equity legislation.",
+      how:[
+        {t:"Define the market position",d:"Choose a target percentile by role family. Critical skills may be paid at P75 to compete. Supporting functions at P50. Be explicit. Vague policies produce inconsistent decisions."},
+        {t:"Run pay equity analysis annually",d:"Analyse pay by demographic group after controlling for level, function, geography, and performance. Any residual gap that cannot be explained by legitimate factors is a pay equity concern and a legal and reputational risk."},
+        {t:"Build a transparent pay architecture",d:"Pay bands by level and function — even if not disclosed externally — give managers a framework for making consistent decisions. Without bands, every offer negotiation is an improvisation."}
+      ],
+      who:"Total Reward/Compensation owns the strategy. Finance co-owns the budget. HRBPs implement per BU and flag anomalies.",
+      when:"Compensation strategy reviewed annually. Pay equity analysis run annually. Market data refreshed at minimum annually.",
+      documents:["Compensation philosophy document","Pay band architecture","Pay equity analysis (annual)","Offer approval framework","Salary review guidelines"],
+      mistakes:[
+        {t:"Paying market rate for the company's country of HQ for all markets",d:"A multi-country business cannot apply a single country's salary norms globally. Local market rates, cost of living, and competitive landscape vary. Using head-office rates in all markets produces either overpayment or the inability to attract talent."},
+        {t:"Reactive pay decisions without a framework",d:"When every offer and every salary review is a negotiation without a framework, pay becomes driven by who asked loudest rather than by market data and performance."}
+      ],
+      metrics:["Pay positioning vs market benchmark by level and function","Pay equity gap (residual gap after controlling for legitimate factors — target: <2%)","Offer acceptance rate by compensation tier","Attrition rate by pay position (employees below P25 attrition rate)"],
+      hrbpContext:"The HRBP is often the first to hear about pay dissatisfaction — in exit interviews, in 1:1s, in offhand comments. Build a structured mechanism to capture and report pay intelligence to central HR: which roles are losing candidates at offer stage, which employees have flagged salary concerns, which markets are seeing competitive pressure. This intelligence is more valuable than any benchmarking survey.",
+      scenario:{failure:"The company has no pay bands. Every offer is negotiated individually. After 3 years, two senior analysts in the same BU doing comparable work are paid 28% differently. One discovers the other's salary. An employment tribunal claim follows.",excellence:"Annual pay equity analysis identifies a 6% gender pay gap in the commercial BU that is not explained by level or tenure. Central HR and the BU head implement a targeted correction in the annual review. Gap closes to 1.8% the following year. The analysis and action is included in the company's voluntary pay gap report."},
+      multicountry:"Compensation strategy must be built country by country. Salary norms, statutory benefits, bonus expectations, and equity inclusion all vary. The total cost of employment in different markets can differ by a factor of 1.5–2x for equivalent roles. The HRBP in each country must validate that the compensation framework is appropriate for their market."
+    },
+    {
+      id:"6-2", name:"Recognition & non-financial reward", tag:"Recognition", tagColor:"#a87fd4", severity:"optimising",
+      what:"Recognition is the systematic acknowledgement of contribution, behaviour, and achievement in ways that are timely, specific, and meaningful to the recipient. Non-financial reward encompasses the full range of value the employment relationship provides beyond salary: development, flexibility, purpose, community, and belonging.",
+      why:"Recognition is the highest-ROI people intervention available — particularly in organisations where salary competitiveness is constrained. Research consistently shows that employees who feel recognised are significantly more engaged and significantly less likely to leave. The cost of a recognition culture is managerial behaviour change, not budget.",
+      how:[
+        {t:"Distinguish between recognition and reward",d:"Recognition is immediate, behavioural, and often informal. Reward is formal and financial. Both matter, but recognition — specific, timely, public acknowledgement of great work — is what most organisations are missing."},
+        {t:"Train managers to recognise specifically",d:"'Good job' is not recognition. 'The way you handled the client situation yesterday — the speed, the ownership, the communication — that's exactly the standard we're building here' is recognition. Train managers on the difference."},
+        {t:"Build peer recognition into the culture",d:"Peer recognition — teams acknowledging each other's contributions — is as powerful as manager recognition for many employees. Build lightweight mechanisms: a Slack channel, a monthly team spotlight, a peer nomination process."}
+      ],
+      who:"Line managers are the primary recognition agents. HR/People team builds the framework and tools. Senior leaders model recognition behaviour for the organisation.",
+      when:"Recognition: continuous. Non-financial reward strategy: reviewed annually.",
+      documents:["Recognition programme framework","Manager recognition training guide","Peer recognition toolkit","Non-financial reward inventory"],
+      mistakes:[
+        {t:"Recognition that is generic or delayed",d:"Recognition given six weeks after the event for something vague has no motivational impact. Specific, timely, behavioural recognition is what changes engagement scores."},
+        {t:"Recognition only flowing from senior to junior",d:"In a multi-BU structure with HRBPs embedded in each unit, recognition culture can feel hierarchical. Actively design peer-to-peer and cross-BU recognition mechanisms."}
+      ],
+      metrics:["Recognition frequency (survey: 'I received recognition for good work in the last 7 days' — Gallup Q12 benchmark)","Manager recognition quality rating (360 item)","Correlation between recognition score and attrition rate","Peer recognition participation rate"],
+      hrbpContext:"The HRBP is best positioned to model recognition behaviour and to coach the managers in their BU who struggle with it. In the monthly BU management meeting, the HRBP can introduce a 2-minute 'shoutout' slot as a structural nudge to build the habit. This costs nothing and has an outsized effect on team culture.",
+      scenario:{failure:"Engagement survey shows 'recognition' as the lowest-scoring driver across three of four BUs. HRBP digs into the data: 40% of employees say they have not received specific recognition in the last month. Managers believe they give recognition — they just don't do it specifically or publicly enough.",excellence:"HRBP introduces a Friday 'recognition moment' as a standing item in the BU leadership meeting. Within 2 months, it has spread organically to team meetings. Next engagement pulse shows recognition score up 1.4 points — the single largest improvement of any driver."},
+      multicountry:"Public recognition norms vary by culture. In some markets, public praise is motivating; in others, it creates social discomfort. The HRBP should calibrate the recognition approach to local cultural norms, particularly for teams in markets with more collectivist or hierarchical cultural orientations."
+    }
+  ]
+},
+{
+  id:6, phase:"Phase 7", name:"Employee Experience", short:"Experience", accent:"#e07060",
+  accentBg:"rgba(224,112,96,0.12)", accentBorder:"rgba(224,112,96,0.3)",
+  summary:"Employee experience is the sum of every interaction an employee has with the organisation throughout their tenure. It is not a programme — it is a system. It is the primary retention mechanism for employees who have options.",
+  buRelevance:"Employee experience is felt at BU level. The HRBP is the custodian of this experience within their unit — translating central HR programmes into human moments that employees actually feel.",
+  touchpoints:[
+    {
+      id:"7-1", name:"Engagement surveys & listening", tag:"Listening", tagColor:"#e07060", severity:"critical",
+      what:"Engagement surveys are structured, regular measurements of employee attitudes — used to identify drivers of engagement and disengagement, track trends, and prioritise improvement actions. Listening channels extend beyond surveys to surface what surveys don't ask.",
+      why:"You cannot manage what you do not measure. Organisations that assume they know how employees feel — without systematic listening — are routinely wrong, typically in the direction of overestimating satisfaction. The most dangerous employees are the quietly disengaged.",
+      how:[
+        {t:"Annual census plus quarterly pulses",d:"The annual census provides depth and trend data. Quarterly pulses provide real-time signals. For a 100–200 person organisation, a census of 30–40 questions plus a quarterly pulse of 8–10 is proportionate."},
+        {t:"Report at BU and team level, not just organisation level",d:"Organisation-level averages mask the variation that is most actionable. A 7.2/10 average concealing a 5.1 in one BU and a 9.0 in another is not useful management information."},
+        {t:"Act within 30 days of close",d:"Require every manager to: share results with their team within 2 weeks, identify 1–2 improvement priorities, commit to specific actions with timelines. The survey-action gap is the most common failure of listening programmes."},
+        {t:"Run quarterly focus groups on specific themes",d:"8–12 employees, facilitated by the HRBP, exploring a specific theme — 'What gets in the way of your best work?' — produces insight that surveys cannot. Feed themes into the next pulse survey."}
+      ],
+      who:"HR/People team designs and administers. HRBPs analyse BU-level results and support managers in action planning. Senior leaders responsible for their function's engagement outcomes.",
+      when:"Annual census. Quarterly pulse. Results shared within 2 weeks of close. Actions committed within 30 days.",
+      documents:["Survey design and question bank","Manager results discussion toolkit","Action planning template","Engagement reporting dashboard","Annual engagement trend report"],
+      mistakes:[
+        {t:"Running surveys without acting on findings",d:"Survey fatigue is caused entirely by the organisation's failure to close the action loop. Surveys without committed, visible action should not be run."},
+        {t:"Only reporting results to senior leadership",d:"If front-line employees never see their team's results and are never part of the action planning, the survey is a leadership management tool, not a listening programme."},
+        {t:"Four separate BU surveys with no cross-BU view",d:"BU-level surveys are valuable. But without a cross-BU view, the organisation cannot identify systemic issues — management quality, culture, compensation — that affect everyone."}
+      ],
+      metrics:["Employee engagement score / eNPS (target: top quartile for sector)","Survey participation rate (target: >80%)","Manager action planning completion rate (target: 100% below threshold)","Year-on-year engagement score by BU","Correlation between engagement score and attrition rate per BU"],
+      hrbpContext:"The HRBP is the most important actor in the post-survey process. They translate data into conversation, conversation into action, and action into visible change. An HRBP who presents survey results to the BU head and facilitates a genuine action-planning session is doing the work. An HRBP who sends the report by email is not.",
+      scenario:{failure:"Engagement survey shows 'career development' as the lowest driver across all four BUs. The CHRO presents the data to the board. No BU-level action planning happens. Next year's survey shows the same result. Three high performers leave citing 'no development opportunities' in exit interviews.",excellence:"HRBP presents BU-level results in a 90-minute session with the BU head and management team. Three specific actions identified. HRBP tracks progress monthly. At next quarter's pulse, 'development' score up 0.9 points. BU head references the improvement in their town hall."},
+      multicountry:"Engagement benchmarks vary by country. What constitutes a high score in one market may be average in another. Use country-specific benchmarks where available, and always supplement survey data with qualitative listening in each market."
+    },
+    {
+      id:"7-2", name:"DEI & psychological safety", tag:"Culture", tagColor:"#4a9fd4", severity:"important",
+      what:"Diversity, equity and inclusion — in a 100–200 person, multi-country organisation — is not a large corporate programme. It is the deliberate design of every people process to produce fair outcomes, and the active cultivation of an environment where everyone can contribute without code-switching.",
+      why:"Diverse teams consistently outperform homogeneous ones on complex problem-solving, innovation, and decision-making. But diversity without psychological safety is representation without voice — and representation without equity is a photo opportunity, not a people strategy.",
+      how:[
+        {t:"Audit every people process for differential outcomes",d:"Do women and men progress to senior levels at the same rate? Do employees from different backgrounds receive equivalent performance ratings? The audits are not about intention — they are about outcome. Data reveals what good intentions cannot."},
+        {t:"Measure and manage psychological safety",d:"Psychological safety — the shared belief that the team is safe for interpersonal risk-taking — is the most important cultural variable for team performance. Measure it directly in the engagement survey. Address low scores with team-level interventions."},
+        {t:"Hold leaders accountable",d:"DEI outcomes must be in the performance objectives of BU heads and managers. Leaders who are not held accountable for DEI outcomes will not prioritise them under pressure."}
+      ],
+      who:"CHRO and board own accountability. Central HR designs the framework. HRBPs embed it in BU processes. Every manager is a DEI delivery mechanism.",
+      when:"Strategy reviewed annually. Process audits at minimum annually. Representation data tracked quarterly.",
+      documents:["Representation data dashboard","Inclusive hiring guidelines","Psychological safety assessment","Intersectional pay equity analysis","Annual DEI progress report"],
+      mistakes:[
+        {t:"DEI training as a substitute for structural change",d:"Unconscious bias training has weak evidence for sustained behaviour change. It is not a substitute for fixing the structures and processes that produce biased outcomes."},
+        {t:"One global DEI approach for all countries",d:"DEI is not culturally neutral. What diversity means, what equity requires, and what inclusion looks like varies by country context. A central DEI framework must be adapted per market."}
+      ],
+      metrics:["Representation by gender and other relevant characteristics at each level","Psychological safety score (engagement survey composite)","Promotion and progression rates by demographic group","Pay equity gap (annual)","Inclusion index score"],
+      hrbpContext:"In a multi-country business, the HRBP is often the only person who understands the local cultural and legal context for DEI. Central HR may set the principles; the HRBP translates them. In some countries, certain demographic data cannot be collected. In others, specific protections apply that don't exist elsewhere. The HRBP must be the country compliance expert as well as the culture enabler.",
+      scenario:{failure:"Company implements a global 'inclusion' training programme. In one market, the content conflicts with local cultural norms and causes discomfort rather than inclusion. The HRBP was not consulted. Engagement in that market drops.",excellence:"HRBP notices that two of the five senior promotions in the past 12 months have been internal male candidates, despite a 50/50 gender split in the eligible pool. Raises this in calibration. Process audit reveals that the promotion criteria were weighted toward attributes that were assessed inconsistently across genders. Criteria are revised."},
+      multicountry:"Legal requirements around diversity monitoring, data collection, and reporting vary significantly. What is mandatory in one jurisdiction (gender pay gap reporting in the UK) is prohibited in another (collecting certain demographic data in France). The HRBP must be the compliance navigator for each market."
+    },
+    {
+      id:"7-3", name:"Employee relations & culture", tag:"ER", tagColor:"#b8936a", severity:"critical",
+      what:"Employee relations is the management of individual and collective relationships between employees and the organisation — including grievances, disciplinary proceedings, conduct issues, and the management of workplace conflict. Culture is what employees actually experience, not what is stated on the values poster.",
+      why:"ER cases not managed well become legal claims, become reputational damage, and become the stories that shape culture in ways that no communication programme can counteract. Culture violations tolerated at senior level — especially by the organisation's leaders — permanently undermine every culture statement ever made.",
+      how:[
+        {t:"Maintain clear, current ER policies per jurisdiction",d:"Grievance, disciplinary, capability, harassment, whistleblowing — all must be current, legally compliant in every country, and accessible to every employee. Annual review is non-negotiable."},
+        {t:"Investigate before acting",d:"The most common ER error: acting on allegations before completing an adequate investigation. Every disciplinary or grievance proceeding begins with fact-finding — evidence, parties heard, documented conclusions."},
+        {t:"Resolve informally where possible",d:"The majority of workplace conflicts that escalate to formal proceedings would be resolved more cheaply — for everyone — if addressed earlier, informally, and with mediation. Build mediation into your ER toolkit."},
+        {t:"Tolerate no culture violations at senior level",d:"Culture is defined as much by what the organisation tolerates as what it celebrates. A high-performing leader who bullies, who exempts themselves from values, or who creates unsafe environments for their team is the most expensive culture failure the organisation can have."}
+      ],
+      who:"HRBPs and ER specialists own formal processes. Line managers manage day-to-day conduct. Legal advises on complex cases. Senior HR/CHRO sign off on dismissal decisions.",
+      when:"Reactive to ER events. Proactive policy review annually. ER manager training annually.",
+      documents:["Grievance procedure","Disciplinary procedure","Capability procedure","Harassment and bullying policy","Whistleblowing policy","Investigation report template","Mediation programme guide"],
+      mistakes:[
+        {t:"Investigating and deciding with the same person",d:"The investigator must not be the decision-maker. Separation of these roles is fundamental to procedural fairness and legal defensibility."},
+        {t:"Different ER standards across BUs",d:"If the technology BU handles a conduct issue one way and the commercial BU handles an equivalent issue another way, the organisation has no consistent culture. Central HR must ensure process consistency across all four BUs."}
+      ],
+      metrics:["ER case volume by type and BU (trend identifies systemic issues)","Time to resolution (target: within policy timelines)","Tribunal claim rate and outcome","Repeat ER cases per manager or team","Mediation utilisation and resolution rate","Manager ER training completion rate"],
+      hrbpContext:"The HRBP is the front line of ER management in their BU. They are the first call when a manager has a conduct concern, the facilitator of informal resolution before cases escalate, and the quality controller ensuring that formal processes are followed correctly. Without a strong HRBP presence, ER cases are managed inconsistently by managers who have not been trained.",
+      scenario:{failure:"A BU head is repeatedly described in engagement survey comments as creating a hostile atmosphere. The HRBP flags this to the CHRO. No action is taken because 'they're a high performer commercially.' Three employees resign citing the BU head's behaviour in exit interviews. A fourth raises a formal grievance.",excellence:"HRBP identifies a pattern of interpersonal conflict in one team before it escalates. Facilitates mediation between the two individuals. Issue resolved in 3 weeks. No formal ER process required. Both employees are still with the organisation 18 months later."},
+      multicountry:"Employment law varies enormously across jurisdictions — what constitutes a fair dismissal in one country may be unlawful in another. Notice periods, consultation requirements, redundancy obligations, and data privacy during investigations all differ. The HRBP must know the law in their market and escalate to legal counsel early for any case with complexity."
+    }
+  ]
+},
+{
+  id:7, phase:"Phase 8", name:"Retention & Growth", short:"Retention", accent:"#60a060",
+  accentBg:"rgba(96,160,96,0.12)", accentBorder:"rgba(96,160,96,0.3)",
+  summary:"Retention is not a programme. It is the cumulative outcome of everything the organisation has done or failed to do in every earlier phase. When retention is poor, the question is not 'what retention initiative should we launch?' It is 'what upstream failure is driving departure?'",
+  buRelevance:"Retention pressure varies by BU depending on competitive landscape, management quality, and growth opportunity. HRBPs must monitor flight risk per BU and translate retention data into BU-specific interventions.",
+  touchpoints:[
+    {
+      id:"8-1", name:"Career pathing & internal mobility", tag:"Growth", tagColor:"#60a060", severity:"critical",
+      what:"Career pathing is the explicit communication of growth and progression possibilities available to employees. Internal mobility is the organisational practice of filling roles — particularly senior ones — from within before looking externally.",
+      why:"The most common reason high performers leave is not pay. It is perceived lack of growth opportunity. In a 100–200 person company across four BUs, internal mobility is both the most cost-effective retention mechanism and the fastest route to filling roles with people who already understand the organisation.",
+      how:[
+        {t:"Build and communicate career paths",d:"Employees should be able to see — in concrete terms — what progression looks like from their current role. Not just 'up' (promotion) but 'across' (BU moves, function moves, project leadership) and 'deep' (functional expertise). Multi-directional career architecture retains people who are not ready for promotion but hungry for growth."},
+        {t:"Fill internal vacancies internally first",d:"Make it a formal policy: every vacancy at and above a defined level must be considered for internal filling before external search is initiated. An internal posting process — transparent, fair, and consistently applied — sends a powerful signal about how much the organisation values its own people."},
+        {t:"Create cross-BU mobility opportunities",d:"A 4-BU structure is a natural internal talent marketplace. Employees who can move between BUs — taking their institutional knowledge into a new context — develop faster, stay longer, and carry organisational culture with them. HRBP collaboration across BUs is what makes this possible."}
+      ],
+      who:"Line managers identify development opportunities. HRBPs facilitate cross-BU visibility and internal mobility. Central HR maintains the internal vacancy process.",
+      when:"Career conversations: quarterly in 1:1s. Internal vacancy posting: on every new opening before external advertising. Cross-BU mobility: at least annually reviewed.",
+      documents:["Career architecture framework","Internal vacancy policy","Career conversation guide","Cross-BU mobility process","Talent visibility framework"],
+      mistakes:[
+        {t:"Treating internal mobility as a threat",d:"Managers who block their top performers from moving internally to protect their team are destroying the organisation's retention capability and their own credibility. The organisation must make it safe and normal for great people to move."},
+        {t:"No visibility across BUs",d:"In a siloed 4-BU structure, a high performer in BU 1 who wants growth has no visibility of opportunities in BUs 2, 3, or 4. They look externally — and leave. Cross-BU talent visibility is a retention mechanism."}
+      ],
+      metrics:["Internal fill rate: % of vacancies above coordinator level filled internally (target: >40%)","Internal applicant-to-hire conversion rate","Career development satisfaction (survey: 'I have clear opportunities to grow' — target: >65%)","Cross-BU mobility rate: % of employees who have moved across BUs","Voluntary attrition rate among employees who have had a career conversation in the past 6 months"],
+      hrbpContext:"The HRBP should maintain a talent visibility map for their BU — who the high performers are, what they aspire to, and where across the organisation those aspirations could be met. Sharing this intelligence across HRBPs — in a monthly HRBP forum — creates the cross-BU talent marketplace that the organisation needs to retain its best people.",
+      scenario:{failure:"A top performer in the operations BU approaches their manager about growth. The manager says 'there's no headroom in this team right now.' The employee spends 6 weeks job-searching. They leave to a competitor. The role they would have moved to in the commercial BU was filled externally the same month.",excellence:"HRBP talent forum identifies a high performer in BU 2 who wants to move into a commercial role. BU 3 has an opening. A cross-BU move is facilitated. The employee receives a promotion in the new role. 18 months later, they are a team lead. They cite internal mobility as the reason they chose to stay."},
+      multicountry:"Cross-country mobility raises significant employment law, immigration, tax, and benefits complexity. Even temporary cross-border moves can create shadow employment obligations. Establish a clear policy for cross-country secondments and ensure legal counsel is involved early in any cross-border move."
+    },
+    {
+      id:"8-2", name:"Exit management & offboarding", tag:"Intelligence", tagColor:"#7a8fa0", severity:"important",
+      what:"Exit management is the structured process by which departing employees leave the organisation in a way that is dignified, legally compliant, and intelligence-generating. Exit interviews — conducted rigorously — produce the most honest data the organisation has access to about why people leave.",
+      why:"An employee who leaves is an employee who has no reason to self-censor. Exit intelligence, gathered systematically and analysed at scale, reveals retention risks that engagement surveys miss — because survey respondents still want to keep their job.",
+      how:[
+        {t:"Conduct structured exit interviews with every voluntary leaver",d:"Not an HR checklist. A genuine, conversational interview asking: Why did you start looking? What tipped the decision? What would have made you stay? What should we know? The best exit interviews feel like a valued conversation, not a form-filling exercise."},
+        {t:"Analyse exit data at BU and function level quarterly",d:"Individual exit interviews are intelligence. Aggregated exit interview themes are strategy. Quarterly analysis by BU, level, tenure, and departure reason reveals patterns that individual conversations cannot."},
+        {t:"Manage the departure with dignity",d:"The way an organisation treats people who leave is observed closely by those who stay. A departure handled with generosity, clear communication, and respect sends a powerful signal about organisational character."},
+        {t:"Maintain a warm alumni network",d:"Former employees are a source of referrals, boomerang hires, and brand ambassadors. An organisation that treats departures as betrayals destroys this network. One that treats them as career transitions cultivates it."}
+      ],
+      who:"HRBP conducts exit interviews or a trusted senior HR colleague. Immediate manager handles the operational aspects. HR Operations manages the offboarding process.",
+      when:"Exit interview scheduled within the first week of notice. Offboarding process completed by last day. Exit data analysed quarterly.",
+      documents:["Exit interview question framework","Exit interview analysis template","Offboarding checklist","Alumni network communications"],
+      mistakes:[
+        {t:"Exit interviews conducted by the departing employee's manager",d:"Employees will not tell their manager the true reasons for leaving. Exit interviews must be conducted by HR — ideally by the HRBP who has an independent relationship with the employee."},
+        {t:"Treating exit data as individual anecdotes",d:"A single exit interview saying 'my manager doesn't develop me' is an anecdote. Six exit interviews from the same BU saying the same thing in six months is a management quality alert that requires action."}
+      ],
+      metrics:["Exit interview completion rate (target: >85% of voluntary leavers)","Departure reason distribution by BU and level","Regretted attrition rate (high performers and critical skills)","Controllable attrition rate (% where reason was addressable)","Average tenure at departure","Boomerang hire rate"],
+      hrbpContext:"The HRBP's exit interview is the most important intelligence-gathering conversation in their toolkit. Done well, it reveals the truth about management quality, career development failures, culture problems, and compensation gaps in a way that no other source does. This intelligence must flow to the CHRO and BU heads in a structured quarterly report — not be filed and forgotten.",
+      scenario:{failure:"Exit interview conducted by email survey. 60% response rate. Questions are generic. Data is shared with no one. Controllable attrition continues. The same four reasons keep appearing in isolation across 18 months. No pattern is ever identified.",excellence:"HRBP conducts a structured 45-minute exit conversation with a high-performing commercial manager. Key insight: the BU's promotion criteria are opaque and perceived as unfair. HRBP raises this in the quarterly talent review. Criteria are clarified and communicated. Two subsequent potential leavers cite improved clarity as a reason they stayed."},
+      multicountry:"Exit interview obligations vary by jurisdiction. In some markets, employees have rights regarding how their data is used. Some employment contracts require specific exit processes. Ensure the offboarding process is legally reviewed for each country."
+    }
+  ]
+},
+{
+  id:8, phase:"Phase 9", name:"HR Operations & Analytics", short:"Analytics", accent:"#7a8fa0",
+  accentBg:"rgba(122,143,160,0.12)", accentBorder:"rgba(122,143,160,0.3)",
+  summary:"HR operations is the infrastructure that makes everything else possible. Analytics is the intelligence layer that turns people data into investment decisions. For a multi-country, multi-BU organisation, operational consistency and data integrity are the foundation of strategic HR.",
+  buRelevance:"HR Operations is shared service. HRBPs are the primary consumers of analytics to manage their BU effectively. The CHRO uses analytics to demonstrate HR's return on investment to the company.",
+  touchpoints:[
+    {
+      id:"9-1", name:"HRIS & people data infrastructure", tag:"Operations", tagColor:"#7a8fa0", severity:"critical",
+      what:"The HRIS (Human Resources Information System) is the master record of the workforce — the single source of truth for every people metric, every employment relationship, and every people process. Without data integrity, HR analytics produces confident nonsense.",
+      why:"Organisations making decisions from inconsistent or inaccurate people data are not making evidence-based decisions — they are making data-laundered intuitions. The HRIS is the foundation on which all HR analytics, compliance reporting, and people intelligence is built.",
+      how:[
+        {t:"Establish one master HRIS",d:"In a multi-country, multi-BU organisation, the temptation is to allow each country or BU to use its own system. Resist this. The analytics, compliance reporting, and cross-BU talent visibility that the organisation needs are only possible with one master system."},
+        {t:"Enforce data quality standards",d:"Every employee record must be complete, current, and accurate. Assign data quality ownership — typically HR Operations — with quarterly audits. Poor data quality is the most common reason HR analytics initiatives fail."},
+        {t:"Build the reporting infrastructure for BU-level insight",d:"The HRBP needs to be able to run their own BU reports without needing a central HR request. Self-service analytics for HRBPs — headcount, attrition, time-to-fill, engagement scores by team — is the minimum standard for a functioning HRBP model."}
+      ],
+      who:"HR Operations owns the HRIS. Central HR IT/People Analytics owns reporting. HRBPs are primary users of BU-level data.",
+      when:"HRIS data reviewed and audited quarterly. Reporting infrastructure reviewed annually.",
+      documents:["HRIS data dictionary","Data quality standards","HRBP self-service reporting guide","People data governance policy"],
+      mistakes:[
+        {t:"Multiple HR systems with no integration",d:"A payroll system in one country, an ATS that doesn't connect to the HRIS, and a performance module that requires manual data entry produces a reporting environment where no number can be trusted."},
+        {t:"HR analytics that only the analytics team can access",d:"If the HRBP cannot pull a BU attrition report without raising a ticket, the analytics capability is not serving the people who need it most."}
+      ],
+      metrics:["HRIS data completeness rate (target: >98%)","Report generation time: HRBP self-service report (target: <5 minutes)","Data quality audit score (quarterly)","Cross-country data consistency rate"],
+      hrbpContext:"The HRBP should be a confident user of the HRIS and a vocal advocate for data quality. If the data they are using to advise the BU head is wrong, their recommendations are wrong. Insist on training, insist on self-service access, and flag data quality issues to HR Operations as a priority — not a nicety.",
+      scenario:{failure:"CHRO prepares a quarterly people dashboard for the board. Headcount figures from the HRIS differ from Finance's headcount by 12. The presentation is delayed. The credibility of people data is questioned. Root cause: HRIS was not updated for three leavers and one hire across two countries.",excellence:"HR Operations implements a monthly data quality audit. By quarter 3, HRIS data completeness is at 99.2%. The board people dashboard is produced in 2 hours. HRBPs can run their own BU reports in under 5 minutes."},
+      multicountry:"Data privacy law (GDPR in Europe, POPIA in South Africa, and equivalent in other jurisdictions) governs what employee data can be stored, where it can be stored, and how long it can be retained. The HRIS architecture and data governance policy must be reviewed by legal counsel for each country of operation."
+    },
+    {
+      id:"9-2", name:"People analytics & attrition modelling", tag:"Analytics", tagColor:"#7a8fa0", severity:"important",
+      what:"People analytics is the use of workforce data to understand drivers of departure, predict attrition risk, and measure the cost and impact of people decisions. It converts anecdotal understanding of why people leave into evidence-based people strategy.",
+      why:"Attrition is both a symptom of underlying problems and a cost in its own right. For a 100–200 person company, losing 15% annually means 15–30 people replaced every year — at an average cost of 1.5–2x salary per departure. At this scale, analytics-driven retention is a direct financial return on HR's function.",
+      how:[
+        {t:"Calculate the true cost of attrition by role type",d:"Include: recruitment cost, onboarding cost, productivity loss during transition, and knowledge loss. Typically 1.5–3x annual salary per departure. This number makes the business case for retention investment self-evident — and positions HR's contribution in financial terms the company understands."},
+        {t:"Build a leading indicator dashboard",d:"Attrition rate is a lagging indicator — the resignation is the outcome. Leading indicators (engagement score trends, flight risk scores, 1:1 frequency, recognition frequency) predict attrition before it happens. Review monthly."},
+        {t:"Segment attrition by controllable vs uncontrollable",d:"Not all attrition is equally actionable. Controllable voluntary attrition — where the reason was addressable by the organisation — is the only attrition that a people strategy can influence. Track this separately."},
+        {t:"Present people analytics as financial intelligence",d:"HR analytics presented as 'people data' is interesting. HR analytics presented as 'we spend X on attrition annually and can reduce that by Y with these interventions' is strategic. Translate people data into the language of business return."}
+      ],
+      who:"HR Analytics/People Analytics team (or HRBP + HR Director for smaller organisations). HRBPs consume insights. CHRO presents to board.",
+      when:"Monthly leading indicator review. Quarterly attrition analysis. Annual deep-dive on cost of attrition.",
+      documents:["Attrition analytics dashboard","Cost of attrition model by role family","Leading indicators monitoring report","Quarterly people analytics report to BU heads","Annual workforce analytics report to ExCo"],
+      mistakes:[
+        {t:"Reporting headcount and attrition rate without context",d:"18% attrition means nothing without context: vs prior year, vs sector, by BU, by regretted vs unregretted. Context converts a number into intelligence."},
+        {t:"Analytics that no one acts on",d:"An analytically sophisticated attrition model that is not connected to any management decision or people intervention is an HR trophy, not a management tool."}
+      ],
+      metrics:["Total attrition rate vs prior year vs sector benchmark","Regretted attrition rate (high performers and critical skills)","Controllable attrition rate","Cost of attrition as % of total people cost (annual, reported to ExCo)","Leading indicator movement month-on-month"],
+      hrbpContext:"For the HRBP, people analytics is the evidence base for every recommendation they make to the BU head. It transforms the HRBP from an HR administrator who 'deals with people problems' into a business advisor who 'manages the organisation's most significant operating cost.' The HRBP who walks into a BU head meeting with a cost-of-attrition calculation and a proposed intervention gets a different reception than one who presents HR activity reports.",
+      scenario:{failure:"HR presents a quarterly people dashboard to the board: headcount, attrition rate, open vacancies. No context, no trend, no cost. The board asks 'so what does this mean?' HR cannot answer. Budget for a new HR initiative is denied.",excellence:"HRBP calculates that the commercial BU's 22% attrition rate represents a cost of $380,000 annually when fully loaded. Presents this to the BU head with a proposed retention intervention costing $45,000. The BU head approves immediately. Attrition drops to 14% the following year. ROI is presented to the board."},
+      multicountry:"People analytics across multiple countries requires careful data governance. Not all employee data can be aggregated across jurisdictions. Ensure the analytics framework is reviewed for privacy compliance before cross-country data is combined."
+    },
+    {
+      id:"9-3", name:"HR compliance & employment law", tag:"Compliance", tagColor:"#70a870", severity:"critical",
+      what:"HR compliance is the ongoing management of the organisation's obligations under employment law in every jurisdiction in which it operates — ensuring that every employment practice is legally defensible, every policy is current, and every process protects both employees and the organisation.",
+      why:"Employment law non-compliance is a financial, reputational, and human risk. For a multi-country business, the complexity multiplies with each jurisdiction. Ignorance of local law is not a defence.",
+      how:[
+        {t:"Map compliance obligations by country",d:"For each country of operation: what employment law obligations apply, what minimum standards must be met, what reporting is required, and what processes must be documented. This map must be reviewed annually and whenever local law changes."},
+        {t:"Maintain legally reviewed policies per jurisdiction",d:"HR policies must be reviewed by local employment counsel for each country. A policy that is legally sound in one jurisdiction may be unlawful or unenforceable in another."},
+        {t:"Train managers on their legal obligations",d:"Most employment law risk is created by managers who do not know what they cannot do — in interviews, in performance management, in redundancy situations, in day-to-day management. Proactive manager training is the most effective legal risk management tool."},
+        {t:"Establish an escalation path for legal complexity",d:"Every HRBP must know when to escalate to employment counsel. The cost of legal advice is a fraction of the cost of a tribunal claim, a regulatory fine, or a reputational incident."}
+      ],
+      who:"HR Operations owns the compliance calendar. HRBPs own first-line compliance in their BU and country. Legal/Employment Counsel advises. CHRO is ultimately accountable.",
+      when:"Compliance calendar reviewed quarterly. Policies reviewed annually. Legal counsel consulted for any case with complexity.",
+      documents:["Compliance obligation map by country","HR policy register","Manager legal obligations training programme","Employment law update tracker","Legal escalation protocol"],
+      mistakes:[
+        {t:"Assuming one set of policies covers all countries",d:"The most common multi-country compliance failure. Employment law varies significantly across jurisdictions. One policy document cannot cover all of them adequately."},
+        {t:"Not tracking law changes proactively",d:"Employment law changes. Minimum wage uplifts, new protected characteristics, changes to notice periods, new consultation obligations — these require active monitoring in each jurisdiction."}
+      ],
+      metrics:["Policy currency rate: % of HR policies reviewed by legal counsel in the last 12 months (target: 100%)","Manager legal training completion rate (target: 100% annually)","Employment tribunal/claim rate by country","Compliance audit findings by jurisdiction"],
+      hrbpContext:"The HRBP is the first line of employment law compliance in their BU and country. They must know the basics of employment law in their jurisdiction well enough to identify when a situation requires legal advice — and have a clear escalation path to get it. A HRBP who advises a manager incorrectly because they assumed local law was the same as another country's is a significant organisational risk.",
+      scenario:{failure:"A BU head in one country terminates an employee following a performance process designed for a different jurisdiction. The process did not include the mandatory consultation steps required by local law. An unfair dismissal claim is filed. Legal cost: $60,000. Settlement: $45,000. The process was designed by central HR without local legal review.",excellence:"HRBP maintains a one-page compliance reference for each country they manage — key legal obligations, minimum standards, mandatory processes. Reviews it with local employment counsel annually. When a disciplinary situation arises, the HRBP follows the jurisdiction-specific process with confidence."},
+      multicountry:"This touchpoint is inherently multi-country. Every single process in this codex — hiring, performance management, dismissal, redundancy — has jurisdiction-specific legal requirements. The HRBP operating across multiple countries must treat local legal compliance as a core competency, not a specialist add-on."
+    }
+  ]
+}
+];
+
+// ══════════════════════════════════════════════════════
+// ENTRY PATHS — recommended journeys per role
+// ══════════════════════════════════════════════════════
+const ENTRY_PATHS = {
+  founder: {
+    label:"Founder / CEO Path",
+    description:"Your highest-leverage touchpoints — where HR strategy most directly drives business return.",
+    phases:[0,1,4,5,8],
+    firstTP:"1-2"
+  },
+  hrbp: {
+    label:"HRBP Path",
+    description:"The touchpoints where your day-to-day impact is highest. Start here.",
+    phases:[2,3,4,6,7],
+    firstTP:"3-1"
+  },
+  hod: {
+    label:"Head of BU Path",
+    description:"What you need to know about the people operating system in your business unit.",
+    phases:[1,2,3,4,6],
+    firstTP:"4-1"
+  }
+};
+
+// ══════════════════════════════════════════════════════
+// STATE
+// ══════════════════════════════════════════════════════
+let currentPhase = 0;
+let currentTP = null;
+let currentView = 'codex';
+let activeEntryPath = null;
+
+// ══════════════════════════════════════════════════════
+// RENDER SIDEBAR
+// ══════════════════════════════════════════════════════
+function renderSidebar() {
+  const nav = document.getElementById('phase-nav');
+  nav.innerHTML = PHASES.map((p,i) => `
+    <div class="phase-nav-item${i===currentPhase?' active':''}" onclick="selectPhase(${i})">
+      <div class="phase-nav-inner">
+        <div class="phase-dot" style="background:${p.accent}"></div>
+        <div class="phase-nav-text">
+          <div class="phase-nav-num">${p.phase}</div>
+          <div class="phase-nav-name">${p.name}</div>
+        </div>
+        <div class="phase-nav-count">${p.touchpoints.length}</div>
+      </div>
+    </div>
+  `).join('');
+}
+
+// ══════════════════════════════════════════════════════
+// RENDER PHASE HEADER
+// ══════════════════════════════════════════════════════
+function renderPhaseHeader(p) {
+  const badge = document.getElementById('phase-badge');
+  badge.textContent = p.phase;
+  badge.style.background = p.accentBg;
+  badge.style.border = `1px solid ${p.accentBorder}`;
+  badge.style.color = p.accent;
+
+  document.getElementById('phase-title').textContent = p.name;
+  document.getElementById('phase-summary').textContent = p.summary;
+
+  const buRow = document.getElementById('phase-bu-row');
+  buRow.innerHTML = `<span class="bu-label">BU relevance:</span> <span class="bu-tag">${p.buRelevance}</span>`;
+}
+
+// ══════════════════════════════════════════════════════
+// RENDER TOUCHPOINT GRID
+// ══════════════════════════════════════════════════════
+function renderGrid(p) {
+  const grid = document.getElementById('tp-grid');
+  grid.innerHTML = p.touchpoints.map((tp, i) => {
+    const sevClass = `sev-${tp.severity}`;
+    const sevLabel = tp.severity.charAt(0).toUpperCase() + tp.severity.slice(1);
+    return `
+    <div class="tp-card${currentTP && currentTP.id === tp.id ? ' active':''}"
+         style="--card-accent:${tp.tagColor};--card-accent-border:${tp.tagColor}40;--card-accent-bg:${tp.tagColor}10;"
+         onclick="selectTP('${tp.id}')" data-delay="${i}">
+      <div class="tp-card-header">
+        <div class="tp-card-badges">
+          <div class="tp-card-tag" style="background:${tp.tagColor}20;color:${tp.tagColor};">
+            <span>●</span>${tp.tag}
+          </div>
+          <span class="tp-severity-badge ${sevClass}">${sevLabel}</span>
+        </div>
+        <span class="tp-card-id">${tp.id}</span>
+      </div>
+      <div class="tp-card-name">${tp.name}</div>
+      <div class="tp-card-what">${tp.what}</div>
+      <span class="tp-card-arrow">→</span>
+    </div>
+  `}).join('');
+}
+
+// ══════════════════════════════════════════════════════
+// SELECT PHASE
+// ══════════════════════════════════════════════════════
+function selectPhase(i) {
+  currentPhase = i;
+  currentTP = null;
+  closePanel();
+  setView('codex');
+  renderSidebar();
+  const p = PHASES[i];
+  renderPhaseHeader(p);
+  renderGrid(p);
+}
+
+// ══════════════════════════════════════════════════════
+// SELECT TOUCHPOINT
+// ══════════════════════════════════════════════════════
+function selectTP(id) {
+  const phase = PHASES[currentPhase];
+  const tp = phase.touchpoints.find(t => t.id === id);
+  if (!tp) return;
+  currentTP = tp;
+
+  document.querySelectorAll('.tp-card').forEach(c => {
+    const idEl = c.querySelector('.tp-card-id');
+    c.classList.toggle('active', idEl && idEl.textContent === id);
+  });
+
+  document.getElementById('detail-tp-id').textContent = tp.id;
+  document.getElementById('detail-name').textContent = tp.name;
+
+  // Severity
+  const sevBadge = document.getElementById('detail-severity-badge');
+  const sevLabel = document.getElementById('detail-severity-label');
+  const sevClass = `sev-${tp.severity}`;
+  sevBadge.className = `tp-severity-badge ${sevClass}`;
+  sevBadge.textContent = tp.severity.charAt(0).toUpperCase() + tp.severity.slice(1);
+
+  const sevDescriptions = {
+    critical: "Failure here breaks the system downstream.",
+    important: "Significant impact on outcomes when done poorly.",
+    optimising: "Improves performance when done well; manageable if deferred."
+  };
+  sevLabel.textContent = sevDescriptions[tp.severity] || '';
+
+  // HRBP context strip
+  const hrbpStrip = document.getElementById('detail-hrbp-strip');
+  const hrbpText = document.getElementById('detail-hrbp-text');
+  if (tp.hrbpContext) {
+    hrbpStrip.classList.add('visible');
+    hrbpText.textContent = tp.hrbpContext;
+  } else {
+    hrbpStrip.classList.remove('visible');
+  }
+
+  // Tab accent
+  document.querySelectorAll('.detail-tab').forEach(t => {
+    t.style.setProperty('--tab-accent', tp.tagColor);
+  });
+
+  // What & Why
+  const scenarioHtml = tp.scenario ? `
+    <div class="scenario-grid">
+      <div class="scenario-box failure">
+        <div class="scenario-label">What Failure Looks Like</div>
+        <div class="scenario-text">${tp.scenario.failure}</div>
+      </div>
+      <div class="scenario-box excellence">
+        <div class="scenario-label">What Excellence Looks Like</div>
+        <div class="scenario-text">${tp.scenario.excellence}</div>
+      </div>
+    </div>` : '';
+
+  document.getElementById('tab-what').innerHTML = `
+    <p class="what-text">${tp.what}</p>
+    <div class="why-box" style="--section-accent:${tp.tagColor}">
+      <div class="why-box-label">Why This Matters</div>
+      <p class="why-text">${tp.why}</p>
+    </div>
+    ${scenarioHtml}
+  `;
+
+  // How
+  document.getElementById('tab-how').innerHTML = tp.how.map((h,i) => `
+    <div class="how-step">
+      <div class="how-step-header">
+        <span class="how-step-num" style="--step-accent:${tp.tagColor}">0${i+1}</span>
+        <span class="how-step-title">${h.t}</span>
+      </div>
+      <div class="how-step-desc">${h.d}</div>
+    </div>
+  `).join('');
+
+  // Who/When
+  const multicountryHtml = tp.multicountry ? `
+    <div class="multicountry-box">
+      <div class="multicountry-label">Multi-Country Consideration</div>
+      <div class="multicountry-text">${tp.multicountry}</div>
+    </div>` : '';
+
+  const hrbpPanelHtml = tp.hrbpContext ? `
+    <div class="hrbp-panel-box">
+      <div class="hrbp-panel-label">HRBP Playbook</div>
+      <div class="hrbp-panel-text">${tp.hrbpContext}</div>
+    </div>` : '';
+
+  document.getElementById('tab-who').innerHTML = `
+    <div class="who-when-grid">
+      <div class="who-when-box">
+        <div class="who-when-label">Who Owns It</div>
+        <div class="who-when-text">${tp.who}</div>
+      </div>
+      <div class="who-when-box">
+        <div class="who-when-label">When to Do It</div>
+        <div class="who-when-text">${tp.when}</div>
+      </div>
+    </div>
+    ${hrbpPanelHtml}
+    ${multicountryHtml}
+  `;
+
+  // Docs
+  document.getElementById('tab-docs').innerHTML = `
+    <ul class="docs-list">
+      ${tp.documents.map(d => `<li>${d}</li>`).join('')}
+    </ul>
+  `;
+
+  // Mistakes
+  document.getElementById('tab-mistakes').innerHTML = tp.mistakes.map(m => `
+    <div class="mistake-item">
+      <div class="mistake-title">${m.t}</div>
+      <div class="mistake-desc">${m.d}</div>
+    </div>
+  `).join('');
+
+  // Metrics
+  document.getElementById('tab-metrics').innerHTML = `
+    <div>
+      ${tp.metrics.map(m => `
+        <div class="metric-item">
+          <div class="metric-dot" style="--metric-accent:${tp.tagColor}"></div>
+          <div>${m}</div>
+        </div>
+      `).join('')}
+    </div>
+  `;
+
+  switchTab('what');
+  document.getElementById('detail-panel').classList.add('open');
+  document.getElementById('detail-body').scrollTop = 0;
+}
+
+// ══════════════════════════════════════════════════════
+// TABS
+// ══════════════════════════════════════════════════════
+document.querySelectorAll('.detail-tab').forEach(tab => {
+  tab.addEventListener('click', () => switchTab(tab.dataset.tab));
+});
+
+function switchTab(name) {
+  document.querySelectorAll('.detail-tab').forEach(t => {
+    t.classList.toggle('active', t.dataset.tab === name);
+  });
+  document.querySelectorAll('.detail-section').forEach(s => {
+    s.classList.toggle('active', s.id === `tab-${name}`);
+  });
+  document.getElementById('detail-body').scrollTop = 0;
+}
+
+// ══════════════════════════════════════════════════════
+// CLOSE PANEL
+// ══════════════════════════════════════════════════════
+function closePanel() {
+  currentTP = null;
+  document.getElementById('detail-panel').classList.remove('open');
+  document.querySelectorAll('.tp-card').forEach(c => c.classList.remove('active'));
+}
+
+// ══════════════════════════════════════════════════════
+// VIEW TOGGLE
+// ══════════════════════════════════════════════════════
+function setView(view) {
+  currentView = view;
+  document.getElementById('tp-grid-wrap').classList.toggle('hidden', view === 'system');
+  document.getElementById('system-map-view').classList.toggle('visible', view === 'system');
+
+  document.querySelectorAll('.entry-pill').forEach(p => {
+    p.classList.remove('active');
+  });
+
+  if (view === 'codex') {
+    document.querySelector('.entry-pill:first-child').classList.add('active');
+  } else if (view === 'system') {
+    document.querySelector('.entry-pill:nth-child(2)').classList.add('active');
+    renderSystemMap();
+  }
+
+  // Reset phase header for system view
+  if (view === 'system') {
+    document.getElementById('phase-badge').textContent = 'System';
+    document.getElementById('phase-badge').style.background = 'rgba(200,168,64,0.12)';
+    document.getElementById('phase-badge').style.border = '1px solid rgba(200,168,64,0.3)';
+    document.getElementById('phase-badge').style.color = '#c8a840';
+    document.getElementById('phase-title').textContent = 'The Dependency Map';
+    document.getElementById('phase-summary').textContent = 'The People Value Chain is a system. Each phase depends on the one before it. Failure upstream appears as a people problem downstream — months later, in the wrong place.';
+    document.getElementById('phase-bu-row').innerHTML = '';
+    closePanel();
+  } else {
+    const p = PHASES[currentPhase];
+    renderPhaseHeader(p);
+  }
+}
+
+// ══════════════════════════════════════════════════════
+// SYSTEM MAP
+// ══════════════════════════════════════════════════════
+function renderSystemMap() {
+  const breakPoints = {
+    0: "Skipping LMA → wrong salary bands, unexpected pool scarcity",
+    1: "No attraction strategy → reactive, expensive sourcing",
+    2: "Unstructured selection → expensive, wrong hires",
+    3: "Poor onboarding → slow contribution, early attrition",
+    4: "No performance management → disengagement, under-performance tolerated",
+    5: "Reward misalignment → attrition for avoidable reasons",
+    6: "Poor employee experience → quiet disengagement",
+    7: "No retention strategy → loss of best people, institutional knowledge drain",
+    8: "Weak analytics → HR seen as cost centre, not business partner"
+  };
+
+  const list = document.getElementById('system-phases-list');
+  list.innerHTML = PHASES.map((p, i) => `
+    <div class="system-phase-row" onclick="selectPhase(${i}); setView('codex');">
+      ${i > 0 ? `<div class="sp-connector"><div class="sp-line"></div><div class="sp-arrow"></div></div>` : '<div class="sp-num"></div>'}
+      <div class="sp-content">
+        <div class="sp-header">
+          <div class="sp-dot" style="background:${p.accent}"></div>
+          <div class="sp-phase-name">${p.phase}: ${p.name}</div>
+        </div>
+        <div class="sp-phase-summary">${p.summary}</div>
+        ${breakPoints[i] ? `<div class="sp-break-indicator">⚡ If skipped: ${breakPoints[i]}</div>` : ''}
+      </div>
+    </div>
+  `).join('');
+}
+
+// ══════════════════════════════════════════════════════
+// ENTRY PATH
+// ══════════════════════════════════════════════════════
+function setEntryPath(role) {
+  activeEntryPath = role;
+  const path = ENTRY_PATHS[role];
+  if (!path) return;
+
+  // deactivate all pills, activate role pill
+  document.querySelectorAll('.entry-pill').forEach(p => p.classList.remove('active'));
+  document.getElementById(`pill-${role}`).classList.add('active');
+
+  // Go to first recommended phase
+  const firstPhaseIdx = path.phases[0];
+  selectPhase(firstPhaseIdx);
+
+  // Show entry path panel briefly
+  setView('codex');
+
+  // Then open the first recommended TP
+  setTimeout(() => {
+    if (path.firstTP) {
+      const [phaseNum] = path.firstTP.split('-');
+      const phaseIdx = PHASES.findIndex(p => p.touchpoints.some(tp => tp.id === path.firstTP));
+      if (phaseIdx !== -1) {
+        selectPhase(phaseIdx);
+        setTimeout(() => selectTP(path.firstTP), 50);
+      }
+    }
+  }, 100);
+}
+
+// ══════════════════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════════════════
+renderSidebar();
+selectPhase(0);
+</script>
+</body>
+</html>
