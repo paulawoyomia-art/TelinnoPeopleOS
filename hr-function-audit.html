@@ -1,1360 +1,830 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Telinno — HR Function Audit</title>
-<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
-:root {
-  --ink: #0f0f0f;
-  --ink-2: #444;
-  --ink-3: #888;
-  --ink-4: #bbb;
-  --paper: #faf9f6;
-  --surface: #fff;
-  --border: #e8e5de;
-  --border-2: #d4d0c8;
-  --red: #c0392b; --red-bg: #fdf0ee; --red-border: #f5c4bc;
-  --amber: #b85c00; --amber-bg: #fef6ec; --amber-border: #fad9b0;
-  --green: #1a6b3c; --green-bg: #edf7f2; --green-border: #a8dfc0;
-  --blue: #1a4a8a; --blue-bg: #eef3fb; --blue-border: #b0c8f0;
-  --purple: #5a3db8; --purple-bg: #f3f0fd; --purple-border: #c8b8f4;
-  --accent: #1a3a5c;
-}
-
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-body {
-  font-family: 'DM Sans', sans-serif;
-  background: var(--paper);
-  color: var(--ink);
-  min-height: 100vh;
-  font-size: 15px;
-  line-height: 1.6;
-}
-
-/* ─── NAV ─── */
-nav {
-  background: var(--accent);
-  color: #fff;
-  padding: 0 2rem;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  height: 52px;
-  position: sticky;
-  top: 0;
-  z-index: 100;
-}
-.nav-brand { display: flex; align-items: center; gap: 10px; }
-.nav-logo {
-  width: 28px; height: 28px; border-radius: 6px;
-  background: rgba(255,255,255,0.15);
-  display: flex; align-items: center; justify-content: center;
-}
-.nav-title { font-size: 14px; font-weight: 500; letter-spacing: 0.02em; }
-.nav-sub { font-size: 12px; color: rgba(255,255,255,0.55); margin-left: 1rem; }
-.nav-right { display: flex; align-items: center; gap: 1rem; }
-.nav-badge {
-  font-size: 11px; font-weight: 600; padding: 3px 10px;
-  border-radius: 20px; background: rgba(255,255,255,0.12);
-  color: rgba(255,255,255,0.8); letter-spacing: 0.04em; text-transform: uppercase;
-}
-
-/* ─── STAGE INDICATOR ─── */
-.stage-bar {
-  background: var(--surface);
-  border-bottom: 1px solid var(--border);
-  padding: 0 2rem;
-  display: flex;
-  align-items: center;
-  gap: 0;
-  height: 44px;
-  overflow-x: auto;
-}
-.stage-item {
-  display: flex; align-items: center; gap: 8px;
-  padding: 0 1.25rem 0 0;
-  font-size: 12px; font-weight: 500;
-  color: var(--ink-4);
-  white-space: nowrap;
-  cursor: default;
-  transition: color 0.2s;
-}
-.stage-item.active { color: var(--accent); }
-.stage-item.done { color: var(--green); }
-.stage-num {
-  width: 20px; height: 20px; border-radius: 50%;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 10px; font-weight: 700;
-  background: var(--border); color: var(--ink-3);
-  flex-shrink: 0;
-}
-.stage-item.active .stage-num { background: var(--accent); color: #fff; }
-.stage-item.done .stage-num { background: var(--green); color: #fff; }
-.stage-sep { color: var(--border-2); margin: 0 0.5rem; font-size: 11px; }
-
-/* ─── LAYOUT ─── */
-.page { display: none; }
-.page.active { display: block; }
-
-/* ─── FORM PAGE ─── */
-.form-wrap {
-  max-width: 780px;
-  margin: 0 auto;
-  padding: 2.5rem 1.5rem 5rem;
-}
-
-.form-header {
-  margin-bottom: 2.5rem;
-  padding-bottom: 1.75rem;
-  border-bottom: 1px solid var(--border);
-}
-.form-eyebrow {
-  font-size: 11px; font-weight: 600; letter-spacing: 0.1em;
-  text-transform: uppercase; color: var(--ink-3);
-  margin-bottom: 0.5rem;
-}
-.form-title {
-  font-family: 'DM Serif Display', serif;
-  font-size: 28px; line-height: 1.2;
-  color: var(--ink); margin-bottom: 0.6rem;
-}
-.form-desc { font-size: 14px; color: var(--ink-2); max-width: 560px; line-height: 1.65; }
-
-/* HRBP selector */
-.hrbp-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
-  gap: 10px;
-  margin-bottom: 2.5rem;
-}
-.hrbp-card {
-  border: 1.5px solid var(--border);
-  border-radius: 10px;
-  padding: 0.9rem 1rem;
-  cursor: pointer;
-  transition: border-color 0.15s, background 0.15s;
-  background: var(--surface);
-}
-.hrbp-card:hover { border-color: var(--accent); }
-.hrbp-card.selected { border-color: var(--accent); background: var(--blue-bg); }
-.hrbp-card input { display: none; }
-.hrbp-name { font-size: 13px; font-weight: 600; color: var(--ink); margin-bottom: 2px; }
-.hrbp-kad { font-size: 11px; color: var(--ink-3); }
-.hrbp-country { font-size: 11px; color: var(--ink-4); margin-top: 1px; }
-
-/* Section */
-.audit-section {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  margin-bottom: 1.25rem;
-  overflow: hidden;
-}
-.section-head {
-  padding: 1rem 1.25rem;
-  border-bottom: 1px solid var(--border);
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  background: #fdfdfc;
-}
-.section-icon {
-  width: 30px; height: 30px; border-radius: 7px;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 14px; flex-shrink: 0;
-}
-.section-name { font-size: 14px; font-weight: 600; color: var(--ink); }
-.section-sub { font-size: 12px; color: var(--ink-3); margin-top: 1px; }
-.section-body { padding: 1rem 1.25rem; }
-
-/* Question */
-.q-block { margin-bottom: 1.35rem; }
-.q-block:last-child { margin-bottom: 0; }
-.q-label {
-  font-size: 13px; font-weight: 500; color: var(--ink);
-  margin-bottom: 6px; display: block;
-}
-.q-label span { font-weight: 400; color: var(--ink-3); font-size: 12px; margin-left: 4px; }
-
-/* Radio pill group */
-.pill-group { display: flex; gap: 6px; flex-wrap: wrap; }
-.pill {
-  display: inline-flex; align-items: center; gap: 5px;
-  padding: 5px 12px; border-radius: 20px;
-  border: 1px solid var(--border-2);
-  font-size: 12px; font-weight: 500; cursor: pointer;
-  color: var(--ink-2); background: var(--surface);
-  transition: all 0.15s;
-  user-select: none;
-}
-.pill input { display: none; }
-.pill:hover { border-color: var(--accent); color: var(--accent); }
-.pill.selected-no { border-color: var(--red-border); background: var(--red-bg); color: var(--red); }
-.pill.selected-partial { border-color: var(--amber-border); background: var(--amber-bg); color: var(--amber); }
-.pill.selected-yes { border-color: var(--green-border); background: var(--green-bg); color: var(--green); }
-
-/* Text input */
-.q-text {
-  width: 100%;
-  border: 1px solid var(--border-2);
-  border-radius: 7px;
-  padding: 8px 10px;
-  font-family: 'DM Sans', sans-serif;
-  font-size: 13px;
-  color: var(--ink);
-  background: var(--surface);
-  resize: vertical;
-  min-height: 62px;
-  transition: border-color 0.15s;
-}
-.q-text:focus { outline: none; border-color: var(--accent); }
-
-/* Submit */
-.submit-row {
-  margin-top: 2rem;
-  display: flex; align-items: center; gap: 1rem;
-  padding-top: 1.5rem;
-  border-top: 1px solid var(--border);
-}
-.btn-primary {
-  background: var(--accent);
-  color: #fff;
-  border: none;
-  border-radius: 8px;
-  padding: 10px 24px;
-  font-family: 'DM Sans', sans-serif;
-  font-size: 14px; font-weight: 600;
-  cursor: pointer;
-  transition: opacity 0.15s;
-}
-.btn-primary:hover { opacity: 0.88; }
-.btn-secondary {
-  background: var(--surface);
-  color: var(--ink-2);
-  border: 1px solid var(--border-2);
-  border-radius: 8px;
-  padding: 10px 20px;
-  font-family: 'DM Sans', sans-serif;
-  font-size: 14px; font-weight: 500;
-  cursor: pointer;
-  transition: border-color 0.15s;
-}
-.btn-secondary:hover { border-color: var(--ink-3); }
-.submit-note { font-size: 12px; color: var(--ink-3); }
-
-/* ─── RESULTS PAGE ─── */
-.results-wrap { max-width: 900px; margin: 0 auto; padding: 2.5rem 1.5rem 5rem; }
-
-.results-header {
-  margin-bottom: 2rem;
-  padding-bottom: 1.5rem;
-  border-bottom: 1px solid var(--border);
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  flex-wrap: wrap;
-  gap: 1rem;
-}
-.results-title {
-  font-family: 'DM Serif Display', serif;
-  font-size: 26px; line-height: 1.2; color: var(--ink);
-  margin-bottom: 4px;
-}
-.results-meta { font-size: 13px; color: var(--ink-3); }
-.results-actions { display: flex; gap: 8px; flex-wrap: wrap; }
-
-/* Overall score banner */
-.score-banner {
-  border-radius: 12px;
-  padding: 1.5rem 1.75rem;
-  margin-bottom: 1.75rem;
-  display: flex;
-  align-items: center;
-  gap: 1.5rem;
-  flex-wrap: wrap;
-}
-.score-big {
-  font-family: 'DM Serif Display', serif;
-  font-size: 52px; line-height: 1;
-  flex-shrink: 0;
-}
-.score-label { font-size: 20px; font-weight: 600; margin-bottom: 3px; }
-.score-desc { font-size: 13px; opacity: 0.8; max-width: 460px; }
-
-/* Summary stats */
-.stat-row {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-  gap: 10px;
-  margin-bottom: 2rem;
-}
-.stat-card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  padding: 0.9rem 1rem;
-  text-align: center;
-}
-.stat-num { font-size: 28px; font-weight: 700; line-height: 1; margin-bottom: 4px; }
-.stat-lbl { font-size: 11px; color: var(--ink-3); text-transform: uppercase; letter-spacing: 0.06em; font-weight: 600; }
-
-/* Function result card */
-.fn-card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  margin-bottom: 1rem;
-  overflow: hidden;
-}
-.fn-head {
-  padding: 1rem 1.25rem;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-  cursor: pointer;
-  transition: background 0.1s;
-}
-.fn-head:hover { background: #fafaf8; }
-.fn-head-left { display: flex; align-items: center; gap: 10px; }
-.fn-icon { font-size: 16px; }
-.fn-name { font-size: 14px; font-weight: 600; }
-.fn-sub { font-size: 12px; color: var(--ink-3); margin-top: 1px; }
-.rag {
-  font-size: 11px; font-weight: 700; letter-spacing: 0.06em;
-  text-transform: uppercase; padding: 4px 12px; border-radius: 20px;
-  flex-shrink: 0;
-}
-.rag-red { background: var(--red-bg); color: var(--red); border: 1px solid var(--red-border); }
-.rag-amber { background: var(--amber-bg); color: var(--amber); border: 1px solid var(--amber-border); }
-.rag-green { background: var(--green-bg); color: var(--green); border: 1px solid var(--green-border); }
-
-.fn-body { display: none; padding: 0 1.25rem 1.25rem; border-top: 1px solid var(--border); }
-.fn-body.open { display: block; }
-
-.finding-block { margin-top: 1rem; }
-.finding-head { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.07em; color: var(--ink-3); margin-bottom: 0.5rem; }
-
-.gap-list { list-style: none; }
-.gap-item {
-  font-size: 13px; color: var(--ink-2);
-  padding: 5px 0 5px 18px;
-  position: relative;
-  border-bottom: 1px solid var(--border);
-}
-.gap-item:last-child { border-bottom: none; }
-.gap-item::before {
-  content: ''; position: absolute; left: 0; top: 13px;
-  width: 6px; height: 6px; border-radius: 50%;
-  background: var(--red);
-}
-.gap-item.amber::before { background: var(--amber); }
-.gap-item.green::before { background: var(--green); }
-
-.action-list { list-style: none; counter-reset: actions; }
-.action-item {
-  font-size: 13px; color: var(--ink-2);
-  padding: 6px 0 6px 28px;
-  position: relative;
-  border-bottom: 1px solid var(--border);
-  counter-increment: actions;
-}
-.action-item:last-child { border-bottom: none; }
-.action-item::before {
-  content: counter(actions);
-  position: absolute; left: 0; top: 4px;
-  width: 18px; height: 18px; border-radius: 50%;
-  background: var(--accent); color: #fff;
-  font-size: 10px; font-weight: 700;
-  display: flex; align-items: center; justify-content: center;
-  font-family: 'DM Sans', sans-serif;
-}
-.action-tag {
-  display: inline-block; font-size: 10px; font-weight: 600;
-  padding: 1px 6px; border-radius: 4px; margin-left: 6px;
-  vertical-align: middle;
-}
-.tag-now { background: #fdf0ee; color: var(--red); }
-.tag-30 { background: var(--amber-bg); color: var(--amber); }
-.tag-90 { background: var(--blue-bg); color: var(--blue); }
-
-/* Verbatim from HRBP */
-.verbatim {
-  background: #f8f7f4;
-  border-left: 3px solid var(--border-2);
-  border-radius: 0 6px 6px 0;
-  padding: 0.6rem 0.9rem;
-  font-size: 12px;
-  color: var(--ink-2);
-  font-style: italic;
-  margin-top: 0.5rem;
-}
-
-/* Priority action plan */
-.action-plan {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 1.5rem 1.75rem;
-  margin-top: 2rem;
-}
-.plan-title {
-  font-family: 'DM Serif Display', serif;
-  font-size: 20px; margin-bottom: 1.25rem;
-  padding-bottom: 0.75rem;
-  border-bottom: 1px solid var(--border);
-}
-.plan-row {
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  gap: 1rem;
-}
-.plan-col-head {
-  font-size: 11px; font-weight: 700; text-transform: uppercase;
-  letter-spacing: 0.08em; color: var(--ink-3); margin-bottom: 0.75rem;
-  padding-bottom: 0.5rem; border-bottom: 2px solid var(--border);
-}
-.plan-col-head.now { border-color: var(--red); color: var(--red); }
-.plan-col-head.d30 { border-color: var(--amber); color: var(--amber); }
-.plan-col-head.d90 { border-color: var(--blue); color: var(--blue); }
-.plan-item {
-  font-size: 12px; color: var(--ink-2);
-  padding: 5px 0 5px 14px;
-  position: relative;
-  border-bottom: 1px solid var(--border);
-}
-.plan-item:last-child { border-bottom: none; }
-.plan-item::before {
-  content: '→'; position: absolute; left: 0;
-  color: var(--ink-4); font-size: 10px;
-}
-
-/* Print */
-@media print {
-  nav, .stage-bar, .results-actions, #pageForm { display: none !important; }
-  .fn-body { display: block !important; }
-  body { background: #fff; }
-}
-@media (max-width: 600px) {
-  .plan-row { grid-template-columns: 1fr; }
-  .score-big { font-size: 38px; }
-  .results-header { flex-direction: column; }
-}
-
-/* ── PHASE NAV ── */
-.phase-nav-bar{background:#0d1520;border-bottom:1px solid rgba(255,255,255,0.08);padding:0 2rem;display:flex;align-items:center;justify-content:space-between;height:40px;font-family:'DM Sans',sans-serif;}
-.pnb-left{display:flex;align-items:center;gap:0;}
-.pnb-back{font-size:11px;color:rgba(255,255,255,0.3);text-decoration:none;letter-spacing:0.03em;padding-right:16px;border-right:1px solid rgba(255,255,255,0.08);margin-right:16px;transition:color 0.15s;}
-.pnb-back:hover{color:rgba(255,255,255,0.6);}
-.pnb-steps{display:flex;align-items:center;gap:0;}
-.pnb-step{display:flex;align-items:center;gap:6px;padding:0 12px 0 0;font-size:10.5px;color:rgba(255,255,255,0.25);white-space:nowrap;}
-.pnb-step-dot{width:16px;height:16px;border-radius:50%;border:1.5px solid;display:flex;align-items:center;justify-content:center;font-size:7px;font-weight:600;flex-shrink:0;}
-.pnb-step.active{color:rgba(255,255,255,0.85);}
-.pnb-step.done{color:rgba(255,255,255,0.4);}
-.pnb-step-sep{color:rgba(255,255,255,0.12);font-size:10px;margin-right:12px;}
-.pnb-right a{font-size:10.5px;font-weight:500;text-decoration:none;padding:5px 12px;border-radius:4px;border:1px solid;transition:all 0.15s;}
-
+:root{--ink:#0b0f18;--ink-2:#111620;--ink-3:#181e2c;--border:rgba(255,255,255,0.07);--border-mid:rgba(255,255,255,0.13);--text:#e2ddd5;--text-muted:#6b6660;--text-dim:#353230;--gold:#c9ab47;--gold-bg:rgba(201,171,71,0.09);--gold-border:rgba(201,171,71,0.22);--red:#e05555;--red-bg:rgba(224,85,85,0.09);--red-border:rgba(224,85,85,0.2);--amber:#d4922a;--amber-bg:rgba(212,146,42,0.09);--amber-border:rgba(212,146,42,0.22);--green:#4d9e82;--green-bg:rgba(77,158,130,0.09);--green-border:rgba(77,158,130,0.22);}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'DM Sans',sans-serif;background:var(--ink);color:var(--text);min-height:100vh;}
+#nav{background:var(--ink-2);border-bottom:1px solid var(--border);padding:0 24px;height:40px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:200;}
+.nav-brand{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:var(--gold);}
+.nav-links{display:flex;gap:2px;}
+.nav-link{font-family:'DM Mono',monospace;font-size:8.5px;letter-spacing:0.06em;text-transform:uppercase;padding:4px 10px;border-radius:3px;color:var(--text-muted);text-decoration:none;transition:color 0.15s;}
+.nav-link:hover{color:var(--text);}
+.nav-link.here{color:var(--gold);background:var(--gold-bg);}
+#stepbar{background:var(--ink-2);border-bottom:1px solid var(--border);display:flex;padding:0;}
+.step{flex:1;padding:11px 20px;display:flex;align-items:center;gap:10px;border-right:1px solid var(--border);opacity:0.4;transition:opacity 0.2s;}
+.step:last-child{border-right:none;}
+.step.active{opacity:1;}
+.step.done{opacity:0.6;}
+.step-num{width:20px;height:20px;border-radius:50%;border:1px solid var(--border-mid);display:flex;align-items:center;justify-content:center;font-family:'DM Mono',monospace;font-size:9px;color:var(--text-muted);flex-shrink:0;}
+.step.active .step-num{background:var(--gold);border-color:var(--gold);color:var(--ink);font-weight:600;}
+.step.done .step-num{background:var(--green);border-color:var(--green);color:var(--ink);}
+.step-label{font-size:11px;font-weight:500;color:var(--text-muted);}
+.step.active .step-label{color:var(--text);}
+.page{display:none;}
+.page.active{display:block;}
+#pageForm{max-width:860px;margin:0 auto;padding:32px 32px 80px;}
+.form-header{margin-bottom:32px;}
+.form-eyebrow{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:0.12em;text-transform:uppercase;color:var(--gold);margin-bottom:8px;}
+.form-title{font-family:'Playfair Display',serif;font-size:28px;font-weight:700;margin-bottom:8px;}
+.form-sub{font-size:13px;color:var(--text-muted);line-height:1.65;max-width:620px;}
+.hrbp-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:28px;}
+.hrbp-card{background:var(--ink-2);border:1px solid var(--border-mid);border-radius:8px;padding:14px 16px;cursor:pointer;transition:all 0.15s;}
+.hrbp-card:hover{border-color:var(--gold-border);background:var(--gold-bg);}
+.hrbp-card.selected{border-color:var(--gold);background:var(--gold-bg);}
+.hc-name{font-size:13px;font-weight:600;color:var(--text);margin-bottom:2px;}
+.hc-kad{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:0.06em;color:var(--gold);margin-bottom:3px;}
+.hc-detail{font-size:10.5px;color:var(--text-muted);}
+.audit-section{margin-bottom:28px;background:var(--ink-2);border:1px solid var(--border);border-radius:10px;overflow:hidden;}
+.section-head{padding:14px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px;}
+.section-icon{font-size:18px;}
+.section-info{flex:1;}
+.section-title{font-size:14px;font-weight:600;color:var(--text);}
+.section-sub{font-size:11px;color:var(--text-muted);margin-top:2px;}
+.section-ref{font-family:'DM Mono',monospace;font-size:8px;letter-spacing:0.08em;text-transform:uppercase;padding:2px 7px;border-radius:2px;background:var(--ink-3);border:1px solid var(--border-mid);color:var(--text-dim);white-space:nowrap;}
+.section-body{padding:16px 20px;}
+.question{margin-bottom:20px;padding-bottom:20px;border-bottom:1px solid var(--border);}
+.question:last-of-type{border-bottom:none;margin-bottom:0;padding-bottom:0;}
+.q-label{font-size:12.5px;font-weight:500;color:var(--text);margin-bottom:4px;line-height:1.4;}
+.q-policy{font-size:10.5px;color:var(--text-muted);margin-bottom:9px;line-height:1.55;padding:7px 10px;background:var(--ink-3);border-left:2px solid var(--gold);border-radius:0 4px 4px 0;}
+.q-policy strong{color:var(--gold);}
+.pill-group{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:6px;}
+label.pill{display:inline-flex;align-items:center;gap:5px;padding:5px 13px;border-radius:20px;border:1px solid var(--border-mid);font-size:11.5px;font-weight:500;cursor:pointer;color:var(--text-muted);background:var(--ink-3);transition:all 0.12s;user-select:none;}
+label.pill:hover{border-color:var(--text-dim);color:var(--text);}
+label.pill input{position:absolute;opacity:0;width:0;height:0;}
+label.pill.sel-no{border-color:var(--red-border);background:var(--red-bg);color:var(--red);}
+label.pill.sel-partial{border-color:var(--amber-border);background:var(--amber-bg);color:var(--amber);}
+label.pill.sel-yes{border-color:var(--green-border);background:var(--green-bg);color:var(--green);}
+.q-note{width:100%;background:var(--ink-3);border:1px solid var(--border);border-radius:4px;padding:7px 9px;font-family:'DM Sans',sans-serif;font-size:11px;color:var(--text);outline:none;resize:none;min-height:32px;line-height:1.5;margin-top:6px;}
+.q-note:focus{border-color:var(--gold-border);}
+.q-note::placeholder{color:var(--text-dim);}
+.form-submit{display:flex;align-items:center;justify-content:space-between;padding:20px 0;border-top:1px solid var(--border);margin-top:8px;}
+.submit-note{font-size:11.5px;color:var(--text-muted);}
+.btn-generate{background:var(--gold-bg);border:1px solid var(--gold-border);color:var(--gold);font-family:'DM Mono',monospace;font-size:10px;letter-spacing:0.08em;text-transform:uppercase;padding:11px 24px;border-radius:5px;cursor:pointer;transition:all 0.15s;}
+.btn-generate:hover{background:rgba(201,171,71,0.16);}
+#pageResults{max-width:960px;margin:0 auto;padding:32px 32px 80px;}
+.results-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:24px;padding-bottom:20px;border-bottom:1px solid var(--border);}
+.rh-eyebrow{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:0.12em;text-transform:uppercase;color:var(--gold);margin-bottom:6px;}
+.rh-title{font-family:'Playfair Display',serif;font-size:24px;font-weight:700;margin-bottom:4px;}
+.rh-meta{font-size:11.5px;color:var(--text-muted);}
+.rh-actions{display:flex;gap:8px;flex-shrink:0;}
+.btn-sm{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:0.07em;text-transform:uppercase;padding:8px 14px;border-radius:4px;cursor:pointer;border:1px solid var(--border-mid);background:var(--ink-2);color:var(--text-muted);text-decoration:none;transition:all 0.15s;display:inline-block;}
+.btn-sm:hover{border-color:var(--text-dim);color:var(--text);}
+.btn-sm.primary{background:var(--gold-bg);border-color:var(--gold-border);color:var(--gold);}
+#scoreBanner{border-radius:10px;padding:22px 26px;margin-bottom:24px;border:1px solid;}
+#scoreBanner.red{background:var(--red-bg);border-color:var(--red-border);}
+#scoreBanner.amber{background:var(--amber-bg);border-color:var(--amber-border);}
+#scoreBanner.green{background:var(--green-bg);border-color:var(--green-border);}
+.banner-inner{display:flex;align-items:center;gap:22px;}
+.score-big{font-family:'DM Mono',monospace;font-size:46px;font-weight:500;line-height:1;flex-shrink:0;}
+#scoreBanner.red .score-big{color:var(--red);}
+#scoreBanner.amber .score-big{color:var(--amber);}
+#scoreBanner.green .score-big{color:var(--green);}
+.score-label{font-size:17px;font-weight:600;color:var(--text);margin-bottom:4px;}
+.score-desc{font-size:12.5px;color:var(--text-muted);line-height:1.6;max-width:520px;}
+#statRow{display:flex;gap:10px;margin-bottom:24px;}
+.stat-box{flex:1;background:var(--ink-2);border:1px solid var(--border);border-radius:8px;padding:14px;text-align:center;}
+.stat-box-num{font-family:'DM Mono',monospace;font-size:24px;color:var(--text);display:block;margin-bottom:3px;}
+.stat-box-num.red{color:var(--red);}.stat-box-num.amber{color:var(--amber);}.stat-box-num.green{color:var(--green);}
+.stat-box-label{font-size:11px;color:var(--text-muted);}
+.plan-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:28px;}
+.plan-col-head{font-size:11.5px;font-weight:600;color:var(--text);margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid var(--border);}
+.plan-item{font-size:11.5px;color:var(--text-muted);line-height:1.5;padding:7px 0;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;gap:7px;}
+.plan-item::before{content:'→';color:var(--text-dim);flex-shrink:0;font-size:10px;margin-top:1px;}
+.plan-item.empty{color:var(--text-dim);font-style:italic;}.plan-item.empty::before{display:none;}
+#fnCards{display:flex;flex-direction:column;gap:10px;}
+.fn-card{background:var(--ink-2);border:1px solid var(--border);border-radius:9px;overflow:hidden;}
+.fn-head{display:flex;align-items:center;gap:14px;padding:14px 18px;cursor:pointer;transition:background 0.12s;}
+.fn-head:hover{background:rgba(255,255,255,0.03);}
+.fn-head-left{display:flex;align-items:center;gap:12px;flex:1;}
+.fn-icon{font-size:17px;flex-shrink:0;}
+.fn-name{font-size:13px;font-weight:600;color:var(--text);}
+.fn-sub{font-size:10.5px;color:var(--text-muted);margin-top:1px;}
+.rag{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:0.07em;text-transform:uppercase;padding:3px 9px;border-radius:3px;flex-shrink:0;}
+.rag-red{background:var(--red-bg);color:var(--red);border:1px solid var(--red-border);}
+.rag-amber{background:var(--amber-bg);color:var(--amber);border:1px solid var(--amber-border);}
+.rag-green{background:var(--green-bg);color:var(--green);border:1px solid var(--green-border);}
+.fn-body{display:none;padding:0 18px 16px;border-top:1px solid var(--border);}
+.fn-body.open{display:block;}
+.finding-head{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:0.09em;text-transform:uppercase;color:var(--text-dim);margin-bottom:6px;margin-top:14px;}
+.gap-list{list-style:none;display:flex;flex-direction:column;gap:5px;}
+.gap-item{font-size:12px;color:var(--text-muted);line-height:1.5;display:flex;align-items:flex-start;gap:8px;padding:7px 10px;background:var(--red-bg);border:1px solid var(--red-border);border-radius:4px;}
+.gap-item::before{content:'✕';color:var(--red);flex-shrink:0;font-size:10px;margin-top:2px;}
+.gap-item.amber{background:var(--amber-bg);border-color:var(--amber-border);}
+.gap-item.amber::before{content:'△';color:var(--amber);}
+.action-list{list-style:none;display:flex;flex-direction:column;gap:5px;}
+.action-item{font-size:12px;color:var(--text-muted);line-height:1.5;display:flex;align-items:flex-start;gap:8px;padding:7px 10px;background:var(--ink-3);border:1px solid var(--border);border-radius:4px;}
+.action-item::before{content:'→';color:var(--text-dim);flex-shrink:0;font-size:10px;margin-top:2px;}
+.action-tag{font-family:'DM Mono',monospace;font-size:8px;letter-spacing:0.05em;padding:1px 6px;border-radius:2px;margin-left:auto;flex-shrink:0;}
+.tag-now{background:var(--red-bg);color:var(--red);border:1px solid var(--red-border);}
+.tag-30{background:var(--amber-bg);color:var(--amber);border:1px solid var(--amber-border);}
+.tag-90{background:var(--green-bg);color:var(--green);border:1px solid var(--green-border);}
+.verbatim{font-size:11.5px;color:var(--text-muted);font-style:italic;padding:10px 12px;background:var(--ink-3);border-left:2px solid var(--gold);border-radius:0 4px 4px 0;margin-top:10px;line-height:1.6;}
+.sec-divider{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-dim);margin-bottom:12px;margin-top:28px;display:flex;align-items:center;gap:10px;}
+.sec-divider::after{content:'';flex:1;height:1px;background:var(--border);}
+::-webkit-scrollbar{width:4px;}::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.08);border-radius:2px;}
+@media print{#nav,#stepbar,.rh-actions{display:none;}.fn-body{display:block!important;}}
 </style>
 </head>
 <body>
 
-<!-- NAV -->
-<nav>
-  <div class="nav-brand">
-    <div class="nav-logo">
-      <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-        <rect x="1" y="1" width="6" height="6" rx="1.5" fill="#6C63E8"/>
-        <rect x="9" y="1" width="6" height="6" rx="1.5" fill="#4db896"/>
-        <rect x="1" y="9" width="6" height="6" rx="1.5" fill="#4db896"/>
-        <rect x="9" y="9" width="6" height="6" rx="1.5" fill="#6C63E8" opacity="0.5"/>
-      </svg>
-    </div>
-    <span class="nav-title">Telinno Consulting</span>
-    <span class="nav-sub">HR Function Audit</span>
-  </div>
-  <div class="nav-right">
-    <span class="nav-badge">April 2026</span>
-  </div>
-</nav>
-
-<div class="phase-nav-bar">
-  <div class="pnb-left">
-    <a href="index.html" class="pnb-back">&#x2190; Back to Portal</a>
-    <div class="pnb-steps">
-      <div class="pnb-step active">
-        <div class="pnb-step-dot" style="border-color:#e07060;color:#e07060;">1</div>
-        <span style="color:#e07060;font-weight:600;">Diagnose the System</span>
-      </div>
-      <span class="pnb-step-sep">&#x203A;</span>
-      <div class="pnb-step">
-        <div class="pnb-step-dot" style="border-color:rgba(255,255,255,0.15);color:rgba(255,255,255,0.2);">2</div>
-        <span>Diagnose the People</span>
-      </div>
-      <span class="pnb-step-sep">&#x203A;</span>
-      <div class="pnb-step">
-        <div class="pnb-step-dot" style="border-color:rgba(255,255,255,0.15);color:rgba(255,255,255,0.2);">3</div>
-        <span>Define Success</span>
-      </div>
-      <span class="pnb-step-sep">&#x203A;</span>
-      <div class="pnb-step">
-        <div class="pnb-step-dot" style="border-color:rgba(255,255,255,0.15);color:rgba(255,255,255,0.2);">4</div>
-        <span>Fix It</span>
-      </div>
-    </div>
-  </div>
-  <div class="pnb-right">
-    <a href="telinno-audit-v2.html" style="background:rgba(201,171,71,0.1);border-color:rgba(201,171,71,0.25);color:#c9ab47;">Next: People Audit &#x2192;</a>
+<div id="nav">
+  <span class="nav-brand">Telinno · HR Function Audit</span>
+  <div class="nav-links">
+    <a href="index.html" class="nav-link">← Portal</a>
+    <a href="hr-function-audit.html" class="nav-link here">Function Audit</a>
+    <a href="people-infra-audit.html" class="nav-link">People Audit</a>
+    <a href="telinno-jsp.html" class="nav-link">JSP</a>
+    <a href="telinno-matrix.html" class="nav-link">Matrix</a>
+    <a href="pvc-final.html" class="nav-link">PVC</a>
   </div>
 </div>
 
-
-<!-- STAGE BAR -->
-<div class="stage-bar">
-  <div class="stage-item active" id="s1">
-    <div class="stage-num">1</div> HRBP Intake
-  </div>
-  <span class="stage-sep">›</span>
-  <div class="stage-item" id="s2">
-    <div class="stage-num">2</div> Function Assessment
-  </div>
-  <span class="stage-sep">›</span>
-  <div class="stage-item" id="s3">
-    <div class="stage-num">3</div> Audit Report
-  </div>
+<div id="stepbar">
+  <div class="step active" id="s1"><div class="step-num">1</div><div class="step-label">Select HRBP &amp; KAD</div></div>
+  <div class="step" id="s2"><div class="step-num">2</div><div class="step-label">Assess All HR Functions</div></div>
+  <div class="step" id="s3"><div class="step-num">3</div><div class="step-label">Audit Report &amp; Action Plan</div></div>
 </div>
 
-<!-- ══════════════ PAGE 1: INTAKE FORM ══════════════ -->
 <div class="page active" id="pageForm">
-<div class="form-wrap">
+<div id="formInner" style="max-width:860px;margin:0 auto;padding:32px 32px 80px;">
 
   <div class="form-header">
-    <p class="form-eyebrow">HR Function Audit · Telinno · April 2026</p>
-    <h1 class="form-title">HRBP Process Intake</h1>
-    <p class="form-desc">This form captures the current state of HR processes in your KAD — what exists, what is nominal, and what is absent. Answers feed directly into the full audit report. Be honest; the gaps identified here become the action plan.</p>
+    <div class="form-eyebrow">Telinno Consulting · April 2026</div>
+    <div class="form-title">HR Function Audit</div>
+    <div class="form-sub">Assesses whether each HR function <strong>exists</strong>, whether it is <strong>compliant with Telinno's HR Policy Handbook and Employee Handbook</strong>, and whether it is being <strong>correctly operated</strong>. Every question is anchored to a specific policy or regulatory reference. Be precise — the gaps you identify become the action plan for your KAD.</div>
   </div>
 
-  <!-- HRBP Selection -->
-  <div class="q-block" style="margin-bottom:2rem;">
-    <label class="q-label">Which HRBP are you? <span>Select one</span></label>
-    <div class="hrbp-grid">
-      <label class="hrbp-card">
-        <input type="radio" name="hrbp" value="amadou"/>
-        <p class="hrbp-name">Amadou Guindo</p>
-        <p class="hrbp-kad">KAD 1 — Equipment Vendors</p>
-        <p class="hrbp-country">ZTE, Nokia · Mali</p>
-      </label>
-      <label class="hrbp-card">
-        <input type="radio" name="hrbp" value="luvie"/>
-        <p class="hrbp-name">Luvie Mafotsang</p>
-        <p class="hrbp-kad">KAD 2 — Huawei, Regulators</p>
-        <p class="hrbp-country">Gov't · Cameroon</p>
-      </label>
-      <label class="hrbp-card">
-        <input type="radio" name="hrbp" value="adeniyi"/>
-        <p class="hrbp-name">Adeniyi Oluwadimimu</p>
-        <p class="hrbp-kad">KAD 3 — Tower Infrastructure</p>
-        <p class="hrbp-country">GICL, IHS, ATC · Nigeria</p>
-      </label>
-      <label class="hrbp-card">
-        <input type="radio" name="hrbp" value="bassira"/>
-        <p class="hrbp-name">Bassira Abdou Laouali</p>
-        <p class="hrbp-kad">KAD 4 — Telecom Operators</p>
-        <p class="hrbp-country">MTN, Airtel, Orange · Niger</p>
-      </label>
-      <label class="hrbp-card">
-        <input type="radio" name="hrbp" value="lead"/>
-        <p class="hrbp-name">HR Lead / CHRO</p>
-        <p class="hrbp-kad">All KADs — Central</p>
-        <p class="hrbp-country">Organisation-wide view</p>
-      </label>
-    </div>
+  <div style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-dim);margin-bottom:10px;">Which HRBP are you?</div>
+  <div class="hrbp-grid">
+    <div class="hrbp-card" onclick="selectHRBP(this,'Amadou Guindo','KAD 1 — Equipment Vendors','ZTE, Nokia · Mali')"><div class="hc-name">Amadou Guindo</div><div class="hc-kad">KAD 1 — Equipment Vendors</div><div class="hc-detail">ZTE, Nokia · Mali</div></div>
+    <div class="hrbp-card" onclick="selectHRBP(this,'Luvie Mafotsang','KAD 2 — Huawei, Regulators &amp; Govt','Cameroon')"><div class="hc-name">Luvie Mafotsang</div><div class="hc-kad">KAD 2 — Huawei, Regulators &amp; Govt</div><div class="hc-detail">Cameroon</div></div>
+    <div class="hrbp-card" onclick="selectHRBP(this,'Adeniyi Oluwadimimu','KAD 3 — Tower Infrastructure','GICL, IHS, ATC · Nigeria')"><div class="hc-name">Adeniyi Oluwadimimu</div><div class="hc-kad">KAD 3 — Tower Infrastructure</div><div class="hc-detail">GICL, IHS, ATC · Nigeria</div></div>
+    <div class="hrbp-card" onclick="selectHRBP(this,'Bassira Abdou Laouali','KAD 4 — Telecom Operators','MTN, Airtel, Orange · Niger')"><div class="hc-name">Bassira Abdou Laouali</div><div class="hc-kad">KAD 4 — Telecom Operators</div><div class="hc-detail">MTN, Airtel, Orange · Niger</div></div>
+    <div class="hrbp-card" onclick="selectHRBP(this,'HR Lead / CHRO','All KADs','Organisation-wide')"><div class="hc-name">HR Lead / CHRO</div><div class="hc-kad">All KADs — Organisation-wide</div><div class="hc-detail">Central view</div></div>
   </div>
 
-  <!-- SECTION 1: Compliance & Employment Law -->
+  <!-- SECTION 1 -->
   <div class="audit-section">
-    <div class="section-head">
-      <div class="section-icon" style="background:#fdf0ee;">⚖️</div>
-      <div>
-        <p class="section-name">1. Compliance & Employment Law</p>
-        <p class="section-sub">Contracts, right-to-work, country obligations</p>
-      </div>
-    </div>
+    <div class="section-head"><div class="section-icon">📋</div><div class="section-info"><div class="section-title">1. Employment &amp; Engagement Process</div><div class="section-sub">Appointment letters · references · induction · ID · probation · handbook acknowledgement</div></div><div class="section-ref">HR Policy Handbook — Section 1</div></div>
     <div class="section-body">
-      <div class="q-block">
-        <label class="q-label">Do all employees in your KAD have a signed employment contract?</label>
-        <div class="pill-group" data-q="contracts">
-          <label class="pill"><input type="radio" name="q_contracts" value="no"/> No — significant gaps</label>
-          <label class="pill"><input type="radio" name="q_contracts" value="partial"/> Partial — some missing</label>
-          <label class="pill"><input type="radio" name="q_contracts" value="yes"/> Yes — all signed</label>
-        </div>
+      <div class="question">
+        <div class="q-label">Is a formal letter of appointment issued to every new hire before or on their first day?</div>
+        <div class="q-policy"><strong>Policy (Section 1, HR Policy Handbook):</strong> "You will be given a letter of employment once you have been considered suitable for employment." Employment without a formal letter is not legally constituted and creates significant exposure in all operating jurisdictions.</div>
+        <div class="pill-group"><label class="pill"><input type="radio" name="q_appt_letter" value="no">No — not consistently issued</label><label class="pill"><input type="radio" name="q_appt_letter" value="partial">Partial — some hires missing letters</label><label class="pill"><input type="radio" name="q_appt_letter" value="yes">Yes — issued to all employees</label></div>
       </div>
-      <div class="q-block">
-        <label class="q-label">Do you have visibility of employment law requirements for each country in your KAD?</label>
-        <div class="pill-group" data-q="law">
-          <label class="pill"><input type="radio" name="q_law" value="no"/> No</label>
-          <label class="pill"><input type="radio" name="q_law" value="partial"/> Partial awareness</label>
-          <label class="pill"><input type="radio" name="q_law" value="yes"/> Yes — documented</label>
-        </div>
+      <div class="question">
+        <div class="q-label">Are 2 recent passport photographs (not older than 6 months) collected from all new employees on resumption?</div>
+        <div class="q-policy"><strong>Policy (Section 1, HR Policy Handbook):</strong> Required documentation on engagement. Also required: 3 references (1 from previous employer, 2 personal) — or 2 references if it is the employee's first job.</div>
+        <div class="pill-group"><label class="pill"><input type="radio" name="q_photos_refs" value="no">No — not being collected</label><label class="pill"><input type="radio" name="q_photos_refs" value="partial">Partial — inconsistent collection</label><label class="pill"><input type="radio" name="q_photos_refs" value="yes">Yes — photos and references on file for all</label></div>
       </div>
-      <div class="q-block">
-        <label class="q-label">Are payslips issued correctly and on time each month?</label>
-        <div class="pill-group" data-q="payslips">
-          <label class="pill"><input type="radio" name="q_payslips" value="no"/> No</label>
-          <label class="pill"><input type="radio" name="q_payslips" value="partial"/> Sometimes / inconsistent</label>
-          <label class="pill"><input type="radio" name="q_payslips" value="yes"/> Yes — consistently</label>
-        </div>
+      <div class="question">
+        <div class="q-label">Is a structured induction programme conducted for new hires, ending with a signed induction form from both the employee and HR?</div>
+        <div class="q-policy"><strong>Policy (Section 1, HR Policy Handbook):</strong> "The HR unit coordinates the induction programme for a new employee. At the end of the induction programme, an induction form is filled and signed by the new employee and HR." The signed form is the compliance evidence.</div>
+        <div class="pill-group"><label class="pill"><input type="radio" name="q_induction" value="no">No — no structured induction</label><label class="pill"><input type="radio" name="q_induction" value="partial">Informal induction — no signed form</label><label class="pill"><input type="radio" name="q_induction" value="yes">Yes — structured programme with signed form</label></div>
       </div>
-      <div class="q-block">
-        <label class="q-label">Notes on compliance gaps <span>(optional)</span></label>
-        <textarea class="q-text" name="n_compliance" placeholder="E.g. 3 employees have expired contracts, Niger statutory deductions unclear…"></textarea>
+      <div class="question">
+        <div class="q-label">Is an employment number and ID card issued to every employee? Are ID cards being worn in the office as required?</div>
+        <div class="q-policy"><strong>Policy (Section 1, HR Policy Handbook):</strong> "Every employee will be issued an employment number and employment ID card. The employment ID card must be worn at all times in the TCL office and shown upon request to customers."</div>
+        <div class="pill-group"><label class="pill"><input type="radio" name="q_id_card" value="no">No — not issued</label><label class="pill"><input type="radio" name="q_id_card" value="partial">Issued but not worn / tracked</label><label class="pill"><input type="radio" name="q_id_card" value="yes">Yes — issued and compliance enforced</label></div>
+      </div>
+      <div class="question">
+        <div class="q-label">Is probation correctly managed? 3-month period → written supervisor assessment → written confirmation letter. Extensions (max 6 months total) issued in writing?</div>
+        <div class="q-policy"><strong>Policy (Section 1, HR Policy Handbook):</strong> "You will remain on probation for an initial period of three (3) months… If the appraisal is satisfactory… you will receive a formal confirmation letter in writing." Extension allowed but cannot exceed 6 months total.</div>
+        <div class="pill-group"><label class="pill"><input type="radio" name="q_probation" value="no">No formal probation management</label><label class="pill"><input type="radio" name="q_probation" value="partial">Managed informally — no written letters</label><label class="pill"><input type="radio" name="q_probation" value="yes">Yes — documented and fully compliant</label></div>
+      </div>
+      <div class="question">
+        <div class="q-label">Has the HR Policy Handbook and Employee Handbook been issued to all employees? Has each employee signed and returned the acknowledgement slip?</div>
+        <div class="q-policy"><strong>Policy (Both Handbooks):</strong> Both the HR Policy Handbook ("Agreement to the Terms" page) and the Employee Handbook (Section C acknowledgement) require the employee to sign and return confirmation. Without this, the company cannot enforce the handbook's terms.</div>
+        <div class="pill-group"><label class="pill"><input type="radio" name="q_handbook_ack" value="no">No — not issued or collected</label><label class="pill"><input type="radio" name="q_handbook_ack" value="partial">Issued but many acknowledgements missing</label><label class="pill"><input type="radio" name="q_handbook_ack" value="yes">Yes — all employees have signed</label></div>
+        <textarea class="q-note" name="n_employment" placeholder="Notes on employment process gaps — which employees lack letters, IDs, induction forms…" rows="2"></textarea>
       </div>
     </div>
   </div>
 
-  <!-- SECTION 2: Workforce Planning & Structure -->
+  <!-- SECTION 2 -->
   <div class="audit-section">
-    <div class="section-head">
-      <div class="section-icon" style="background:#eef3fb;">📊</div>
-      <div>
-        <p class="section-name">2. Workforce Planning & Structure</p>
-        <p class="section-sub">Headcount planning, org design, vacancy management</p>
-      </div>
-    </div>
+    <div class="section-head"><div class="section-icon">💰</div><div class="section-info"><div class="section-title">2. Compensation &amp; Pay Administration</div><div class="section-sub">Payslips · bank accounts · salary structure · salary bands · pay equity</div></div><div class="section-ref">HR Policy Handbook — Section 2; Employee Handbook — Section B.9</div></div>
     <div class="section-body">
-      <div class="q-block">
-        <label class="q-label">Does your KAD have a documented workforce plan aligned to business objectives?</label>
-        <div class="pill-group">
-          <label class="pill"><input type="radio" name="q_wfplan" value="no"/> No — reactive hiring only</label>
-          <label class="pill"><input type="radio" name="q_wfplan" value="partial"/> Informal / in someone's head</label>
-          <label class="pill"><input type="radio" name="q_wfplan" value="yes"/> Yes — documented</label>
-        </div>
+      <div class="question">
+        <div class="q-label">Is a payslip (pay advice) issued to every employee on or before the last working day of every month?</div>
+        <div class="q-policy"><strong>Policy (Section 2, HR Policy Handbook):</strong> "Payday is the last working day every month… A pay advice will be issued to you." This is also a statutory requirement in Nigeria (CITA) and equivalent legislation in Mali, Niger, CIV, and Cameroon. Non-issuance is a regulatory violation.</div>
+        <div class="pill-group"><label class="pill"><input type="radio" name="q_payslips" value="no">No — payslips not being issued</label><label class="pill"><input type="radio" name="q_payslips" value="partial">Inconsistent — some months or some employees missing</label><label class="pill"><input type="radio" name="q_payslips" value="yes">Yes — issued every month for all employees</label></div>
       </div>
-      <div class="q-block">
-        <label class="q-label">Are reporting lines and org structure clear and documented after the restructure?</label>
-        <div class="pill-group">
-          <label class="pill"><input type="radio" name="q_orgstruct" value="no"/> No — still unclear</label>
-          <label class="pill"><input type="radio" name="q_orgstruct" value="partial"/> Mostly — some ambiguity</label>
-          <label class="pill"><input type="radio" name="q_orgstruct" value="yes"/> Yes — clear and communicated</label>
-        </div>
+      <div class="question">
+        <div class="q-label">Does every employee have a bank account on file? Is all salary paid by direct bank credit — no cash payments?</div>
+        <div class="q-policy"><strong>Policy (Section 2, HR Policy Handbook):</strong> "For the purpose of receiving your pay, you are expected to maintain an account with one of the company's banks… your account will be credited directly by the bank." Employee Handbook (Section B.9): "The Company's normal method of payment is by credit to bank account of Employees. (No cash payment)"</div>
+        <div class="pill-group"><label class="pill"><input type="radio" name="q_bank" value="no">No — gaps exist or cash being paid</label><label class="pill"><input type="radio" name="q_bank" value="partial">Partial — some employees without accounts</label><label class="pill"><input type="radio" name="q_bank" value="yes">Yes — all on direct bank credit</label></div>
       </div>
-      <div class="q-block">
-        <label class="q-label">Do open vacancies have a defined hiring process and timeline?</label>
-        <div class="pill-group">
-          <label class="pill"><input type="radio" name="q_vacancies" value="no"/> No</label>
-          <label class="pill"><input type="radio" name="q_vacancies" value="partial"/> Ad hoc</label>
-          <label class="pill"><input type="radio" name="q_vacancies" value="yes"/> Yes — structured process</label>
-        </div>
+      <div class="question">
+        <div class="q-label">Is every employee's compensation package documented with a full breakdown: basic salary + housing allowance + transport allowance + meal allowance?</div>
+        <div class="q-policy"><strong>Policy (Section 2, HR Policy Handbook):</strong> "Your compensation package is made up of salary and benefits. Each position in the company has a range of basic salary and allowances. Allowances include housing, transport and meal." Each component must be individually documented per employee.</div>
+        <div class="pill-group"><label class="pill"><input type="radio" name="q_comp_structure" value="no">No — lump sum only, no breakdown</label><label class="pill"><input type="radio" name="q_comp_structure" value="partial">Partial — inconsistent across employees</label><label class="pill"><input type="radio" name="q_comp_structure" value="yes">Yes — full breakdown documented for all</label></div>
       </div>
-      <div class="q-block">
-        <label class="q-label">Notes <span>(optional)</span></label>
-        <textarea class="q-text" name="n_workforce" placeholder="E.g. 4 open roles in KAD 3 without a hiring plan, reporting lines post-restructure not communicated…"></textarea>
+      <div class="question">
+        <div class="q-label">Is there a documented, market-benchmarked salary band for every role type in your KAD? Are pay decisions made within the band?</div>
+        <div class="q-policy"><strong>Policy (Section 2, HR Policy Handbook):</strong> "All salary ranges are reviewed periodically, to assure our continued competitiveness. The salary ranges are related to pay in the competitive community for specific levels of responsibility." Without bands, compensation decisions are arbitrary and create inequity claims.</div>
+        <div class="pill-group"><label class="pill"><input type="radio" name="q_salary_bands" value="no">No — no salary bands exist</label><label class="pill"><input type="radio" name="q_salary_bands" value="partial">Informal only — not documented</label><label class="pill"><input type="radio" name="q_salary_bands" value="yes">Yes — documented, market-benchmarked bands per role</label></div>
+        <textarea class="q-note" name="n_compensation" placeholder="Notes on compensation gaps — known pay inequities, missing payslips, employees without bank accounts…" rows="2"></textarea>
       </div>
     </div>
   </div>
 
-  <!-- SECTION 3: Recruitment & Selection -->
+  <!-- SECTION 3 -->
   <div class="audit-section">
-    <div class="section-head">
-      <div class="section-icon" style="background:#edf7f2;">🎯</div>
-      <div>
-        <p class="section-name">3. Recruitment & Selection</p>
-        <p class="section-sub">Sourcing, job descriptions, structured selection</p>
-      </div>
-    </div>
+    <div class="section-head"><div class="section-icon">📈</div><div class="section-info"><div class="section-title">3. Performance Management</div><div class="section-sub">Goals · written appraisals (twice yearly) · 1:1 cadence · PIP · consequence management</div></div><div class="section-ref">HR Policy Handbook — Sections 2 &amp; 7; Employee Handbook — Section A.7</div></div>
     <div class="section-body">
-      <div class="q-block">
-        <label class="q-label">Do roles being hired have a written job description or Job Success Profile?</label>
-        <div class="pill-group">
-          <label class="pill"><input type="radio" name="q_jd" value="no"/> No — verbal briefs only</label>
-          <label class="pill"><input type="radio" name="q_jd" value="partial"/> Some roles</label>
-          <label class="pill"><input type="radio" name="q_jd" value="yes"/> Yes — all roles</label>
-        </div>
+      <div class="question">
+        <div class="q-label">Do all employees in your KAD have documented, agreed performance goals for the current period — connected to KAD objectives?</div>
+        <div class="q-policy"><strong>Policy (Section 2, HR Policy Handbook):</strong> "Performance is the principle behind our reward system." Without documented goals, appraisals cannot be objective, promotion decisions are indefensible, and compensation reviews have no basis. Goals must be written — verbal agreements are insufficient.</div>
+        <div class="pill-group"><label class="pill"><input type="radio" name="q_goals" value="no">No — no documented goals exist</label><label class="pill"><input type="radio" name="q_goals" value="partial">Partial — some employees only</label><label class="pill"><input type="radio" name="q_goals" value="yes">Yes — all employees have documented goals</label></div>
       </div>
-      <div class="q-block">
-        <label class="q-label">Is there a structured interview or selection process (scored, criteria-based)?</label>
-        <div class="pill-group">
-          <label class="pill"><input type="radio" name="q_selection" value="no"/> No — gut feel / informal</label>
-          <label class="pill"><input type="radio" name="q_selection" value="partial"/> Partially — varies by manager</label>
-          <label class="pill"><input type="radio" name="q_selection" value="yes"/> Yes — structured process</label>
-        </div>
+      <div class="question">
+        <div class="q-label">Have written performance appraisals been conducted in the last 6 months? (Policy mandates twice yearly — mid-year and end-of-year, both in writing)</div>
+        <div class="q-policy"><strong>Policy (Section 2, HR Policy Handbook):</strong> "You will receive written performance appraisals twice a year (every 6 months – mid and end-of-year). These appraisals will be used to determine the amount and timing of your merit or promotional increases." Written — not verbal. On file — not forgotten.</div>
+        <div class="pill-group"><label class="pill"><input type="radio" name="q_appraisals" value="no">No — appraisals not conducted</label><label class="pill"><input type="radio" name="q_appraisals" value="partial">Verbal / informal — not written or filed</label><label class="pill"><input type="radio" name="q_appraisals" value="yes">Yes — written, conducted, and filed</label></div>
       </div>
-      <div class="q-block">
-        <label class="q-label">Notes <span>(optional)</span></label>
-        <textarea class="q-text" name="n_recruitment" placeholder="E.g. Last 3 hires made without HRBP involvement, no interview scorecard in use…"></textarea>
+      <div class="question">
+        <div class="q-label">Are regular performance conversations (1:1s) happening between managers and their direct reports at a defined cadence?</div>
+        <div class="q-policy"><strong>PVC Doctrine (Phase 5):</strong> Continuous feedback is the operating mechanism between formal appraisals. A 6-month appraisal cycle without ongoing 1:1s means feedback arrives 6 months too late to change behaviour. The 1:1 is the manager's most important management tool.</div>
+        <div class="pill-group"><label class="pill"><input type="radio" name="q_perf_cadence" value="no">No — ad hoc or absent</label><label class="pill"><input type="radio" name="q_perf_cadence" value="partial">Occasional — no defined cadence</label><label class="pill"><input type="radio" name="q_perf_cadence" value="yes">Yes — regular defined cadence</label></div>
+      </div>
+      <div class="question">
+        <div class="q-label">Is there a documented underperformance process (PIP) being applied correctly? Written warning first → PIP initiation → review → termination only after documented failure?</div>
+        <div class="q-policy"><strong>Policy (Section 7, HR Policy Handbook):</strong> "A below average performance during a scheduled performance appraisal will commence a Performance Improvement Plan (PIP), after a written warning for non performance has been issued… if performance still falls below average after the PIP, the Line manager may give another written warning… thereafter if no improvement, advise management to effect termination."</div>
+        <div class="pill-group"><label class="pill"><input type="radio" name="q_pip" value="no">No — underperformance handled informally or ignored</label><label class="pill"><input type="radio" name="q_pip" value="partial">Process exists but inconsistently applied</label><label class="pill"><input type="radio" name="q_pip" value="yes">Yes — PIP process documented and correctly applied</label></div>
+        <textarea class="q-note" name="n_performance" placeholder="Notes on performance management — any active PIPs, employees with no goals, appraisals not completed…" rows="2"></textarea>
       </div>
     </div>
   </div>
 
-  <!-- SECTION 4: Onboarding -->
+  <!-- SECTION 4 -->
   <div class="audit-section">
-    <div class="section-head">
-      <div class="section-icon" style="background:#f3f0fd;">🚀</div>
-      <div>
-        <p class="section-name">4. Onboarding</p>
-        <p class="section-sub">First-day process, 30/60/90 day plans, role clarity</p>
-      </div>
-    </div>
+    <div class="section-head"><div class="section-icon">⚖️</div><div class="section-info"><div class="section-title">4. Discipline &amp; Grievance Management</div><div class="section-sub">Query process · written responses · warnings · suspension · grievance procedure · due process</div></div><div class="section-ref">HR Policy Handbook — Sections 5 &amp; 6; Employee Handbook — Section B.19</div></div>
     <div class="section-body">
-      <div class="q-block">
-        <label class="q-label">Do new hires receive a structured onboarding plan (30/60/90 day)?</label>
-        <div class="pill-group">
-          <label class="pill"><input type="radio" name="q_onboard" value="no"/> No</label>
-          <label class="pill"><input type="radio" name="q_onboard" value="partial"/> Informal introduction only</label>
-          <label class="pill"><input type="radio" name="q_onboard" value="yes"/> Yes — documented plan</label>
-        </div>
+      <div class="question">
+        <div class="q-label">Is the correct disciplinary sequence followed: query issued → employee given 24 hours to respond in writing → management action → escalation if repeated?</div>
+        <div class="q-policy"><strong>Policy (Section 6, HR Policy Handbook):</strong> "When you commit any offence… you may receive a query from the Human Resources unit. You will be giving an opportunity to state your own case in writing within 24 hours." 3 queries in a year → suspension without pay. 4th query → termination. This process must be followed exactly for any termination to be legally defensible.</div>
+        <div class="pill-group"><label class="pill"><input type="radio" name="q_discipline_process" value="no">No — handled ad hoc without following process</label><label class="pill"><input type="radio" name="q_discipline_process" value="partial">Partial — process not always followed</label><label class="pill"><input type="radio" name="q_discipline_process" value="yes">Yes — correct process consistently followed</label></div>
       </div>
-      <div class="q-block">
-        <label class="q-label">Do new hires have clarity on their role, KPIs and reporting line within week 1?</label>
-        <div class="pill-group">
-          <label class="pill"><input type="radio" name="q_roleentry" value="no"/> No</label>
-          <label class="pill"><input type="radio" name="q_roleentry" value="partial"/> Sometimes</label>
-          <label class="pill"><input type="radio" name="q_roleentry" value="yes"/> Yes — always</label>
-        </div>
+      <div class="question">
+        <div class="q-label">Are all disciplinary actions (queries, warnings, suspensions) documented in writing and filed in the employee's HR record?</div>
+        <div class="q-policy"><strong>Policy (Section 6, HR Policy Handbook):</strong> Verbal queries and verbal warnings are not legally enforceable. Every query must be in writing, every response in writing, every outcome in writing. Without a documented trail, the company cannot defend a termination decision in any jurisdiction.</div>
+        <div class="pill-group"><label class="pill"><input type="radio" name="q_disc_records" value="no">No — verbal actions only, nothing documented</label><label class="pill"><input type="radio" name="q_disc_records" value="partial">Partial — some documented, many verbal</label><label class="pill"><input type="radio" name="q_disc_records" value="yes">Yes — all disciplinary actions documented and filed</label></div>
       </div>
-      <div class="q-block">
-        <label class="q-label">Notes <span>(optional)</span></label>
-        <textarea class="q-text" name="n_onboard" placeholder="E.g. New hires typically left to figure things out, no buddy system…"></textarea>
+      <div class="question">
+        <div class="q-label">Is there a documented grievance procedure that employees know about and can access? Is the 2-step escalation (supervisor → HR within 3 days) being followed?</div>
+        <div class="q-policy"><strong>Policy (Section 5, HR Policy Handbook):</strong> "If you need to do so, you must use the following problem review: 1. First discuss the problem with your immediate supervisor. 2. If you have not received a satisfactory response after 3 days, then you may pass the matter to HR for final settlement." If employees don't know this process exists, they either escalate inappropriately or suppress legitimate concerns.</div>
+        <div class="pill-group"><label class="pill"><input type="radio" name="q_grievance" value="no">No — no formal grievance process</label><label class="pill"><input type="radio" name="q_grievance" value="partial">Process exists but not communicated to employees</label><label class="pill"><input type="radio" name="q_grievance" value="yes">Yes — known, accessible, and correctly followed</label></div>
+        <textarea class="q-note" name="n_discipline" placeholder="Notes on active disciplinary cases, open grievances, any matters where due process was not followed…" rows="2"></textarea>
       </div>
     </div>
   </div>
 
-  <!-- SECTION 5: Performance Management -->
+  <!-- SECTION 5 -->
   <div class="audit-section">
-    <div class="section-head">
-      <div class="section-icon" style="background:#faeeda;">📈</div>
-      <div>
-        <p class="section-name">5. Performance Management</p>
-        <p class="section-sub">Goal setting, reviews, underperformance handling</p>
-      </div>
-    </div>
+    <div class="section-head"><div class="section-icon">🗓</div><div class="section-info"><div class="section-title">5. Leave Management</div><div class="section-sub">Annual leave entitlement · leave schedules · sick leave certification · maternity/paternity</div></div><div class="section-ref">HR Policy Handbook — Section 3; Employee Handbook — Section B.16</div></div>
     <div class="section-body">
-      <div class="q-block">
-        <label class="q-label">Do all employees in your KAD have documented performance goals for this year?</label>
-        <div class="pill-group">
-          <label class="pill"><input type="radio" name="q_goals" value="no"/> No</label>
-          <label class="pill"><input type="radio" name="q_goals" value="partial"/> Some — not consistent</label>
-          <label class="pill"><input type="radio" name="q_goals" value="yes"/> Yes — all employees</label>
-        </div>
+      <div class="question">
+        <div class="q-label">Is each employee's annual leave entitlement stated in their letter of employment? Do employees know their exact entitlement?</div>
+        <div class="q-policy"><strong>Policy (Section 3, HR Policy Handbook):</strong> "Your leave entitlement for each year is as stated in your letter of employment." A generic 'refer to policy' is insufficient — leave entitlement must be individually specified in each employment letter. Eligibility requires appointment confirmation and at least 12 months continuous service.</div>
+        <div class="pill-group"><label class="pill"><input type="radio" name="q_leave_ent" value="no">No — not in employment letters</label><label class="pill"><input type="radio" name="q_leave_ent" value="partial">In some contracts only — inconsistent</label><label class="pill"><input type="radio" name="q_leave_ent" value="yes">Yes — individually stated in all employment letters</label></div>
       </div>
-      <div class="q-block">
-        <label class="q-label">Are performance conversations happening at a defined cadence (monthly / quarterly)?</label>
-        <div class="pill-group">
-          <label class="pill"><input type="radio" name="q_perfcadence" value="no"/> No — ad hoc or not at all</label>
-          <label class="pill"><input type="radio" name="q_perfcadence" value="partial"/> Occasionally</label>
-          <label class="pill"><input type="radio" name="q_perfcadence" value="yes"/> Yes — consistent cadence</label>
-        </div>
+      <div class="question">
+        <div class="q-label">Have leave schedules been submitted to HR by all employees for this year? Is a consolidated leave plan maintained for your KAD?</div>
+        <div class="q-policy"><strong>Policy (Section 3, HR Policy Handbook):</strong> "You are required to submit your annual leave date to the Human Resources unit by January 31 each year. A leave schedule will be compiled on a 'first on time' basis." Without a leave plan, the organisation has no visibility of planned absences and cannot prevent operational gaps.</div>
+        <div class="pill-group"><label class="pill"><input type="radio" name="q_leave_sched" value="no">No — no leave schedules exist</label><label class="pill"><input type="radio" name="q_leave_sched" value="partial">Partial — some submitted</label><label class="pill"><input type="radio" name="q_leave_sched" value="yes">Yes — consolidated leave plan maintained</label></div>
       </div>
-      <div class="q-block">
-        <label class="q-label">Is there a process for managing underperformance (PIP, documented warnings)?</label>
-        <div class="pill-group">
-          <label class="pill"><input type="radio" name="q_pip" value="no"/> No — handled informally</label>
-          <label class="pill"><input type="radio" name="q_pip" value="partial"/> Inconsistent</label>
-          <label class="pill"><input type="radio" name="q_pip" value="yes"/> Yes — documented process</label>
-        </div>
+      <div class="question">
+        <div class="q-label">Is sick leave tracked against the 24-day annual cap? Is a medical certificate from a registered practitioner required and collected?</div>
+        <div class="q-policy"><strong>Policy (Section 3, HR Policy Handbook):</strong> "You shall be entitled to sick leave with full pay of 24 days in any year provided that the illness occasioning such leave is certified by a registered medical practitioner." Absence beyond 24 days without certification is unpaid and actionable under policy.</div>
+        <div class="pill-group"><label class="pill"><input type="radio" name="q_sick_leave" value="no">No — no tracking, no certificates required</label><label class="pill"><input type="radio" name="q_sick_leave" value="partial">Partial — certificates not consistently collected</label><label class="pill"><input type="radio" name="q_sick_leave" value="yes">Yes — tracked with certified medical evidence</label></div>
       </div>
-      <div class="q-block">
-        <label class="q-label">Notes <span>(optional)</span></label>
-        <textarea class="q-text" name="n_perf" placeholder="E.g. No performance reviews completed in 2025, underperformance managed by avoidance…"></textarea>
+      <div class="question">
+        <div class="q-label">Is maternity leave (12 weeks paid, requires 12 months service) and paternity leave (3 days max per annum) being administered correctly and consistently?</div>
+        <div class="q-policy"><strong>Policy (Section 3, HR Policy Handbook):</strong> Maternity: 12 weeks full pay for confirmed employees with 12+ months service. Extension: 4 weeks unpaid at manager's discretion. Annual leave cannot be built into maternity leave. Paternity: maximum 3 days per annum. Inconsistent application creates discrimination claims.</div>
+        <div class="pill-group"><label class="pill"><input type="radio" name="q_parental" value="no">No — not formally managed</label><label class="pill"><input type="radio" name="q_parental" value="partial">Inconsistently applied across employees</label><label class="pill"><input type="radio" name="q_parental" value="yes">Yes — correctly administered per policy</label></div>
+        <textarea class="q-note" name="n_leave" placeholder="Notes on leave management — outstanding schedules, sick leave concerns, recent maternity/paternity cases…" rows="2"></textarea>
       </div>
     </div>
   </div>
 
-  <!-- SECTION 6: Learning & Development -->
+  <!-- SECTION 6 -->
   <div class="audit-section">
-    <div class="section-head">
-      <div class="section-icon" style="background:#eaf3de;">🎓</div>
-      <div>
-        <p class="section-name">6. Learning & Development</p>
-        <p class="section-sub">Training needs, capability gaps, development plans</p>
-      </div>
-    </div>
+    <div class="section-head"><div class="section-icon">🚪</div><div class="section-info"><div class="section-title">6. Separations &amp; Exit Process</div><div class="section-sub">30-day notice · clearance form · final pay · asset recovery · exit interview</div></div><div class="section-ref">HR Policy Handbook — Section 7; Employee Handbook — Section B.6</div></div>
     <div class="section-body">
-      <div class="q-block">
-        <label class="q-label">Has a training needs analysis been conducted for your KAD in the last 12 months?</label>
-        <div class="pill-group">
-          <label class="pill"><input type="radio" name="q_tna" value="no"/> No</label>
-          <label class="pill"><input type="radio" name="q_tna" value="partial"/> Informally / partially</label>
-          <label class="pill"><input type="radio" name="q_tna" value="yes"/> Yes — documented</label>
-        </div>
+      <div class="question">
+        <div class="q-label">Is the full clearance procedure followed for all exits? (Line Manager → IT/Information Management → Admin → Finance → HR all sign off before final pay is released)</div>
+        <div class="q-policy"><strong>Policy (Section 7, HR Policy Handbook):</strong> "HR prepares a Clearance Form in three (3) copies. Employee approaches the Heads of each department: (a) Line Manager (b) Information Management (c) Administration (d) Finance (e) HR." All must sign before final pay computation. No shortcuts.</div>
+        <div class="pill-group"><label class="pill"><input type="radio" name="q_clearance" value="no">No — no structured clearance process</label><label class="pill"><input type="radio" name="q_clearance" value="partial">Partial — some steps skipped</label><label class="pill"><input type="radio" name="q_clearance" value="yes">Yes — full process followed for every exit</label></div>
       </div>
-      <div class="q-block">
-        <label class="q-label">Do employees have individual development plans?</label>
-        <div class="pill-group">
-          <label class="pill"><input type="radio" name="q_idp" value="no"/> No</label>
-          <label class="pill"><input type="radio" name="q_idp" value="partial"/> For some</label>
-          <label class="pill"><input type="radio" name="q_idp" value="yes"/> Yes — all employees</label>
-        </div>
+      <div class="question">
+        <div class="q-label">Is final pay computed within 1 month of termination? Is the 90%/10% retention applied? (10% held for 60 days for outstanding invoices, then released)</div>
+        <div class="q-policy"><strong>Policy (Section 7, HR Policy Handbook):</strong> "The Company pays 90% of the total net pay and holds 10% retention amount… After a period of not more than sixty (60) days, HR informs Finance to release the remaining 10%." Final pay must also include all earned salary, allowances, bonuses, and unused vacation leave.</div>
+        <div class="pill-group"><label class="pill"><input type="radio" name="q_final_pay" value="no">No — not following policy timelines or retention rule</label><label class="pill"><input type="radio" name="q_final_pay" value="partial">Partially applied — some elements missing</label><label class="pill"><input type="radio" name="q_final_pay" value="yes">Yes — fully compliant with policy</label></div>
       </div>
-      <div class="q-block">
-        <label class="q-label">Notes <span>(optional)</span></label>
-        <textarea class="q-text" name="n_ld" placeholder="E.g. Technical training happens ad hoc by vendor, no L&D budget assigned…"></textarea>
+      <div class="question">
+        <div class="q-label">Are all company assets recovered from leavers before exit? (ID card, CUG SIM, laptop, phone, access cards) Are exit interviews conducted?</div>
+        <div class="q-policy"><strong>Policy (Sections 1 &amp; 2, HR Policy Handbook):</strong> ID card: "At the end of contract/employment, the employee must submit his/her identification card to the HR unit." CUG SIM: "On termination of employment, the Employee must return it to the HR Manager." Unrecovered assets are a cost and a security risk.</div>
+        <div class="pill-group"><label class="pill"><input type="radio" name="q_assets" value="no">No — assets not consistently recovered</label><label class="pill"><input type="radio" name="q_assets" value="partial">Partial — some items recovered</label><label class="pill"><input type="radio" name="q_assets" value="yes">Yes — full asset recovery and exit interview</label></div>
+        <textarea class="q-note" name="n_separations" placeholder="Notes on recent exits — any outstanding assets, final pay issues, exit interview findings…" rows="2"></textarea>
       </div>
     </div>
   </div>
 
-  <!-- SECTION 7: Employee Relations & Engagement -->
+  <!-- SECTION 7 -->
   <div class="audit-section">
-    <div class="section-head">
-      <div class="section-icon" style="background:#fbeaf0;">🤝</div>
-      <div>
-        <p class="section-name">7. Employee Relations & Engagement</p>
-        <p class="section-sub">Grievances, flight risk, morale, HRBP visibility</p>
-      </div>
-    </div>
+    <div class="section-head"><div class="section-icon">🎯</div><div class="section-info"><div class="section-title">7. Recruitment &amp; Selection</div><div class="section-sub">JDs for ALL existing roles · JSPs · structured selection · internal priority · pre-employment checks</div></div><div class="section-ref">HR Policy Handbook — Section 1; PVC Phases 2 &amp; 3</div></div>
     <div class="section-body">
-      <div class="q-block">
-        <label class="q-label">Is there a documented grievance / disciplinary process employees are aware of?</label>
-        <div class="pill-group">
-          <label class="pill"><input type="radio" name="q_grievance" value="no"/> No</label>
-          <label class="pill"><input type="radio" name="q_grievance" value="partial"/> Exists but not communicated</label>
-          <label class="pill"><input type="radio" name="q_grievance" value="yes"/> Yes — known and accessible</label>
-        </div>
+      <div class="question">
+        <div class="q-label">Does every existing role in your KAD have a current, written Job Description — not just roles being hired for, but every role that currently exists?</div>
+        <div class="q-policy"><strong>Critical distinction:</strong> A Job Description must exist for every role that currently exists in the organisation — not just open vacancies. Without a JD, you cannot manage performance against a role that has not been defined, you cannot conduct a compliant appraisal, and you cannot build a JSP or competency framework. This is the most fundamental documentation gap in the system.</div>
+        <div class="pill-group"><label class="pill"><input type="radio" name="q_jd_all" value="no">No — most existing roles have no JD</label><label class="pill"><input type="radio" name="q_jd_all" value="partial">Partial — some roles have JDs, many do not</label><label class="pill"><input type="radio" name="q_jd_all" value="yes">Yes — all current roles have written, current JDs</label></div>
       </div>
-      <div class="q-block">
-        <label class="q-label">Have you identified any flight risks in your KAD since the restructure?</label>
-        <div class="pill-group">
-          <label class="pill"><input type="radio" name="q_flightrisk" value="yes"/> Yes — named individuals</label>
-          <label class="pill"><input type="radio" name="q_flightrisk" value="partial"/> Suspected / unsure</label>
-          <label class="pill"><input type="radio" name="q_flightrisk" value="no"/> No known flight risks</label>
-        </div>
+      <div class="question">
+        <div class="q-label">Does every existing role have a completed Job Success Profile (JSP) — defining purpose, outputs, competency requirements, and what excellent performance looks like?</div>
+        <div class="q-policy"><strong>PVC Phase 1 (Job Analysis):</strong> Without a success profile, "organisations write job descriptions based on what the previous person happened to be good at, not what the role actually requires. This produces misaligned hires, unclear performance expectations, and compensation inconsistencies." The JSP is the upgrade from JD — it answers not just 'what' but 'what does good look like'.</div>
+        <div class="pill-group"><label class="pill"><input type="radio" name="q_jsp_all" value="no">No — no JSPs exist for any role</label><label class="pill"><input type="radio" name="q_jsp_all" value="partial">Partial — some roles have JSPs</label><label class="pill"><input type="radio" name="q_jsp_all" value="yes">Yes — all current roles have JSPs</label></div>
       </div>
-      <div class="q-block">
-        <label class="q-label">Have you completed individual 1:1 transition conversations with all your people post-restructure?</label>
-        <div class="pill-group">
-          <label class="pill"><input type="radio" name="q_1on1" value="no"/> No</label>
-          <label class="pill"><input type="radio" name="q_1on1" value="partial"/> Some completed</label>
-          <label class="pill"><input type="radio" name="q_1on1" value="yes"/> Yes — all done</label>
-        </div>
+      <div class="question">
+        <div class="q-label">Is there a structured, scored interview and selection process for all hires above coordinator level? (Not gut feel, informal conversation, or manager preference)</div>
+        <div class="q-policy"><strong>PVC Phase 3 (Selection):</strong> "Unstructured interviews have a predictive validity of approximately 0.2 — barely better than chance for predicting job performance. Structured competency-based interviews have validities of 0.51–0.58." Using unstructured interviews is a deliberate choice to make expensive, poor-quality decisions. Pre-employment medical examination may also be required (Employee Handbook Section B.1).</div>
+        <div class="pill-group"><label class="pill"><input type="radio" name="q_structured_sel" value="no">No — gut feel / informal conversation</label><label class="pill"><input type="radio" name="q_structured_sel" value="partial">Partial — varies by manager</label><label class="pill"><input type="radio" name="q_structured_sel" value="yes">Yes — structured for all roles above coordinator</label></div>
       </div>
-      <div class="q-block">
-        <label class="q-label">Notes <span>(optional)</span></label>
-        <textarea class="q-text" name="n_er" placeholder="E.g. 2 people have raised concerns, morale is low in West Africa cluster…"></textarea>
+      <div class="question">
+        <div class="q-label">Are internal candidates given priority consideration before any external search for vacancies? Is this actually happening in practice?</div>
+        <div class="q-policy"><strong>Policy (Section 1, HR Policy Handbook):</strong> "The company believes in filling vacant positions with the best-qualified persons available, after giving due consideration to promotable employees." Employee Handbook (Section A.6): "Employees who are considered by the Management as being qualified to fill vacancies in higher positions/grades within the organization will be given preference over external candidates."</div>
+        <div class="pill-group"><label class="pill"><input type="radio" name="q_internal_priority" value="no">No — always go external first</label><label class="pill"><input type="radio" name="q_internal_priority" value="partial">Sometimes — no formal policy</label><label class="pill"><input type="radio" name="q_internal_priority" value="yes">Yes — internal priority formally applied</label></div>
+        <textarea class="q-note" name="n_recruitment" placeholder="Notes on recruitment — current vacancies, missing JDs by role, selection process concerns…" rows="2"></textarea>
       </div>
     </div>
   </div>
 
-  <!-- SECTION 8: HR Data & Reporting -->
+  <!-- SECTION 8 -->
   <div class="audit-section">
-    <div class="section-head">
-      <div class="section-icon" style="background:#e6f1fb;">🗄️</div>
-      <div>
-        <p class="section-name">8. HR Data & Reporting</p>
-        <p class="section-sub">HRIS, people data quality, HR metrics</p>
-      </div>
-    </div>
+    <div class="section-head"><div class="section-icon">🚀</div><div class="section-info"><div class="section-title">8. Onboarding</div><div class="section-sub">First-day readiness · 30/60/90 day plans · role clarity · KAD integration · HRBP check-ins</div></div><div class="section-ref">HR Policy Handbook — Section 1 (Induction); PVC Phase 4</div></div>
     <div class="section-body">
-      <div class="q-block">
-        <label class="q-label">Do you have a reliable, up-to-date record of all employees in your KAD (HRIS or equivalent)?</label>
-        <div class="pill-group">
-          <label class="pill"><input type="radio" name="q_hris" value="no"/> No — it's in spreadsheets / emails</label>
-          <label class="pill"><input type="radio" name="q_hris" value="partial"/> Partial — gaps and errors</label>
-          <label class="pill"><input type="radio" name="q_hris" value="yes"/> Yes — reliable and current</label>
-        </div>
+      <div class="question">
+        <div class="q-label">Do new hires receive a structured 30/60/90-day onboarding plan — not just admin setup and access, but actual integration into the KAD?</div>
+        <div class="q-policy"><strong>PVC Phase 4:</strong> "15–20% of new hires report doubts within the first week. The organisation that makes a new hire feel expected, welcomed, and prepared is making an investment with a high return." Onboarding is not just administration — it is the first test of the employer's promise.</div>
+        <div class="pill-group"><label class="pill"><input type="radio" name="q_onboarding" value="no">No — no structured onboarding</label><label class="pill"><input type="radio" name="q_onboarding" value="partial">Informal introduction only — no plan</label><label class="pill"><input type="radio" name="q_onboarding" value="yes">Yes — 30/60/90 plan for all hires above coordinator</label></div>
       </div>
-      <div class="q-block">
-        <label class="q-label">Can you produce a headcount, attrition, or vacancy report for your KAD on demand?</label>
-        <div class="pill-group">
-          <label class="pill"><input type="radio" name="q_reporting" value="no"/> No</label>
-          <label class="pill"><input type="radio" name="q_reporting" value="partial"/> With effort / manually</label>
-          <label class="pill"><input type="radio" name="q_reporting" value="yes"/> Yes — readily available</label>
-        </div>
-      </div>
-      <div class="q-block">
-        <label class="q-label">Notes <span>(optional)</span></label>
-        <textarea class="q-text" name="n_data" placeholder="E.g. Staff list in Google Sheets, last updated March, payroll data held centrally only…"></textarea>
+      <div class="question">
+        <div class="q-label">Do new hires (and employees post-restructure) have documented clarity on their KAD assignment, reporting line, performance expectations, and who they are accountable to — within week 1?</div>
+        <div class="q-policy"><strong>Policy context + Implementation Plan:</strong> Post-April 2026 restructure, every employee must have received formal written confirmation of their KAD, reporting line, and role. Verbal communication of structure is insufficient. Ambiguity in week 1 drives disengagement that is almost impossible to reverse.</div>
+        <div class="pill-group"><label class="pill"><input type="radio" name="q_role_clarity" value="no">No — employees unclear on their structure</label><label class="pill"><input type="radio" name="q_role_clarity" value="partial">Partial — depends on manager quality</label><label class="pill"><input type="radio" name="q_role_clarity" value="yes">Yes — always clear within week 1</label></div>
+        <textarea class="q-note" name="n_onboarding" placeholder="Notes on onboarding gaps — recent hires who received no structured onboarding, post-restructure clarity issues…" rows="2"></textarea>
       </div>
     </div>
   </div>
 
-  <!-- SECTION 9: HRBP Mandate & Operating Rhythm -->
+  <!-- SECTION 9 -->
   <div class="audit-section">
-    <div class="section-head">
-      <div class="section-icon" style="background:#f5f4f0;">🧭</div>
-      <div>
-        <p class="section-name">9. HRBP Mandate & Operating Rhythm</p>
-        <p class="section-sub">Clarity, tools, cadence, escalation</p>
-      </div>
-    </div>
+    <div class="section-head"><div class="section-icon">🎓</div><div class="section-info"><div class="section-title">9. Learning, Development &amp; Promotions</div><div class="section-sub">Competency framework · training needs analysis · IDPs · merit-based promotions</div></div><div class="section-ref">HR Policy Handbook — Section 2; Employee Handbook — Section A.6 &amp; A.7</div></div>
     <div class="section-body">
-      <div class="q-block">
-        <label class="q-label">Do you have a written HRBP operating charter — what you own, decide, escalate?</label>
-        <div class="pill-group">
-          <label class="pill"><input type="radio" name="q_charter" value="no"/> No</label>
-          <label class="pill"><input type="radio" name="q_charter" value="partial"/> Verbal / informal understanding</label>
-          <label class="pill"><input type="radio" name="q_charter" value="yes"/> Yes — documented</label>
-        </div>
+      <div class="question">
+        <div class="q-label">Does a competency framework exist for every role in your KAD? Has a Training Needs Analysis been conducted using the Competency Matrix tool?</div>
+        <div class="q-policy"><strong>PVC Phase 5 (LNA):</strong> "L&D without LNA produces learning activity rather than capability development. Training budgets are consumed by programmes that feel good but address the wrong skills, at the wrong level, for the wrong people." The Competency Matrix tool on this portal is the mechanism for this.</div>
+        <div class="pill-group"><label class="pill"><input type="radio" name="q_competency" value="no">No — no competency framework or TNA</label><label class="pill"><input type="radio" name="q_competency" value="partial">Partial — informal or incomplete</label><label class="pill"><input type="radio" name="q_competency" value="yes">Yes — framework exists and TNA completed</label></div>
       </div>
-      <div class="q-block">
-        <label class="q-label">Do you have a regular HRBP sync with the HR lead or CEO?</label>
-        <div class="pill-group">
-          <label class="pill"><input type="radio" name="q_sync" value="no"/> No — no scheduled touchpoint</label>
-          <label class="pill"><input type="radio" name="q_sync" value="partial"/> Occasional / ad hoc</label>
-          <label class="pill"><input type="radio" name="q_sync" value="yes"/> Yes — weekly or fortnightly</label>
-        </div>
+      <div class="question">
+        <div class="q-label">Do employees have Individual Development Plans (IDPs) connected to identified competency gaps and career aspirations?</div>
+        <div class="q-policy"><strong>Policy (Declaration, HR Policy Handbook):</strong> "Provide career development opportunities and support, encourage and assist every employee further develop a service-oriented career by providing career training." This is a stated company commitment — the absence of IDPs is a breach of it.</div>
+        <div class="pill-group"><label class="pill"><input type="radio" name="q_idp" value="no">No — no IDPs exist</label><label class="pill"><input type="radio" name="q_idp" value="partial">Partial — some employees have them</label><label class="pill"><input type="radio" name="q_idp" value="yes">Yes — all employees have documented IDPs</label></div>
       </div>
-      <div class="q-block">
-        <label class="q-label">Do you have the tools you need to do your job (templates, systems, budget)?</label>
-        <div class="pill-group">
-          <label class="pill"><input type="radio" name="q_tools" value="no"/> No — operating without tools</label>
-          <label class="pill"><input type="radio" name="q_tools" value="partial"/> Some — significant gaps</label>
-          <label class="pill"><input type="radio" name="q_tools" value="yes"/> Yes — well equipped</label>
-        </div>
-      </div>
-      <div class="q-block">
-        <label class="q-label">What is the single biggest blocker to you doing your job effectively?</label>
-        <textarea class="q-text" name="n_blocker" placeholder="Be direct. This is confidential and goes directly to the audit report."></textarea>
+      <div class="question">
+        <div class="q-label">Is promotion merit-based, connected to documented appraisal outcomes, and applied consistently? Is internal mobility actively facilitated across KADs?</div>
+        <div class="q-policy"><strong>Policy (Section 2, HR Policy Handbook):</strong> "The company's policy on promotion is merit based and performance oriented. Emphasis is also placed on the bi-annual performance appraisal." Employee Handbook (Section A.6): "Promotions to higher grades shall be by merit, subject to existence of vacancies." Undocumented or subjective promotion decisions create perceived unfairness and legal risk.</div>
+        <div class="pill-group"><label class="pill"><input type="radio" name="q_promotion" value="no">No — subjective / not connected to appraisals</label><label class="pill"><input type="radio" name="q_promotion" value="partial">Informal merit consideration — not documented</label><label class="pill"><input type="radio" name="q_promotion" value="yes">Yes — documented, appraisal-linked, consistent</label></div>
+        <textarea class="q-note" name="n_ld" placeholder="Notes on L&D — training budget, competency gaps identified, any promotion concerns…" rows="2"></textarea>
       </div>
     </div>
   </div>
 
-  <div class="submit-row">
-    <button class="btn-primary" onclick="generateAudit()">Generate Audit Report →</button>
-    <span class="submit-note">Results are generated instantly from your answers. Nothing is sent externally.</span>
+  <!-- SECTION 10 -->
+  <div class="audit-section">
+    <div class="section-head"><div class="section-icon">🗄️</div><div class="section-info"><div class="section-title">10. HR Data &amp; People Records</div><div class="section-sub">Master employee register · HRIS · reporting capability · workforce plan</div></div><div class="section-ref">HR Policy Handbook — Sections 1 &amp; 8; PVC Phase 9</div></div>
+    <div class="section-body">
+      <div class="question">
+        <div class="q-label">Do you have a reliable, complete, and current master record of all employees in your KAD — not fragmented across spreadsheets, email threads, and WhatsApp messages?</div>
+        <div class="q-policy"><strong>Policy (Section 1, HR Policy Handbook):</strong> "All new employees shall provide HR with full and accurate information required for administrative procedures and statutory requirements. Staff records and related correspondence shall be held in confidential status at all times." Confidential records in WhatsApp are not compliant.</div>
+        <div class="pill-group"><label class="pill"><input type="radio" name="q_hris" value="no">No — fragmented, unreliable, or gaps</label><label class="pill"><input type="radio" name="q_hris" value="partial">Partial — exists but with errors</label><label class="pill"><input type="radio" name="q_hris" value="yes">Yes — single reliable source, current and complete</label></div>
+      </div>
+      <div class="question">
+        <div class="q-label">Can you produce a headcount, attrition, or vacancy report for your KAD within 24 hours if asked by the CEO?</div>
+        <div class="q-policy"><strong>PVC Phase 9:</strong> "If the HRBP cannot pull a BU attrition report without raising a ticket, the analytics capability is not serving the people who need it most." Basic reporting capability is not optional — it is the minimum standard for a functioning HRBP.</div>
+        <div class="pill-group"><label class="pill"><input type="radio" name="q_reporting" value="no">No — requires significant manual effort</label><label class="pill"><input type="radio" name="q_reporting" value="partial">Partially — manual and unreliable</label><label class="pill"><input type="radio" name="q_reporting" value="yes">Yes — available within 24 hours</label></div>
+      </div>
+      <div class="question">
+        <div class="q-label">Does your KAD have a documented workforce plan aligned to 2026 KAD business objectives — covering planned hires, capability gaps, and make/buy/borrow decisions?</div>
+        <div class="q-policy"><strong>PVC Phase 1 (Workforce Planning):</strong> "Without workforce planning, organisations hire reactively — filling vacancies rather than building capability. The result is a workforce perpetually one step behind the business, with chronic skills gaps, bottlenecks in critical functions, and no pipeline for future leaders."</div>
+        <div class="pill-group"><label class="pill"><input type="radio" name="q_wfplan" value="no">No — reactive hiring only</label><label class="pill"><input type="radio" name="q_wfplan" value="partial">Informal / in someone's head only</label><label class="pill"><input type="radio" name="q_wfplan" value="yes">Yes — documented and aligned to KAD strategy</label></div>
+        <textarea class="q-note" name="n_data" placeholder="Notes on HR data quality — what records are missing, where data lives, reporting capability gaps…" rows="2"></textarea>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 11 -->
+  <div class="audit-section">
+    <div class="section-head"><div class="section-icon">🤝</div><div class="section-info"><div class="section-title">11. Employee Engagement &amp; Relations</div><div class="section-sub">Post-restructure transition · flight risk · morale · ER concerns · listening channels</div></div><div class="section-ref">PVC Phases 7 &amp; 8; Implementation Plan — Month 1</div></div>
+    <div class="section-body">
+      <div class="question">
+        <div class="q-label">Have you completed 1:1 transition conversations with all employees in your KAD post-restructure? Does every person know their KAD, their leader, and their reporting line?</div>
+        <div class="q-policy"><strong>Implementation Plan (Month 1, Priority):</strong> "HRBP priority: complete individual transition conversations with every person in their KAD." Without this, structural ambiguity from the April 2026 restructure remains unresolved. Ambiguity is a direct driver of disengagement and departure.</div>
+        <div class="pill-group"><label class="pill"><input type="radio" name="q_transition" value="no">No — not completed</label><label class="pill"><input type="radio" name="q_transition" value="partial">Partial — some completed</label><label class="pill"><input type="radio" name="q_transition" value="yes">Yes — all employees have had 1:1 transition conversations</label></div>
+      </div>
+      <div class="question">
+        <div class="q-label">Have you identified any flight risks in your KAD post-restructure? Have retention conversations been initiated for named individuals?</div>
+        <div class="q-policy"><strong>PVC Phase 8 (Retention):</strong> "Restructures are the highest-risk moment for voluntary departure — particularly among people who were not consulted and who have options. Retention decisions made proactively — not reactively after a resignation." If you know someone is at risk and have not initiated a conversation, the resignation is already in progress.</div>
+        <div class="pill-group"><label class="pill"><input type="radio" name="q_flight" value="no">Yes — identified, no action yet taken</label><label class="pill"><input type="radio" name="q_flight" value="partial">Suspected risks — not yet named or addressed</label><label class="pill"><input type="radio" name="q_flight" value="yes">No known flight risks / all retention conversations underway</label></div>
+      </div>
+      <div class="question">
+        <div class="q-label">What is your honest assessment of overall morale in your KAD right now — post-restructure?</div>
+        <div class="q-policy"><strong>Note:</strong> This is a direct HRBP observation, not a survey metric. Your assessment is the most current intelligence the organisation has. Name what you are seeing.</div>
+        <div class="pill-group"><label class="pill"><input type="radio" name="q_morale" value="no">Deteriorating — visible disengagement or anxiety</label><label class="pill"><input type="radio" name="q_morale" value="partial">Mixed / uncertain — significant variation across the team</label><label class="pill"><input type="radio" name="q_morale" value="yes">Positive / stable — people are engaged and purposeful</label></div>
+        <textarea class="q-note" name="n_engagement" placeholder="Named flight risks. Specific ER concerns. Morale observations. Post-restructure feedback heard in conversations. Be specific — this is the most valuable intelligence in the audit." rows="3"></textarea>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 12 -->
+  <div class="audit-section">
+    <div class="section-head"><div class="section-icon">🧭</div><div class="section-info"><div class="section-title">12. HRBP Mandate &amp; Operating Effectiveness</div><div class="section-sub">Operating charter · weekly sync · tools &amp; resources · biggest blocker</div></div><div class="section-ref">Implementation Plan — HRBP Mandates Section</div></div>
+    <div class="section-body">
+      <div class="question">
+        <div class="q-label">Do you have a written HRBP Operating Charter — defining what you own, what you decide independently, what you escalate to the HR lead?</div>
+        <div class="q-policy"><strong>Implementation Plan:</strong> "Each HRBP must have a signed operating charter." Without it, the HRBP's authority is unclear, escalation paths are undefined, and the organisation cannot hold the HRBP accountable — or protect them when they need backing from senior leadership.</div>
+        <div class="pill-group"><label class="pill"><input type="radio" name="q_charter" value="no">No — no written charter</label><label class="pill"><input type="radio" name="q_charter" value="partial">Verbal understanding only — not documented</label><label class="pill"><input type="radio" name="q_charter" value="yes">Yes — written, agreed, and signed</label></div>
+      </div>
+      <div class="question">
+        <div class="q-label">Is there a regular weekly or fortnightly HRBP sync with the HR lead and/or CEO?</div>
+        <div class="q-policy"><strong>Implementation Plan:</strong> "The weekly HRBP sync is the connective tissue of the HR operating model. Without it, each HRBP operates in isolation, cross-KAD talent opportunities are missed, ER decisions are made inconsistently, and the CEO has no integrated view of the people system."</div>
+        <div class="pill-group"><label class="pill"><input type="radio" name="q_sync" value="no">No — no scheduled sync</label><label class="pill"><input type="radio" name="q_sync" value="partial">Occasional / ad hoc</label><label class="pill"><input type="radio" name="q_sync" value="yes">Yes — weekly or fortnightly standing meeting</label></div>
+      </div>
+      <div class="question">
+        <div class="q-label">Do you have the tools, templates, access, and budget you need to do your job effectively?</div>
+        <div class="q-policy"><strong>Implementation Plan:</strong> An HRBP without tools is a title without function. This question is not about the HRBP improvising better — it is about what the organisation needs to invest to make the HRBP role functional.</div>
+        <div class="pill-group"><label class="pill"><input type="radio" name="q_tools" value="no">No — operating without adequate tools</label><label class="pill"><input type="radio" name="q_tools" value="partial">Partial — significant gaps</label><label class="pill"><input type="radio" name="q_tools" value="yes">Yes — well equipped</label></div>
+        <textarea class="q-note" name="n_blocker" placeholder="What is the single biggest blocker to you doing your job effectively right now? Be specific and honest — this goes directly to the HR lead and CEO." rows="3"></textarea>
+      </div>
+    </div>
+  </div>
+
+  <div class="form-submit">
+    <div class="submit-note">Results generate instantly from your answers. Nothing is sent externally — all data stays in your browser.</div>
+    <button class="btn-generate" onclick="generateAudit()">Generate Audit Report →</button>
   </div>
 
 </div>
 </div>
 
-<!-- ══════════════ PAGE 2: AUDIT REPORT ══════════════ -->
+<!-- RESULTS PAGE -->
 <div class="page" id="pageResults">
-<div class="results-wrap">
+<div style="max-width:960px;margin:0 auto;padding:32px 32px 80px;">
 
   <div class="results-header">
     <div>
-      <p class="results-meta" id="rMeta">Telinno Consulting · HR Function Audit · April 2026</p>
-      <h2 class="results-title" id="rTitle">HR Function Audit Report</h2>
-      <p class="results-meta" id="rSub"></p>
+      <div class="rh-eyebrow">HR Function Audit — Report</div>
+      <div class="rh-title" id="rTitle"></div>
+      <div class="rh-meta" id="rMeta"></div>
+      <div class="rh-meta" id="rSub" style="margin-top:2px;"></div>
     </div>
-    <div class="results-actions">
-      <button class="btn-secondary" onclick="window.print()">⎙ Print / PDF</button>
-      <button class="btn-secondary" onclick="goBack()">← Edit Responses</button>
-    </div>
-  </div>
-
-  <!-- Overall score -->
-  <div class="score-banner" id="scoreBanner">
-    <div class="score-big" id="scoreNum"></div>
-    <div>
-      <p class="score-label" id="scoreLabel"></p>
-      <p class="score-desc" id="scoreDesc"></p>
+    <div class="rh-actions">
+      <a href="people-infra-audit.html" class="btn-sm primary">→ People Infrastructure Audit</a>
+      <button class="btn-sm" onclick="window.print()">⎙ Print / PDF</button>
+      <button class="btn-sm" onclick="goBack()">← Edit Responses</button>
     </div>
   </div>
 
-  <!-- Stats -->
-  <div class="stat-row" id="statRow"></div>
+  <div id="scoreBanner">
+    <div class="banner-inner">
+      <div class="score-big" id="scoreNum"></div>
+      <div><div class="score-label" id="scoreLabel"></div><div class="score-desc" id="scoreDesc"></div></div>
+    </div>
+  </div>
 
-  <!-- Function cards -->
+  <div id="statRow">
+    <div class="stat-box"><span class="stat-box-num red" id="statRed">—</span><span class="stat-box-label">Critical Gaps</span></div>
+    <div class="stat-box"><span class="stat-box-num amber" id="statAmber">—</span><span class="stat-box-label">Needs Attention</span></div>
+    <div class="stat-box"><span class="stat-box-num green" id="statGreen">—</span><span class="stat-box-label">Operating</span></div>
+    <div class="stat-box"><span class="stat-box-num" id="statTotal">—</span><span class="stat-box-label">Functions Assessed</span></div>
+  </div>
+
+  <div style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-dim);margin-bottom:12px;">Priority Action Plan</div>
+  <div class="plan-row" id="planRow"></div>
+
+  <div style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-dim);margin-bottom:12px;">Function-by-Function Findings</div>
   <div id="fnCards"></div>
-
-  <!-- Action plan -->
-  <div class="action-plan" id="actionPlan">
-    <p class="plan-title">Priority Action Plan</p>
-    <div class="plan-row" id="planRow"></div>
-  </div>
 
 </div>
 </div>
 
 <script>
-let selectedHRBP = { name: 'HR Lead', kad: 'All KADs', country: 'Central' };
+let selectedHRBP = {name:'HR Lead / CHRO', kad:'All KADs', country:'Central'};
 
-function selectHRBP(el, name, kad, country) {
-  document.querySelectorAll('.hrbp-card').forEach(c => c.classList.remove('selected'));
+function selectHRBP(el,name,kad,country){
+  document.querySelectorAll('.hrbp-card').forEach(c=>c.classList.remove('selected'));
   el.classList.add('selected');
-  selectedHRBP = { name, kad, country };
+  selectedHRBP={name,kad,country};
 }
 
-function getPillVal(name) {
-  const el = document.querySelector(`input[name="${name}"]:checked`);
-  return el ? el.value : null;
+// Pill visual
+document.querySelectorAll('.pill-group').forEach(group=>{
+  group.querySelectorAll('label.pill').forEach(pill=>{
+    pill.addEventListener('click',()=>{
+      group.querySelectorAll('label.pill').forEach(p=>p.classList.remove('sel-yes','sel-no','sel-partial'));
+      const v=pill.querySelector('input').value;
+      pill.classList.add(v==='yes'?'sel-yes':v==='no'?'sel-no':'sel-partial');
+    });
+  });
+});
+
+function gv(n){const e=document.querySelector(`input[name="${n}"]:checked`);return e?e.value:null;}
+function gn(n){const e=document.querySelector(`textarea[name="${n}"]`);return e?e.value.trim():'';}
+
+function rag(keys){
+  const vals=keys.filter(Boolean);
+  if(!vals.length)return'amber';
+  const no=vals.filter(v=>v==='no').length;
+  const yes=vals.filter(v=>v==='yes').length;
+  const t=vals.length;
+  if(yes/t>=0.75)return'green';
+  if(yes/t<=0.25||no>=t*0.5)return'red';
+  return'amber';
 }
 
-function getNote(name) {
-  const el = document.querySelector(`textarea[name="${name}"]`);
-  return el ? el.value.trim() : '';
-}
-
-function ragFromAnswers(answers) {
-  const vals = answers.filter(Boolean);
-  if (!vals.length) return 'amber';
-  const nos = vals.filter(v => v === 'no').length;
-  const yes = vals.filter(v => v === 'yes').length;
-  const total = vals.length;
-  const score = yes / total;
-  if (score >= 0.75) return 'green';
-  if (score <= 0.25 || nos >= total * 0.5) return 'red';
-  return 'amber';
-}
-
-function ragLabel(r) {
-  if (r === 'red') return 'Critical Gap';
-  if (r === 'amber') return 'Needs Attention';
-  return 'Operating';
-}
-
-function ragClass(r) { return 'rag rag-' + r; }
-
-function generateAudit() {
-  // Collect all answers
-  const answers = {
-    contracts: getPillVal('q_contracts'),
-    law: getPillVal('q_law'),
-    payslips: getPillVal('q_payslips'),
-    wfplan: getPillVal('q_wfplan'),
-    orgstruct: getPillVal('q_orgstruct'),
-    vacancies: getPillVal('q_vacancies'),
-    jd: getPillVal('q_jd'),
-    selection: getPillVal('q_selection'),
-    onboard: getPillVal('q_onboard'),
-    roleentry: getPillVal('q_roleentry'),
-    goals: getPillVal('q_goals'),
-    perfcadence: getPillVal('q_perfcadence'),
-    pip: getPillVal('q_pip'),
-    tna: getPillVal('q_tna'),
-    idp: getPillVal('q_idp'),
-    grievance: getPillVal('q_grievance'),
-    flightrisk: getPillVal('q_flightrisk'),
-    oneone: getPillVal('q_1on1'),
-    hris: getPillVal('q_hris'),
-    reporting: getPillVal('q_reporting'),
-    charter: getPillVal('q_charter'),
-    sync: getPillVal('q_sync'),
-    tools: getPillVal('q_tools'),
+function generateAudit(){
+  const A={
+    appt_letter:gv('q_appt_letter'), photos_refs:gv('q_photos_refs'), induction:gv('q_induction'),
+    id_card:gv('q_id_card'), probation:gv('q_probation'), handbook_ack:gv('q_handbook_ack'),
+    payslips:gv('q_payslips'), bank:gv('q_bank'), comp_structure:gv('q_comp_structure'), salary_bands:gv('q_salary_bands'),
+    goals:gv('q_goals'), appraisals:gv('q_appraisals'), perf_cadence:gv('q_perf_cadence'), pip:gv('q_pip'),
+    discipline_process:gv('q_discipline_process'), disc_records:gv('q_disc_records'), grievance:gv('q_grievance'),
+    leave_ent:gv('q_leave_ent'), leave_sched:gv('q_leave_sched'), sick_leave:gv('q_sick_leave'), parental:gv('q_parental'),
+    clearance:gv('q_clearance'), final_pay:gv('q_final_pay'), assets:gv('q_assets'),
+    jd_all:gv('q_jd_all'), jsp_all:gv('q_jsp_all'), structured_sel:gv('q_structured_sel'), internal_priority:gv('q_internal_priority'),
+    onboarding:gv('q_onboarding'), role_clarity:gv('q_role_clarity'),
+    competency:gv('q_competency'), idp:gv('q_idp'), promotion:gv('q_promotion'),
+    hris:gv('q_hris'), reporting:gv('q_reporting'), wfplan:gv('q_wfplan'),
+    transition:gv('q_transition'), flight:gv('q_flight'), morale:gv('q_morale'),
+    charter:gv('q_charter'), sync:gv('q_sync'), tools:gv('q_tools'),
   };
 
-  const notes = {
-    compliance: getNote('n_compliance'),
-    workforce: getNote('n_workforce'),
-    recruitment: getNote('n_recruitment'),
-    onboard: getNote('n_onboard'),
-    perf: getNote('n_perf'),
-    ld: getNote('n_ld'),
-    er: getNote('n_er'),
-    data: getNote('n_data'),
-    blocker: getNote('n_blocker'),
-  };
-
-  // RAG per function
-  const sections = [
-    {
-      id: 'compliance', icon: '⚖️', name: 'Compliance & Employment Law',
-      sub: 'Contracts · payslips · country law',
-      keys: [answers.contracts, answers.law, answers.payslips],
-      gaps: {
-        no: { contracts: 'No signed employment contracts — critical legal exposure across all countries', law: 'No visibility of employment law requirements per jurisdiction', payslips: 'Payslips not being issued — potential statutory violation' },
-        partial: { contracts: 'Unsigned contracts exist — identify and remediate within 30 days', law: 'Partial awareness of country law — commission full review', payslips: 'Inconsistent payslip issuance — standardise urgently' }
-      },
-      actions: {
-        no: { contracts: { text: 'Audit and identify all unsigned contracts; engage local counsel to remediate', tag: 'now' }, law: { text: 'Commission employment law review across all 6 jurisdictions', tag: 'now' }, payslips: { text: 'Audit payroll records; ensure payslip issuance for all active employees this cycle', tag: 'now' } },
-        partial: { contracts: { text: 'Complete contract gap analysis; close all gaps within 30 days', tag: '30' }, law: { text: 'Document country-specific obligations; create compliance checklist per jurisdiction', tag: '30' }, payslips: { text: 'Standardise payslip process; assign central ownership', tag: '30' } }
-      },
-      noteKey: 'compliance'
-    },
-    {
-      id: 'workforce', icon: '📊', name: 'Workforce Planning & Structure',
-      sub: 'Org design · headcount · vacancy management',
-      keys: [answers.wfplan, answers.orgstruct, answers.vacancies],
-      gaps: {
-        no: { wfplan: 'No workforce plan — hiring is entirely reactive and disconnected from KAD strategy', orgstruct: 'Org structure unclear post-restructure — employees do not know their reporting line', vacancies: 'Open vacancies have no structured hiring process or timeline' },
-        partial: { wfplan: 'Informal workforce plan only — not documented or aligned to KAD objectives', orgstruct: 'Structural ambiguity remains — some reporting lines contested', vacancies: 'Ad hoc approach to vacancies — no standard hiring SLA' }
-      },
-      actions: {
-        no: { wfplan: { text: 'Create a 6-month workforce plan per KAD aligned to project pipeline', tag: '30' }, orgstruct: { text: 'Publish org charts per KAD and communicate formally to all employees', tag: 'now' }, vacancies: { text: 'Create vacancy tracker with hiring timeline and HRBP accountability for each open role', tag: 'now' } },
-        partial: { wfplan: { text: 'Document and formalise workforce plan; review with KAD head quarterly', tag: '30' }, orgstruct: { text: 'Resolve remaining ambiguities; reissue updated org chart', tag: 'now' }, vacancies: { text: 'Standardise hiring process; implement hiring SLA', tag: '30' } }
-      },
-      noteKey: 'workforce'
-    },
-    {
-      id: 'recruitment', icon: '🎯', name: 'Recruitment & Selection',
-      sub: 'Job descriptions · structured interviews · selection decisions',
-      keys: [answers.jd, answers.selection],
-      gaps: {
-        no: { jd: 'Roles filled without written job descriptions — high risk of mis-hires', selection: 'No structured selection process — decisions based on gut feel' },
-        partial: { jd: 'Some roles lack job descriptions — inconsistent hiring quality', selection: 'Selection process varies by manager — not standardised' }
-      },
-      actions: {
-        no: { jd: { text: 'Complete Job Success Profiles for all open roles before any hire proceeds', tag: 'now' }, selection: { text: 'Implement structured interview scorecard for all hires above coordinator level', tag: '30' } },
-        partial: { jd: { text: 'Audit all open roles; produce JSPs for those missing', tag: '30' }, selection: { text: 'Train managers on structured selection; roll out scorecard', tag: '30' } }
-      },
-      noteKey: 'recruitment'
-    },
-    {
-      id: 'onboarding', icon: '🚀', name: 'Onboarding',
-      sub: '30/60/90 day plans · role clarity · first-week experience',
-      keys: [answers.onboard, answers.roleentry],
-      gaps: {
-        no: { onboard: 'No structured onboarding — new hires left to find their own footing', roleentry: 'No role clarity in week 1 — time-to-productivity severely extended' },
-        partial: { onboard: 'Onboarding is informal — no documented plan or HRBP oversight', roleentry: 'Role clarity inconsistent — depends on manager quality' }
-      },
-      actions: {
-        no: { onboard: { text: 'Create a standard 30/60/90 day onboarding template for all hires above coordinator', tag: '30' }, roleentry: { text: 'Mandate first-week clarity meeting: HRBP + manager + new hire, covering role, KPIs, reporting line', tag: 'now' } },
-        partial: { onboard: { text: 'Formalise onboarding plan; assign HRBP as accountable for each new hire\'s first 90 days', tag: '30' }, roleentry: { text: 'Standardise first-week clarity process across all KADs', tag: '30' } }
-      },
-      noteKey: 'onboard'
-    },
-    {
-      id: 'performance', icon: '📈', name: 'Performance Management',
-      sub: 'Goals · review cadence · underperformance',
-      keys: [answers.goals, answers.perfcadence, answers.pip],
-      gaps: {
-        no: { goals: 'No documented performance goals — employees have no clear targets', perfcadence: 'No structured performance conversations — feedback is absent', pip: 'No underperformance process — issues managed by avoidance' },
-        partial: { goals: 'Performance goals set for some employees only — inconsistent', perfcadence: 'Performance conversations happen occasionally — no reliable cadence', pip: 'Inconsistent approach to underperformance — legal and fairness risk' }
-      },
-      actions: {
-        no: { goals: { text: 'Set Q2 performance goals for all 148 employees within 30 days; cascade from KAD objectives', tag: '30' }, perfcadence: { text: 'Establish monthly 1:1 cadence between manager and direct report; HRBP monitors compliance', tag: '30' }, pip: { text: 'Design and communicate underperformance process; train all line managers', tag: '90' } },
-        partial: { goals: { text: 'Complete goal-setting for remaining employees; standardise format', tag: '30' }, perfcadence: { text: 'Enforce review cadence; HRBP tracks and reports completion to HR lead', tag: '30' }, pip: { text: 'Standardise underperformance process across KADs', tag: '90' } }
-      },
-      noteKey: 'perf'
-    },
-    {
-      id: 'ld', icon: '🎓', name: 'Learning & Development',
-      sub: 'Training needs · capability gaps · development plans',
-      keys: [answers.tna, answers.idp],
-      gaps: {
-        no: { tna: 'No training needs analysis — capability gaps unknown and unaddressed', idp: 'No individual development plans — employee growth is not managed' },
-        partial: { tna: 'TNA done informally — not documented or acted upon systematically', idp: 'Development plans exist for some — no consistent approach' }
-      },
-      actions: {
-        no: { tna: { text: 'Conduct TNA using Competency Matrix tool within 60 days; prioritise technical and leadership gaps', tag: '90' }, idp: { text: 'Introduce IDPs as part of performance review cycle; start with senior and mid-level roles', tag: '90' } },
-        partial: { tna: { text: 'Formalise TNA output; create documented priority skills gap list per KAD', tag: '90' }, idp: { text: 'Extend IDP adoption to all employees; integrate with performance review', tag: '90' } }
-      },
-      noteKey: 'ld'
-    },
-    {
-      id: 'er', icon: '🤝', name: 'Employee Relations & Engagement',
-      sub: 'Grievances · flight risk · morale · HRBP visibility',
-      keys: [answers.grievance, answers.oneone],
-      frKey: answers.flightrisk,
-      gaps: {
-        no: { grievance: 'No grievance process — employees have no formal route to raise concerns', oneone: '1:1 transition conversations not completed — restructure ambiguity unresolved' },
-        partial: { grievance: 'Grievance process exists but employees are not aware — ineffective', oneone: 'Transition conversations incomplete — some employees still in structural limbo' }
-      },
-      actions: {
-        no: { grievance: { text: 'Publish and communicate grievance and disciplinary process to all employees', tag: '30' }, oneone: { text: 'Complete remaining transition 1:1s this week; document outcomes and concerns', tag: 'now' } },
-        partial: { grievance: { text: 'Communicate grievance process; confirm all employees know how to access it', tag: '30' }, oneone: { text: 'Complete remaining transition 1:1s; flag any flight risks to HR lead', tag: 'now' } }
-      },
-      noteKey: 'er'
-    },
-    {
-      id: 'data', icon: '🗄️', name: 'HR Data & Reporting',
-      sub: 'HRIS · people data quality · HR metrics',
-      keys: [answers.hris, answers.reporting],
-      gaps: {
-        no: { hris: 'No reliable people data system — HR decisions based on incomplete information', reporting: 'Cannot produce HR reports on demand — no analytics capability' },
-        partial: { hris: 'Data exists but unreliable — gaps and inaccuracies likely', reporting: 'Reporting requires manual effort — not scalable' }
-      },
-      actions: {
-        no: { hris: { text: 'Create master people data file per KAD; verify against payroll within 30 days', tag: '30' }, reporting: { text: 'Build basic HR dashboard: headcount, attrition, vacancies per KAD', tag: '90' } },
-        partial: { hris: { text: 'Audit and clean existing data; assign HRBP as data custodian per KAD', tag: '30' }, reporting: { text: 'Standardise reporting templates; automate where possible', tag: '90' } }
-      },
-      noteKey: 'data'
-    },
-    {
-      id: 'mandate', icon: '🧭', name: 'HRBP Mandate & Operating Rhythm',
-      sub: 'Charter · sync cadence · tools · escalation',
-      keys: [answers.charter, answers.sync, answers.tools],
-      gaps: {
-        no: { charter: 'No HRBP operating charter — unclear what HRBPs own, decide and escalate', sync: 'No regular HRBP sync — HRBPs operating in isolation', tools: 'HRBPs lack the tools to do their job — templates, systems, budget absent' },
-        partial: { charter: 'HRBP mandate verbal only — not documented or consistently applied', sync: 'HRBP syncs are ad hoc — no reliable accountability rhythm', tools: 'Tool gaps exist — HRBPs making do with workarounds' }
-      },
-      actions: {
-        no: { charter: { text: 'Draft and sign HRBP Operating Charter within 2 weeks; one per HRBP', tag: 'now' }, sync: { text: 'Establish weekly HRBP sync with HR lead; 30 minutes, standing agenda', tag: 'now' }, tools: { text: 'Identify and supply minimum tool set: templates, shared drive, access to audit tools', tag: 'now' } },
-        partial: { charter: { text: 'Formalise HRBP charter; review with each HRBP individually', tag: '30' }, sync: { text: 'Move HRBP syncs to a fixed weekly slot; create standing agenda', tag: 'now' }, tools: { text: 'Audit tool gaps; close critical ones within 30 days', tag: '30' } }
-      },
-      noteKey: 'blocker'
-    },
+  const SECTIONS=[
+    {icon:'📋',name:'Employment & Engagement Process',sub:'Appointment letters · references · induction · ID · probation · handbook',
+     keys:[A.appt_letter,A.photos_refs,A.induction,A.id_card,A.probation,A.handbook_ack],noteKey:'n_employment',
+     gaps:{
+       appt_letter:{no:'Formal appointment letters not consistently issued — employment is not legally constituted without one. All employees must have a signed letter.',partial:'Some employees lack appointment letters — identify gaps and issue within 30 days.'},
+       photos_refs:{no:'Passport photographs and/or references not being collected — administrative and verification requirements not met.',partial:'Inconsistent collection — standardise the process for all new hires.'},
+       induction:{no:'No structured induction programme — employees are entering the organisation without orientation. Signed induction form required.',partial:'Informal induction happening but no signed form on file — creates a documentation and compliance gap.'},
+       id_card:{no:'Employment numbers and ID cards not issued — policy violation. Employees cannot be identified on site or shown to clients.',partial:'ID cards issued but worn inconsistently — enforce the policy immediately.'},
+       probation:{no:'Probation not formally managed — confirmation and termination decisions cannot be legally defended without written assessments and letters.',partial:'Managed verbally — written confirmation of employment (or extension) is mandatory per policy.'},
+       handbook_ack:{no:'Handbook acknowledgement not collected — without signed acknowledgement, company cannot enforce handbook terms against employees. This affects every disciplinary proceeding.',partial:'Many employees have not signed — issue handbooks and collect acknowledgements from all within 30 days.'},
+     },
+     actions:{
+       appt_letter:{no:{text:'Audit all employees for missing appointment letters. Issue to all who lack them using standard template. Immediate priority.',tag:'now'}},
+       photos_refs:{no:{text:'Collect passport photographs and reference letters from all employees. File in HR records within 30 days.',tag:'30'}},
+       induction:{no:{text:'Design structured induction programme. Conduct inductions for all employees who received none. Introduce signed induction form immediately for all new hires.',tag:'30'}},
+       id_card:{no:{text:'Issue employment numbers and ID cards to all employees. Enforce wearing policy in all offices immediately.',tag:'now'}},
+       probation:{no:{text:'Audit all employees against probation status. Issue written confirmation letters to all who have passed probation. Issue extension letters where applicable.',tag:'now'}},
+       handbook_ack:{no:{text:'Issue HR Policy Handbook and Employee Handbook to all employees. Collect signed acknowledgement slips within 30 days. File in HR records.',tag:'now'}},
+     }},
+    {icon:'💰',name:'Compensation & Pay Administration',sub:'Payslips · bank accounts · salary structure · salary bands · pay equity',
+     keys:[A.payslips,A.bank,A.comp_structure,A.salary_bands],noteKey:'n_compensation',
+     gaps:{
+       payslips:{no:'Payslips not being issued — this is a statutory violation in Nigeria and all other operating countries. Creates significant legal exposure and employee distrust.',partial:'Inconsistent issuance — payslips must go to every employee every month without exception.'},
+       bank:{no:'Bank accounts not on file for all employees or cash payments being made — non-compliant with policy and creates audit, fraud, and labour law risk.',partial:'Some employees without bank accounts — resolve all gaps. Cease any cash payments immediately.'},
+       comp_structure:{no:'Compensation not documented with full breakdown (basic, housing, transport, meal) — employees cannot verify they are being paid correctly. This drives pay disputes.',partial:'Inconsistent documentation — standardise compensation records for all employees.'},
+       salary_bands:{no:'No salary bands exist for any role — pay decisions are entirely subjective. This is the structural root of pay inequity, discrimination claims, and attrition among underpaid employees.',partial:'Informal bands only — formal, documented, market-benchmarked bands required for every role type.'},
+     },
+     actions:{
+       payslips:{no:{text:'Issue payslips for all employees immediately for the most recent pay period. Establish automated payslip generation in payroll process. This cannot wait.',tag:'now'}},
+       bank:{no:{text:'Audit all employee payment records. Collect bank account details from any employee without one this month. Cease all cash payments.',tag:'now'}},
+       comp_structure:{no:{text:'Document compensation breakdown (basic, housing, transport, meal) for every employee. File in individual HR records.',tag:'30'}},
+       salary_bands:{no:{text:'Develop salary bands by role type and country using local market benchmarking. Present to CEO for approval within 30 days.',tag:'30'}},
+     }},
+    {icon:'📈',name:'Performance Management',sub:'Goals · written appraisals (twice yearly) · 1:1 cadence · PIP process',
+     keys:[A.goals,A.appraisals,A.perf_cadence,A.pip],noteKey:'n_performance',
+     gaps:{
+       goals:{no:'No documented performance goals — employees have no clear targets. Performance management without documented goals is not management — it is arbitrariness.',partial:'Goals set for some employees only — must cover all 148 employees.'},
+       appraisals:{no:'Written appraisals not being conducted — Policy mandates twice yearly in writing. Without written appraisals, pay, promotion, and termination decisions have no defensible basis.',partial:'Verbal only or informal — written appraisals are mandatory per policy and must be filed in HR records.'},
+       perf_cadence:{no:'No regular performance conversations — the only feedback arrives 6 months late at the formal appraisal. This makes real-time performance management impossible.',partial:'Occasional conversations only — a defined regular cadence is required for every manager.'},
+       pip:{no:'No PIP process — underperformance is handled informally or ignored entirely. Without a documented PIP, any termination for performance is legally indefensible.',partial:'PIP process exists but inconsistently applied — must be standardised and documented for every case.'},
+     },
+     actions:{
+       goals:{no:{text:'Set documented performance goals for all employees in KAD within 30 days. Cascade from KAD objectives. Use standard goal template.',tag:'now'}},
+       appraisals:{no:{text:'Conduct written mid-year appraisals for all employees using standardised appraisal form. File completed forms in HR records.',tag:'30'}},
+       perf_cadence:{no:{text:'Establish mandatory regular 1:1 between each manager and their direct reports. HRBP tracks compliance and reports to HR lead monthly.',tag:'30'}},
+       pip:{no:{text:'Design and document PIP process. Train all line managers. Initiate PIPs for any current underperformers (after written warning is issued first).',tag:'30'}},
+     }},
+    {icon:'⚖️',name:'Discipline & Grievance Management',sub:'Query process · written records · warnings · grievance procedure',
+     keys:[A.discipline_process,A.disc_records,A.grievance],noteKey:'n_discipline',
+     gaps:{
+       discipline_process:{no:'Disciplinary process not followed — ad hoc handling makes every termination legally indefensible. The query → 24hr response → action process must be followed without exception.',partial:'Not consistently followed — enforce uniformly across all managers and all KADs.'},
+       disc_records:{no:'No written disciplinary documentation — verbal queries and warnings are not legally enforceable. Without a written audit trail, the company cannot defend any disciplinary outcome in court.',partial:'Some documented — all disciplinary actions must be in writing and filed in the employee\'s HR record.'},
+       grievance:{no:'No documented grievance procedure accessible to employees — employees have no formal route to raise concerns. This is both a policy failure and a significant culture risk.',partial:'Exists but not communicated — communicate the 2-step grievance procedure to all employees within 30 days.'},
+     },
+     actions:{
+       discipline_process:{no:{text:'Implement mandatory query → 24hr written response → management action sequence. Train all managers. Apply uniformly and immediately.',tag:'now'}},
+       disc_records:{no:{text:'Audit all active disciplinary matters. Document retroactively where possible. Establish disciplinary file for each active case going forward.',tag:'now'}},
+       grievance:{no:{text:'Produce one-page grievance procedure. Communicate to all employees via email and notice boards. Include in all future onboarding.',tag:'30'}},
+     }},
+    {icon:'🗓',name:'Leave Management',sub:'Annual leave entitlement · leave schedules · sick leave · maternity/paternity',
+     keys:[A.leave_ent,A.leave_sched,A.sick_leave,A.parental],noteKey:'n_leave',
+     gaps:{
+       leave_ent:{no:'Leave entitlement not stated in individual employment letters — employees do not know their entitlement. This generates disputes and is non-compliant with policy.',partial:'Not in all contracts — every employment letter must specify the individual\'s leave entitlement.'},
+       leave_sched:{no:'No annual leave schedules submitted — the company has no visibility of planned absences. Operational and payroll risk throughout the year.',partial:'Partial submission only — enforce the January 31 deadline for all employees.'},
+       sick_leave:{no:'Sick leave not tracked against the 24-day annual cap — company may be paying for absences beyond entitlement with no recourse. Medical certification not collected.',partial:'Tracking exists but medical certification not consistently required — enforce the certification requirement for all sick leave.'},
+       parental:{no:'Maternity and paternity leave not formally administered — risk of non-compliance with local labour legislation in Nigeria, Mali, Niger, CIV, and Cameroon.',partial:'Inconsistently applied across employees and countries — standardise per policy for all operating locations.'},
+     },
+     actions:{
+       leave_ent:{no:{text:'Add individual leave entitlement to all employment letters. Issue updated leave entitlement summary to all existing employees.',tag:'30'}},
+       leave_sched:{no:{text:'Request leave schedules from all employees immediately for the remainder of 2026. Maintain a consolidated leave tracker per KAD.',tag:'30'}},
+       sick_leave:{no:{text:'Implement sick leave tracking against 24-day cap. Communicate medical certification requirement to all employees and managers.',tag:'30'}},
+       parental:{no:{text:'Issue parental leave policy note to all managers and HRBPs. Ensure all parental leave applications are processed per policy going forward.',tag:'30'}},
+     }},
+    {icon:'🚪',name:'Separations & Exit Process',sub:'30-day notice · clearance form · final pay · asset recovery',
+     keys:[A.clearance,A.final_pay,A.assets],noteKey:'n_separations',
+     gaps:{
+       clearance:{no:'No formal clearance process — company assets, outstanding advances, and final pay cannot be properly reconciled. The organisation is losing money and property on every exit.',partial:'Process partially followed — enforce all 5 sign-off steps for every leaver without exception.'},
+       final_pay:{no:'Final pay not computed or timed per policy — creates legal exposure in all operating jurisdictions. Payment must occur within 1 month of termination.',partial:'Timing or 90%/10% retention not applied — enforce both for all future exits.'},
+       assets:{no:'Company assets not consistently recovered from leavers — ID cards, SIM cards, laptops, phones being lost. Cumulative cost and security risk.',partial:'Partial recovery — implement mandatory asset checklist as part of clearance form.'},
+     },
+     actions:{
+       clearance:{no:{text:'Design clearance form with all 5 required sign-offs. Apply to all exits immediately, including any recent departures where clearance was not completed.',tag:'now'}},
+       final_pay:{no:{text:'Establish final pay computation process. Apply 90%/10% retention rule. Ensure Finance completes payment within 30 days of every exit.',tag:'now'}},
+       assets:{no:{text:'Create asset recovery checklist as part of clearance form. Audit any recent leavers for outstanding assets. Recover or deduct from final pay per policy.',tag:'now'}},
+     }},
+    {icon:'🎯',name:'Recruitment & Selection (All Existing Roles)',sub:'JDs and JSPs for every current role · structured selection · internal priority',
+     keys:[A.jd_all,A.jsp_all,A.structured_sel,A.internal_priority],noteKey:'n_recruitment',
+     gaps:{
+       jd_all:{no:'Existing roles have no written Job Descriptions — this is not just a recruitment gap. Without a JD for every current role, performance cannot be managed, appraisals are not objective, pay cannot be graded, and JSPs cannot be built. This is the most fundamental documentation failure in the system.',partial:'Some roles have JDs — must cover all current roles across all KADs, not just vacancies.'},
+       jsp_all:{no:'No Job Success Profiles exist for any role — a JSP defines not just what the role does but what excellent performance looks like. Without it, the entire performance and development system has no foundation.',partial:'Some roles have JSPs — must cover all current role types.'},
+       structured_sel:{no:'No structured selection process — hiring decisions made on gut feel. This produces consistently poor hiring outcomes and creates discrimination risk.',partial:'Varies by manager — must be standardised for all roles above coordinator level.'},
+       internal_priority:{no:'Internal candidates not formally considered before external search — the cheapest, fastest, and most culturally aligned talent pool is being ignored.',partial:'Sometimes considered informally — formalise internal vacancy posting before external search opens.'},
+     },
+     actions:{
+       jd_all:{no:{text:'Prioritise JD creation for all 37+ role types across all KADs. Use JSP tool. HRBP facilitates 60-minute job design session per role type with KAD head. Target: all JDs within 60 days.',tag:'30'}},
+       jsp_all:{no:{text:'Complete Job Success Profiles for all existing role types using the JSP tool on this portal. Start with senior and critical roles.',tag:'30'}},
+       structured_sel:{no:{text:'Implement structured interview scorecard for all roles above coordinator. Train all managers who conduct interviews. No hire above coordinator without a scorecard.',tag:'30'}},
+       internal_priority:{no:{text:'Establish internal vacancy policy: all roles above coordinator to be posted internally for minimum 5 days before external search opens.',tag:'30'}},
+     }},
+    {icon:'🚀',name:'Onboarding',sub:'30/60/90 day plans · role clarity · KAD integration within week 1',
+     keys:[A.onboarding,A.role_clarity],noteKey:'n_onboarding',
+     gaps:{
+       onboarding:{no:'No structured onboarding — new hires left to find their footing independently. Time-to-productivity is severely extended and early attrition risk is high. The 90-day plan is the minimum.',partial:'Informal introduction only — a documented 30/60/90-day plan is required for every hire above coordinator level.'},
+       role_clarity:{no:'No structured role clarity in week 1 — the most expensive onboarding failure. A new hire without a clear mandate cannot perform and cannot be managed.',partial:'Inconsistent — depends on individual manager quality. Must be standardised across all KADs.'},
+     },
+     actions:{
+       onboarding:{no:{text:'Create standard 30/60/90-day onboarding template. Apply immediately to all new hires and to any recent joiners who received no structured onboarding.',tag:'30'}},
+       role_clarity:{no:{text:'Mandate a first-week clarity meeting: HRBP + manager + new hire, covering KAD assignment, reporting line, role expectations, and immediate priorities. Non-negotiable.',tag:'now'}},
+     }},
+    {icon:'🎓',name:'Learning, Development & Promotions',sub:'Competency framework · TNA · individual development plans · merit-based promotions',
+     keys:[A.competency,A.idp,A.promotion],noteKey:'n_ld',
+     gaps:{
+       competency:{no:'No competency framework and no Training Needs Analysis — L&D investment (if any) is producing activity, not capability. The Competency Matrix tool exists on this portal to fix this.',partial:'Informal or incomplete — documented TNA required per KAD.'},
+       idp:{no:'No Individual Development Plans — the company states it will "provide career development opportunities" in the HR Policy Handbook. The absence of IDPs is a breach of that commitment to every employee.',partial:'Some employees have IDPs — must cover all employees.'},
+       promotion:{no:'Promotion not merit-based or documented — subjective promotions create perceived unfairness, pay inequity, and legal risk. Every promotion decision must connect to a written appraisal outcome.',partial:'Informal merit consideration — must be formally connected to documented appraisal results.'},
+     },
+     actions:{
+       competency:{no:{text:'Conduct TNA for all employees in KAD using the Competency Matrix tool on this portal. Complete within 60 days. Use outputs to build IDPs.',tag:'30'}},
+       idp:{no:{text:'Create IDPs for all employees based on TNA outputs. Minimum one active development opportunity per person.',tag:'90'}},
+       promotion:{no:{text:'Document promotion criteria linked to appraisal outcomes. Communicate to all managers. Apply to all promotion decisions from this point.',tag:'90'}},
+     }},
+    {icon:'🗄️',name:'HR Data & People Records',sub:'Master employee register · reporting capability · workforce plan',
+     keys:[A.hris,A.reporting,A.wfplan],noteKey:'n_data',
+     gaps:{
+       hris:{no:'No reliable master record of employees — the organisation does not know with confidence who it employs, what their terms are, or what they are owed. This is the root cause of most compliance failures.',partial:'Fragmented or contains errors — consolidate into a single source of truth immediately.'},
+       reporting:{no:'Cannot produce basic people reports on demand — HR cannot demonstrate value, manage risk, or respond to leadership without data.',partial:'Manual effort required — build self-service reporting as a minimum standard.'},
+       wfplan:{no:'No workforce plan — all hiring is reactive. The organisation cannot connect people decisions to business strategy without one.',partial:'Informal only — document the workforce plan and align to KAD objectives.'},
+     },
+     actions:{
+       hris:{no:{text:'Audit and verify all employee records this month. Establish single master HR register with defined ownership. Purge duplicates and fill gaps.',tag:'now'}},
+       reporting:{no:{text:'Build monthly people dashboard: headcount by KAD, attrition rate, open vacancies, appraisal completion. Deliver to CEO monthly from next month.',tag:'30'}},
+       wfplan:{no:{text:'HRBP facilitates 2-hour workforce planning session with each KAD head. Produce a 12-month resourcing roadmap per KAD.',tag:'30'}},
+     }},
+    {icon:'🤝',name:'Employee Engagement & Relations',sub:'Post-restructure transition · flight risk · morale assessment',
+     keys:[A.transition,A.flight,A.morale],noteKey:'n_engagement',
+     gaps:{
+       transition:{no:'1:1 transition conversations not completed — employees remain in structural ambiguity from the April 2026 restructure. Ambiguity is a direct driver of attrition.',partial:'Some completed — must finish all remaining conversations within 2 weeks. Document every outcome.'},
+       flight:{no:'Flight risks identified but no retention action taken — the resignation is already in progress. Every day without a retention conversation increases the probability of departure.',partial:'Suspected risks not yet named — HRBP must name specific individuals and initiate retention conversations this week.'},
+       morale:{no:'Morale deteriorating across the KAD — this requires immediate leadership and HRBP response. Low post-restructure morale produces productivity loss and attrition simultaneously.',partial:'Mixed signals — active listening sessions required to understand what is driving uncertainty and respond visibly.'},
+     },
+     actions:{
+       transition:{no:{text:'Complete all outstanding 1:1 transition conversations within 2 weeks. Document outcomes. Flag any concerns to KAD leader and HR lead immediately.',tag:'now'}},
+       flight:{no:{text:'Initiate retention conversations with named flight risks this week. Escalate to KAD leader and CEO. Agree specific retention actions — do not wait.',tag:'now'}},
+       morale:{no:{text:'Conduct listening sessions across the KAD this week. Identify top 3 morale concerns. Report findings to KAD leader with proposed actions within 2 weeks.',tag:'now'}},
+     }},
+    {icon:'🧭',name:'HRBP Mandate & Operating Effectiveness',sub:'Operating charter · weekly sync · tools and resources',
+     keys:[A.charter,A.sync,A.tools],noteKey:'n_blocker',
+     gaps:{
+       charter:{no:'No written HRBP Operating Charter — the HRBP does not have a defined mandate. Authority, accountability, and escalation paths are all undefined.',partial:'Verbal only — must be documented and signed by the HRBP and the HR lead this week.'},
+       sync:{no:'No regular HRBP sync — the HR operating model is disconnected. Cross-KAD issues go undetected, ER decisions are made inconsistently, and no one has an integrated view.',partial:'Ad hoc only — establish standing weekly HRBP sync with all 4 HRBPs and the HR lead immediately.'},
+       tools:{no:'Operating without adequate tools — an HRBP without tools is a title without function. The organisation must invest in equipping HRBPs properly.',partial:'Significant tool gaps — identify the top 3 gaps and present an investment case to the CEO within 30 days.'},
+     },
+     actions:{
+       charter:{no:{text:'Draft and sign HRBP Operating Charter covering what the HRBP owns, decides, and escalates. Complete within 2 weeks.',tag:'now'}},
+       sync:{no:{text:'Establish standing weekly HRBP sync with all 4 HRBPs and HR lead. Minimum 30 minutes. Calendar invite sent this week.',tag:'now'}},
+       tools:{no:{text:'HRBP identifies top 3 tool and resource gaps. HR lead presents investment case to CEO within 30 days.',tag:'30'}},
+     }},
   ];
 
-  // Build results page
-  document.getElementById('rTitle').textContent = 'HR Function Audit — ' + selectedHRBP.name;
-  document.getElementById('rMeta').textContent = 'Telinno Consulting · ' + selectedHRBP.kad + ' · April 2026';
-  document.getElementById('rSub').textContent = selectedHRBP.country + ' · Generated ' + new Date().toLocaleDateString('en-GB', {day:'numeric',month:'long',year:'numeric'});
+  let reds=0,ambers=0,greens=0;
+  const nowA=[],d30A=[],d90A=[];
+  const fnC=document.getElementById('fnCards');
+  fnC.innerHTML='';
 
-  // Compute overall
-  let reds = 0, ambers = 0, greens = 0;
-  sections.forEach(s => {
-    const r = ragFromAnswers(s.keys);
-    if (r === 'red') reds++;
-    else if (r === 'amber') ambers++;
-    else greens++;
-  });
+  SECTIONS.forEach((s,idx)=>{
+    const r=rag(s.keys);
+    if(r==='red')reds++;else if(r==='amber')ambers++;else greens++;
 
-  const total = sections.length;
-  const score = Math.round((greens * 100 + ambers * 50) / total);
-  const banner = document.getElementById('scoreBanner');
-  let bClass, bLabel, bDesc;
-  if (score >= 70) { bClass = 'green'; bLabel = 'Partially Functional'; bDesc = 'Some HR processes are in place but significant gaps remain. The priority is closing red areas before investing in optimisation.'; }
-  else if (score >= 40) { bClass = 'amber'; bLabel = 'Under Construction'; bDesc = 'HR infrastructure is partially built. Nominal processes exist but many are not operational. The focus must be foundation before strategy.'; }
-  else { bClass = 'red'; bLabel = 'Critical — Foundation Missing'; bDesc = 'Core HR infrastructure does not yet exist. Compliance exposure is high and HRBPs are operating without mandate or tools. Immediate remediation required.'; }
-
-  banner.style.background = `var(--${bClass}-bg)`;
-  banner.style.border = `1px solid var(--${bClass}-border)`;
-  document.getElementById('scoreNum').textContent = score + '%';
-  document.getElementById('scoreNum').style.color = `var(--${bClass})`;
-  document.getElementById('scoreLabel').textContent = bLabel;
-  document.getElementById('scoreLabel').style.color = `var(--${bClass})`;
-  document.getElementById('scoreDesc').textContent = bDesc;
-
-  // Stats
-  document.getElementById('statRow').innerHTML = `
-    <div class="stat-card"><div class="stat-num" style="color:var(--red)">${reds}</div><div class="stat-lbl">Critical Gaps</div></div>
-    <div class="stat-card"><div class="stat-num" style="color:var(--amber)">${ambers}</div><div class="stat-lbl">Need Attention</div></div>
-    <div class="stat-card"><div class="stat-num" style="color:var(--green)">${greens}</div><div class="stat-lbl">Operating</div></div>
-    <div class="stat-card"><div class="stat-num" style="color:var(--accent)">${total}</div><div class="stat-lbl">Functions Assessed</div></div>
-  `;
-
-  // Function cards
-  const fnContainer = document.getElementById('fnCards');
-  fnContainer.innerHTML = '';
-  const nowActions = [], d30Actions = [], d90Actions = [];
-
-  sections.forEach((s, idx) => {
-    const rag = ragFromAnswers(s.keys);
-    const gapsHtml = [];
-    const actHtml = [];
-
-    s.keys.forEach((val, ki) => {
-      const keyMap = Object.keys(s.gaps.no);
-      const key = keyMap[ki];
-      if (!key || !val) return;
-      if (val === 'no' && s.gaps.no[key]) {
-        gapsHtml.push(`<li class="gap-item">${s.gaps.no[key]}</li>`);
-        if (s.actions.no[key]) {
-          const a = s.actions.no[key];
-          actHtml.push({ text: a.text, tag: a.tag });
-          if (a.tag === 'now') nowActions.push(a.text);
-          else if (a.tag === '30') d30Actions.push(a.text);
-          else d90Actions.push(a.text);
-        }
-      } else if (val === 'partial' && s.gaps.partial[key]) {
-        gapsHtml.push(`<li class="gap-item amber">${s.gaps.partial[key]}</li>`);
-        if (s.actions.partial[key]) {
-          const a = s.actions.partial[key];
-          actHtml.push({ text: a.text, tag: a.tag });
-          if (a.tag === 'now') nowActions.push(a.text);
-          else if (a.tag === '30') d30Actions.push(a.text);
-          else d90Actions.push(a.text);
-        }
+    const gH=[],aH=[];
+    const kNames=Object.keys(s.gaps);
+    kNames.forEach((k,i)=>{
+      const val=s.keys[i];
+      if(!val||!s.gaps[k])return;
+      const gt=val==='no'?s.gaps[k].no:val==='partial'?s.gaps[k].partial:null;
+      if(gt)gH.push(`<li class="gap-item${val==='partial'?' amber':''}">${gt}</li>`);
+      if(val==='no'&&s.actions[k]&&s.actions[k].no){
+        const a=s.actions[k].no;
+        aH.push({text:a.text,tag:a.tag});
+        if(a.tag==='now')nowA.push(a.text);
+        else if(a.tag==='30')d30A.push(a.text);
+        else d90A.push(a.text);
       }
     });
 
-    // Flight risk special
-    if (s.frKey === 'yes') {
-      gapsHtml.push('<li class="gap-item">Flight risks identified — escalate to HR lead immediately and initiate retention conversations</li>');
-      nowActions.push('Escalate named flight risks to HR lead; initiate retention conversations this week');
-    }
+    const note=gn(s.noteKey);
+    const noteHtml=note?`<div class="verbatim">"${note}"</div>`:'';
+    const noGaps=gH.length===0;
 
-    const noteText = notes[s.noteKey] ? `<div class="verbatim">"${notes[s.noteKey]}"</div>` : '';
-    const noGaps = gapsHtml.length === 0;
-
-    const card = document.createElement('div');
-    card.className = 'fn-card';
-    card.innerHTML = `
+    const card=document.createElement('div');
+    card.className='fn-card';
+    card.innerHTML=`
       <div class="fn-head" onclick="toggleCard(this)">
         <div class="fn-head-left">
           <span class="fn-icon">${s.icon}</span>
-          <div>
-            <p class="fn-name">${s.name}</p>
-            <p class="fn-sub">${s.sub}</p>
-          </div>
+          <div><div class="fn-name">${s.name}</div><div class="fn-sub">${s.sub}</div></div>
         </div>
-        <span class="${ragClass(rag)}">${ragLabel(rag)}</span>
+        <span class="rag rag-${r}">${r==='red'?'Critical Gap':r==='amber'?'Needs Attention':'Operating'}</span>
       </div>
-      <div class="fn-body" id="fnb-${idx}">
-        ${noGaps ? '<p style="font-size:13px;color:var(--green);padding-top:1rem;">No critical gaps identified in this function.</p>' : `
-        <div class="finding-block">
-          <p class="finding-head">Gaps Identified</p>
-          <ul class="gap-list">${gapsHtml.join('')}</ul>
-        </div>
-        <div class="finding-block" style="margin-top:1rem;">
-          <p class="finding-head">Recommended Actions</p>
-          <ul class="action-list">${actHtml.map(a => `<li class="action-item">${a.text}<span class="action-tag tag-${a.tag}">${a.tag === 'now' ? 'Immediate' : a.tag === '30' ? '30 days' : '60–90 days'}</span></li>`).join('')}</ul>
-        </div>`}
-        ${noteText}
-      </div>
-    `;
-    fnContainer.appendChild(card);
-
-    // Auto-open red cards
-    if (rag === 'red') {
-      card.querySelector('.fn-body').classList.add('open');
-    }
+      <div class="fn-body${r==='red'?' open':''}" id="fnb-${idx}">
+        ${noGaps?'<p style="font-size:13px;color:var(--green);padding:14px 0;">No critical gaps identified in this function.</p>':`
+        <p class="finding-head">Gaps Identified</p>
+        <ul class="gap-list">${gH.join('')}</ul>
+        <p class="finding-head" style="margin-top:12px;">Required Actions</p>
+        <ul class="action-list">${aH.map(a=>`<li class="action-item">${a.text}<span class="action-tag tag-${a.tag}">${a.tag==='now'?'Immediate':a.tag==='30'?'30 days':'60–90 days'}</span></li>`).join('')}</ul>`}
+        ${noteHtml}
+      </div>`;
+    fnC.appendChild(card);
   });
 
-  // Action plan
-  const planItems = (arr) => arr.length ? arr.map(a => `<div class="plan-item">${a}</div>`).join('') : '<div class="plan-item" style="color:var(--ink-4)">No immediate actions required</div>';
-  document.getElementById('planRow').innerHTML = `
-    <div>
-      <p class="plan-col-head now">⚡ Immediate (This Week)</p>
-      ${planItems(nowActions)}
-    </div>
-    <div>
-      <p class="plan-col-head d30">📅 Within 30 Days</p>
-      ${planItems(d30Actions)}
-    </div>
-    <div>
-      <p class="plan-col-head d90">🗓 60–90 Days</p>
-      ${planItems(d90Actions)}
-    </div>
-  `;
+  const total=SECTIONS.length;
+  const score=Math.round((greens*100+ambers*50)/total);
+  const banner=document.getElementById('scoreBanner');
+  let bC,bL,bD;
+  if(score>=70){bC='green';bL='Functional — Continue Building';bD='Core HR processes are in place in most functions. The priority is closing amber areas, deepening quality, and moving toward strategic HR capability. Good foundation — do not stop here.';}
+  else if(score>=40){bC='amber';bL='Under Construction';bD='HR infrastructure is partially built. Nominal processes exist but many are not operational. The foundation must be completed before any strategic HR work is possible. Focus entirely on the critical gaps first.';}
+  else{bC='red';bL='Critical — Foundation Missing';bD='Core HR infrastructure does not yet exist across most functions. The organisation is operating at significant legal, financial, and human risk. Immediate action is required on all critical gaps before anything else.';}
 
-  // Switch pages
+  banner.className=bC;
+  document.getElementById('scoreNum').textContent=score+'%';
+  document.getElementById('scoreLabel').textContent=bL;
+  document.getElementById('scoreDesc').textContent=bD;
+  document.getElementById('statRed').textContent=reds;
+  document.getElementById('statAmber').textContent=ambers;
+  document.getElementById('statGreen').textContent=greens;
+  document.getElementById('statTotal').textContent=total;
+  document.getElementById('rTitle').textContent=`HR Function Audit — ${selectedHRBP.name}`;
+  document.getElementById('rMeta').textContent=`Telinno Consulting · ${selectedHRBP.kad} · April 2026`;
+  document.getElementById('rSub').textContent=`${selectedHRBP.country} · Generated ${new Date().toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'})}`;
+
+  const pi=(arr)=>arr.length?arr.map(a=>`<div class="plan-item">${a}</div>`).join(''):'<div class="plan-item empty">No actions required in this category</div>';
+  document.getElementById('planRow').innerHTML=`
+    <div><div class="plan-col-head">⚡ Immediate — This Week</div>${pi(nowA)}</div>
+    <div><div class="plan-col-head">📅 Within 30 Days</div>${pi(d30A)}</div>
+    <div><div class="plan-col-head">🗓 60–90 Days</div>${pi(d90A)}</div>`;
+
   document.getElementById('pageForm').classList.remove('active');
   document.getElementById('pageResults').classList.add('active');
-  document.getElementById('s1').classList.remove('active');
-  document.getElementById('s1').classList.add('done');
-  document.getElementById('s2').classList.add('done');
-  document.getElementById('s3').classList.add('active');
-  window.scrollTo(0, 0);
+  document.getElementById('s1').classList.remove('active');document.getElementById('s1').classList.add('done');
+  document.getElementById('s2').classList.add('done');document.getElementById('s3').classList.add('active');
+  window.scrollTo(0,0);
 }
 
-function toggleCard(el) {
-  const body = el.nextElementSibling;
-  body.classList.toggle('open');
-}
+function toggleCard(el){el.nextElementSibling.classList.toggle('open');}
 
-function goBack() {
+function goBack(){
   document.getElementById('pageResults').classList.remove('active');
   document.getElementById('pageForm').classList.add('active');
-  document.getElementById('s1').classList.add('active');
-  document.getElementById('s1').classList.remove('done');
-  document.getElementById('s2').classList.remove('done');
-  document.getElementById('s3').classList.remove('active');
-  window.scrollTo(0, 0);
+  document.getElementById('s1').classList.add('active');document.getElementById('s1').classList.remove('done');
+  document.getElementById('s2').classList.remove('done');document.getElementById('s3').classList.remove('active');
+  window.scrollTo(0,0);
 }
-
-// Pill selection — use change event on radio for reliability
-document.querySelectorAll('.pill-group').forEach(group => {
-  group.querySelectorAll('input[type="radio"]').forEach(radio => {
-    radio.addEventListener('change', () => {
-      group.querySelectorAll('.pill').forEach(p => {
-        p.classList.remove('selected-yes','selected-no','selected-partial');
-      });
-      const pill = radio.closest('.pill');
-      const val = radio.value;
-      if (val === 'yes') pill.classList.add('selected-yes');
-      else if (val === 'no') pill.classList.add('selected-no');
-      else pill.classList.add('selected-partial');
-    });
-  });
-});
-
-// HRBP card selection — driven by the radio inside each card
-document.querySelectorAll('.hrbp-card input[type="radio"]').forEach(radio => {
-  radio.addEventListener('change', () => {
-    document.querySelectorAll('.hrbp-card').forEach(c => c.classList.remove('selected'));
-    const card = radio.closest('.hrbp-card');
-    card.classList.add('selected');
-    selectedHRBP = {
-      name: card.querySelector('.hrbp-name').textContent,
-      kad:  card.querySelector('.hrbp-kad').textContent,
-      country: card.querySelector('.hrbp-country').textContent
-    };
-  });
-});
 </script>
 </body>
 </html>

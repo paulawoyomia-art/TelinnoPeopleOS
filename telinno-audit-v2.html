@@ -312,8 +312,8 @@ body{font-family:'DM Sans',sans-serif;background:var(--ink);color:var(--text);mi
       <div class="gap-flags">
         <div class="gf-title">Org-Wide Flags</div>
         <div class="gf-row"><span class="gf-label">No contract</span><span class="gf-val red" id="f-contract">—</span></div>
+        <div class="gf-row"><span class="gf-label">No appt letter</span><span class="gf-val red" id="f-appt">—</span></div>
         <div class="gf-row"><span class="gf-label">No JD</span><span class="gf-val red" id="f-jd">—</span></div>
-        <div class="gf-row"><span class="gf-label">No success profile</span><span class="gf-val red" id="f-sp">—</span></div>
         <div class="gf-row"><span class="gf-label">No payslip</span><span class="gf-val red" id="f-pay">—</span></div>
         <div class="gf-row"><span class="gf-label">No goals</span><span class="gf-val red" id="f-goals">—</span></div>
         <div class="gf-row"><span class="gf-label">Grade unknown</span><span class="gf-val amber" id="f-grade">—</span></div>
@@ -333,65 +333,78 @@ const PEOPLE = [{"kad":"KAD1","name":"Kingsley Okougha","kad_role":"KAD Leader",
 // ── AUDIT SCHEMA — 6 phases ──
 const PHASES = [
   {
-    id:'p1',label:'Phase 1 — Legal & Compliance',color:'var(--red)',crit:'critical',
-    intro:'The non-negotiable floor. No people system can be built until these basics are confirmed for every person.',
+    id:'p1',label:'Phase 1 — Employment File (HR Policy Handbook Sec. 1)',color:'var(--red)',crit:'critical',
+    intro:'Every employee must have these documents on file per the HR Policy Handbook. This is the legal foundation — without it, employment is not properly constituted.',
     fields:[
-      {id:'contract',label:'Employment contract signed & current post-restructure',hint:'Does a signed, current contract exist reflecting the new KAD structure and role?'},
-      {id:'rtw',label:'Right-to-work / work permit verified',hint:'Particularly critical for cross-border assignments — Nigeria, Mali, Niger, CIV, Cameroon, SA, Liberia each have different requirements.'},
-      {id:'payroll',label:'On payroll with correct name, bank details, and role',hint:'Are payroll records accurate and matching the staff register?'},
-      {id:'payslip',label:'Payslip issued in the last month',hint:'A payslip is a legal requirement in most jurisdictions. "Paid but no payslip" is not compliant.'},
+      {id:'appt_letter',label:'Letter of appointment issued and on file',hint:'HR Policy Handbook Section 1: "You will be given a letter of employment." Must exist for every employee without exception.'},
+      {id:'contract',label:'Signed employment contract on file (reflecting post-restructure KAD)',hint:'The signed contract must reflect the current role, KAD, reporting line, and terms. Post-April 2026, all contracts must show new KAD structure.'},
+      {id:'passport_photos',label:'2 recent passport photographs on file',hint:'HR Policy Handbook Section 1: "required to provide 2 recent passport photographs (not more than 6 months)."'},
+      {id:'references',label:'References checked and filed (3 if prior employer, 2 if first job)',hint:'HR Policy Handbook Section 1: "submit the names of three referees… One from your previous employer, two from persons not related to you."'},
+      {id:'induction_form',label:'Induction form signed by employee and HR',hint:'HR Policy Handbook Section 1: "an induction form is filled and signed by the new employee and HR." This is the evidence that induction occurred.'},
+      {id:'emp_number',label:'Employment number assigned',hint:'HR Policy Handbook Section 1: "Every employee will be issued an employment number."'},
+      {id:'id_card',label:'ID card issued and photo on file',hint:'HR Policy Handbook Section 1: "employment ID card must be worn at all times in the TCL office and shown upon request to customers."'},
+      {id:'probation_letter',label:'Probation completion/confirmation letter on file',hint:'HR Policy Handbook Section 1: "you will receive a formal confirmation letter in writing" after satisfactory probation. Or extension letter if extended.'},
+      {id:'handbook_signed',label:'HR & Employee Handbook acknowledgement signed and returned',hint:'Both handbooks require a signed acknowledgement slip returned to HR. Without this, handbook terms cannot be enforced against the employee.'},
     ]
   },
   {
-    id:'p2',label:'Phase 2 — People Documentation',color:'var(--amber)',crit:'critical',
-    intro:'The most critical gap across Telinno. Documentation must exist before performance can be managed.',
+    id:'p2',label:'Phase 2 — Pay & Compliance (HR Policy Handbook Sec. 2 & 3)',color:'var(--amber)',crit:'critical',
+    intro:'Payslip issuance, bank account on file, compensation breakdown documented, and leave entitlement stated in employment letter — all mandatory per policy.',
     fields:[
-      {id:'jd',label:'Job description exists and is current',hint:'Does a written job description exist for this specific KAD role — not generic, not from a previous structure?'},
-      {id:'jsp',label:'Job Success Profile (JSP) completed',hint:'Has a JSP been completed using the Telinno JSP template? This includes success criteria, competencies, and behaviour expectations.'},
-      {id:'competency_assessed',label:'Competency assessment completed',hint:'Has the person been assessed against the competency framework for their role using the Competency Matrix tool?'},
-      {id:'td_plan',label:'Training & Development plan in place',hint:'Does a documented T&D plan exist based on their competency gaps? Not informal conversation — a written plan.'},
+      {id:'payslip',label:'Payslip issued in the last month',hint:'HR Policy Handbook Section 2: "A pay advice will be issued to you." Statutory requirement in Nigeria and other operating countries.'},
+      {id:'bank_on_file',label:'Bank account details on file for direct salary payment',hint:'HR Policy Handbook Section 2: "maintain an account with one of the company\'s banks… account credited directly." No cash payments permitted per policy.'},
+      {id:'comp_breakdown',label:'Compensation documented: basic + housing + transport + meal allowances',hint:'HR Policy Handbook Section 2: "Allowances include housing, transport and meal." Each component must be individually documented per employee.'},
+      {id:'salary_on_file',label:'Agreed salary documented in compensation register',hint:'A formal record of the agreed salary per employee — not just in payroll, but in an HR compensation file. Required for pay equity analysis.'},
+      {id:'leave_in_contract',label:'Annual leave entitlement stated in employment letter',hint:'HR Policy Handbook Section 3: "Your leave entitlement for each year is as stated in your letter of employment." Must be individually specified.'},
+      {id:'leave_schedule',label:'Annual leave schedule submitted for this year',hint:'HR Policy Handbook Section 3: "submit your annual leave date to HR by January 31 each year."'},
+      {id:'rtw',label:'Right-to-work / work permit verified (for cross-border assignments)',hint:'Critical for employees operating across countries. Nigeria, Mali, Niger, CIV, Cameroon, SA, Liberia each have different requirements.'},
     ]
   },
   {
-    id:'p3',label:'Phase 3 — Role Clarity',color:'var(--gold)',crit:'critical',
-    intro:'Every person must know exactly what they are responsible for, who they report to, and what KAD they belong to.',
+    id:'p3',label:'Phase 3 — Role Documentation',color:'var(--gold)',crit:'critical',
+    intro:'Every existing role must have documentation — not just roles being hired for. Without a JD, performance cannot be managed. Without a JSP, you cannot define what good looks like.',
     fields:[
-      {id:'kad_confirmed',label:'KAD assignment formally communicated in writing',hint:'Has the person received written confirmation of their KAD, their KAD leader, and what the restructure means for their day-to-day?'},
-      {id:'reporting_clear',label:'Reporting line confirmed and understood',hint:'Does the person know who they report to? And does their manager know this person reports to them?'},
-      {id:'goals',label:'Performance goals documented and agreed',hint:'Does the person have written, SMART goals connected to KAD objectives — not generic, not verbal?'},
-      {id:'grade_confirmed',label:'Role grade / level assigned and communicated',hint:'Has a formal grade been assigned from the Telinno taxonomy: KAD Leader / SME / Manager / Coordinator / Engineer / Technician / Officer / Intern?'},
+      {id:'jd',label:'Job Description exists and is current for this person\'s role',hint:'Must exist for every current role type in the organisation — not just vacancies. Post-restructure, JDs must reflect KAD structure.'},
+      {id:'jsp',label:'Job Success Profile (JSP) completed for this role',hint:'JSP defines purpose, key outputs, competency requirements, and what excellent performance looks like at 90 days and 12 months.'},
+      {id:'competency_sheet',label:'Competency framework / sheet exists for this role',hint:'Role-specific competency requirements with proficiency levels (1–5). Foundation for the Competency Matrix assessment.'},
+      {id:'grade_assigned',label:'Role grade assigned from Telinno taxonomy',hint:'Grades: KAD Leader / SME / Manager / Coordinator / Engineer / Technician / Officer / Intern. Must be formally assigned and communicated.'},
+      {id:'kad_confirmed',label:'KAD assignment formally communicated in writing',hint:'Post-April 2026 restructure: every employee must have received written confirmation of their KAD, their KAD leader, and what it means.'},
+      {id:'reporting_clear',label:'Reporting line confirmed and understood by employee',hint:'Does the employee know who they report to — and does the manager know this person reports to them?'},
     ]
   },
   {
-    id:'p4',label:'Phase 4 — Performance Management',color:'var(--blue)',crit:'important',
-    intro:'Performance cannot be managed without a foundation. This phase assumes Phase 3 is complete.',
+    id:'p4',label:'Phase 4 — Performance Management (HR Policy Handbook Sec. 2)',color:'var(--blue)',crit:'important',
+    intro:'Goals, written appraisals (twice yearly per policy), continuous feedback, and consequence management for underperformance.',
     fields:[
-      {id:'onetoone',label:'Regular 1:1 with manager in place (weekly or bi-weekly)',hint:'Is there a structured, recurring 1:1 — not just ad hoc conversations?'},
-      {id:'feedback_30d',label:'Received specific performance feedback in last 30 days',hint:'Behavioural, specific feedback — not just "good job." Has this happened in the last month?'},
-      {id:'no_conduct',label:'No open, unresolved conduct or performance concern',hint:'Flag here if there is an active PIP, conduct matter, or unresolved grievance.'},
-      {id:'mid_year',label:'Mid-year or last review completed',hint:'Has a formal performance review or mid-year check-in happened in the current cycle?'},
+      {id:'goals',label:'Performance goals documented and agreed for current period',hint:'HR Policy Handbook Section 2: "Performance is the principle behind our reward system." Goals must be written, connected to KAD objectives — not verbal.'},
+      {id:'last_appraisal',label:'Last written performance appraisal on file (within 6 months)',hint:'HR Policy Handbook Section 2: "written performance appraisals twice a year (every 6 months – mid and end-of-year)." Must be written and filed.'},
+      {id:'onetoone',label:'Regular 1:1 with manager in place',hint:'PVC Phase 5: Continuous feedback is the mechanism between formal appraisals. A 6-month appraisal cycle without 1:1s means feedback arrives too late.'},
+      {id:'feedback_30d',label:'Received specific performance feedback in last 30 days',hint:'Behavioural, specific feedback — not just "doing fine." Has this person received actionable feedback in the last month?'},
+      {id:'no_conduct',label:'No open, unresolved conduct or performance concern',hint:'Flag if there is an active PIP, disciplinary matter, or unresolved conduct issue for this person.'},
+      {id:'confidentiality',label:'Confidentiality / non-competition clause signed',hint:'HR Policy Handbook Section 8: 3-year post-employment non-solicitation and non-competition. Part of employment contract — must be signed.'},
     ]
   },
   {
-    id:'p5',label:'Phase 5 — Pay & Grading',color:'var(--green)',crit:'important',
-    intro:'"Vibes-based compensation" is the fastest route to inequity claims and losing good people. Document everything.',
+    id:'p5',label:'Phase 5 — Competency & Development',color:'var(--green)',crit:'important',
+    intro:'Has this person been assessed against their role competencies? Is there a development plan? Are they growing — or stagnating?',
     fields:[
-      {id:'salary_on_file',label:'Agreed salary documented and on file',hint:'Is the salary formally recorded — not just in payroll, but in a compensation record per person?'},
-      {id:'market_checked',label:'Pay position checked against market for this role and country',hint:'Has the salary been benchmarked against market data for this specific role in this specific country?'},
-      {id:'pay_equity',label:'No known pay equity concern for this person',hint:'Are they paid comparably to peers in equivalent roles? Flag if there is a known or suspected disparity.'},
-      {id:'benefits_communicated',label:'Total reward / benefits communicated and understood',hint:'Does the person know the full value of their compensation package — base, benefits, any variable pay?'},
+      {id:'competency_assessed',label:'Competency assessment completed using the Matrix tool',hint:'Has this person been assessed against the competency framework for their role? Required / current level documented in the Competency Matrix.'},
+      {id:'td_plan',label:'Training & Development plan in place based on competency gaps',hint:'Not an informal conversation — a documented T&D plan with specific learning actions, methods, and timelines.'},
+      {id:'development_active',label:'At least one active development opportunity in place',hint:'A skill being built, a certification underway, a stretch project, a mentoring relationship — something that develops this person.'},
+      {id:'promotion_eligible',label:'Promotion eligibility assessed against documented criteria',hint:'HR Policy Handbook Section 2: "merit based and performance oriented. Emphasis on the bi-annual performance appraisal." Has this been assessed?'},
     ]
   },
   {
     id:'p6',label:'Phase 6 — Employee Experience & Retention',color:'#8b7fd4',crit:'building',
-    intro:'With foundations in place, this phase assesses the human reality — engagement, development, and retention risk.',
+    intro:'How is this person actually doing? Are they engaged, developing, at risk of leaving? This is the HRBP\'s qualitative assessment — the most valuable intelligence in the audit.',
     fields:[
-      {id:'onboarded',label:'Properly onboarded to KAD role (not just admin)',hint:'Did this person receive a real onboarding — context, team integration, purpose — or just logistics?'},
-      {id:'development',label:'Active development opportunity in place',hint:'Does the person have at least one active development opportunity: a skill being built, a certification, a stretch project?'},
-      {id:'engagement',label:'Engagement assessed — person appears engaged',hint:'Based on HRBP direct observation: does this person show up with intent and energy? Or are they going through motions?'},
-      {id:'not_flight_risk',label:'Not identified as flight risk',hint:'Is there intelligence — from conversations, behaviour, market signals — that this person may be looking elsewhere?'},
+      {id:'onboarded',label:'Properly onboarded (not just admin setup — real KAD integration)',hint:'Did this person receive structured onboarding: team integration, role clarity, stakeholder introductions, 30/60/90 plan? Or just a laptop and access?'},
+      {id:'market_checked',label:'Pay position checked against market for this role and country',hint:'Has their salary been compared to external market data? Underpayment drives silent attrition.'},
+      {id:'pay_equity',label:'No known pay equity concern for this person',hint:'Are they paid comparably to peers in equivalent roles? Flag known or suspected disparities.'},
+      {id:'engagement',label:'Person appears engaged based on HRBP observation',hint:'Direct HRBP observation: does this person show up with intent and energy? Or are they going through the motions?'},
+      {id:'not_flight_risk',label:'Not identified as flight risk',hint:'Any intelligence — conversations, behaviour, market signals — that this person may be looking elsewhere? Flag if yes.'},
     ]
-  }
+  },
 ];
 
 // ── STATE ──
@@ -432,17 +445,18 @@ function phaseCompletion(phaseId){
 }
 function orgCompletion(){let a=0,t=0;visiblePeople.forEach(p=>{const c=pCompletion(p);a+=c.ans;t+=c.total;});return t>0?Math.round((a/t)*100):0;}
 function gapFlags(){
-  const f={contract:0,jd:0,sp:0,pay:0,goals:0,grade:0,flight:0};
+  const f={contract:0,jd:0,appt:0,pay:0,goals:0,grade:0,flight:0};
   visiblePeople.forEach(p=>{const d=pData(p);
     if(d.contract==='no')f.contract++;
     if(d.jd==='no')f.jd++;
-    if(d.jsp==='no')f.sp++;
+    if(d.appt_letter==='no')f.appt++;
     if(d.payslip==='no')f.pay++;
     if(d.goals==='no')f.goals++;
-    if(d.grade_confirmed==='no')f.grade++;
+    if(d.grade_assigned==='no')f.grade++;
     if(d.not_flight_risk==='no')f.flight++;
   });return f;
-}
+};
+
 
 // ── LOGIN ──
 function doLogin(){
@@ -632,7 +646,7 @@ function updateRight(){
   });
   const fl=gapFlags();
   const sf=(id,v,t)=>{const e=document.getElementById(id);if(!e)return;e.textContent=v;e.className='gf-val '+(v>=t?'red':v>0?'amber':'green');};
-  sf('f-contract',fl.contract,5);sf('f-jd',fl.jd,5);sf('f-sp',fl.sp,5);
+  sf('f-contract',fl.contract,5);sf('f-appt',fl.appt,5);sf('f-jd',fl.jd,5);
   sf('f-pay',fl.pay,5);sf('f-goals',fl.goals,5);sf('f-grade',fl.grade,10);
   document.getElementById('f-flight').textContent=fl.flight;
   document.getElementById('f-flight').className='gf-val '+(fl.flight>5?'red':fl.flight>0?'amber':'green');
