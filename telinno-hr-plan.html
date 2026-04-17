@@ -749,16 +749,18 @@ body {
 <body>
 
 <!-- PORTAL NAV -->
-<div id="portal-nav" style="background:#0b0f18;border-bottom:1px solid rgba(255,255,255,0.06);padding:0 20px;height:38px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:9999;flex-shrink:0;">
-  <a href="index.html" style="font-family:'DM Mono',monospace;font-size:9.5px;letter-spacing:0.12em;text-transform:uppercase;color:#c9ab47;text-decoration:none;display:flex;align-items:center;gap:6px;">
+<div id="portal-nav" style="background:#0b0f18;border-bottom:1px solid rgba(255,255,255,0.07);padding:0 20px;height:38px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:9999;flex-shrink:0;font-family:'DM Mono',monospace;">
+  <a href="index.html" style="font-size:9.5px;letter-spacing:0.12em;text-transform:uppercase;color:#c9ab47;text-decoration:none;display:flex;align-items:center;gap:6px;">
     <span style="font-size:11px;">←</span> Telinno Portal
   </a>
   <div style="display:flex;gap:2px;align-items:center;">
-    <a href="telinno-audit-v2.html" style="font-family:'DM Mono',monospace;font-size:8.5px;letter-spacing:0.06em;text-transform:uppercase;padding:4px 10px;border-radius:3px;color:#6b6660;text-decoration:none;transition:color 0.15s;" onmouseover="this.style.color='#e4dfd7'" onmouseout="this.style.color='#6b6660'">Audit</a>
-    <a href="telinno-jsp.html" style="font-family:'DM Mono',monospace;font-size:8.5px;letter-spacing:0.06em;text-transform:uppercase;padding:4px 10px;border-radius:3px;color:#6b6660;text-decoration:none;" onmouseover="this.style.color='#e4dfd7'" onmouseout="this.style.color='#6b6660'">JSP</a>
-    <a href="telinno-matrix.html" style="font-family:'DM Mono',monospace;font-size:8.5px;letter-spacing:0.06em;text-transform:uppercase;padding:4px 10px;border-radius:3px;color:#6b6660;text-decoration:none;" onmouseover="this.style.color='#e4dfd7'" onmouseout="this.style.color='#6b6660'">Matrix</a>
-    <a href="telinno-hr-plan.html" style="font-family:'DM Mono',monospace;font-size:8.5px;letter-spacing:0.06em;text-transform:uppercase;padding:4px 10px;border-radius:3px;color:#6b6660;text-decoration:none;" onmouseover="this.style.color='#e4dfd7'" onmouseout="this.style.color='#6b6660'">Plan</a>
-    <a href="pvc-v2.html" style="font-family:'DM Mono',monospace;font-size:8.5px;letter-spacing:0.06em;text-transform:uppercase;padding:4px 10px;border-radius:3px;color:#6b6660;text-decoration:none;" onmouseover="this.style.color='#e4dfd7'" onmouseout="this.style.color='#6b6660'">PVC</a>
+    <a href="hr-function-audit.html" style="font-size:8.5px;letter-spacing:0.06em;text-transform:uppercase;padding:4px 10px;border-radius:3px;color:#6b6660;text-decoration:none;transition:color 0.15s;" onmouseover="this.style.color='#e2ddd5'" onmouseout="this.style.color='#6b6660'">Function Audit</a>
+    <a href="telinno-audit-v2.html" style="font-size:8.5px;letter-spacing:0.06em;text-transform:uppercase;padding:4px 10px;border-radius:3px;color:#6b6660;text-decoration:none;" onmouseover="this.style.color='#e2ddd5'" onmouseout="this.style.color='#6b6660'">People Audit</a>
+    <a href="telinno-jsp.html" style="font-size:8.5px;letter-spacing:0.06em;text-transform:uppercase;padding:4px 10px;border-radius:3px;color:#6b6660;text-decoration:none;" onmouseover="this.style.color='#e2ddd5'" onmouseout="this.style.color='#6b6660'">JSP</a>
+    <a href="telinno-matrix.html" style="font-size:8.5px;letter-spacing:0.06em;text-transform:uppercase;padding:4px 10px;border-radius:3px;color:#6b6660;text-decoration:none;" onmouseover="this.style.color='#e2ddd5'" onmouseout="this.style.color='#6b6660'">Matrix</a>
+    <a href="telinno-hr-plan.html" style="font-size:8.5px;letter-spacing:0.06em;text-transform:uppercase;padding:4px 10px;border-radius:3px;color:#6b6660;text-decoration:none;" onmouseover="this.style.color='#e2ddd5'" onmouseout="this.style.color='#6b6660'">Plan</a>
+    <a href="pvc-final.html" style="font-size:8.5px;letter-spacing:0.06em;text-transform:uppercase;padding:4px 10px;border-radius:3px;color:#6b6660;text-decoration:none;" onmouseover="this.style.color='#e2ddd5'" onmouseout="this.style.color='#6b6660'">PVC</a>
+    <a href="target-state.html" style="font-size:8.5px;letter-spacing:0.06em;text-transform:uppercase;padding:4px 10px;border-radius:3px;color:#6b6660;text-decoration:none;" onmouseover="this.style.color='#e2ddd5'" onmouseout="this.style.color='#6b6660'">Target State</a>
   </div>
 </div>
 
@@ -927,21 +929,6 @@ body {
       </div>
       <div class="org-kad" style="--kad-color:#e07060">
         <div class="org-kad-num">KAD 3</div>
-        <div class="org-kad-name">Tower Infrastructure<br>(GICL, IHS, ATC)</div>
-        <div class="org-kad-hrbp">HRBP: Adeniyi Oluwadimimu · Nigeria</div>
-        <div class="org-kad-stats">
-          <div class="org-stat">
-            <span class="org-stat-num">20</span>
-            <span class="org-stat-label">people</span>
-          </div>
-          <div class="org-stat">
-            <span class="org-stat-num">4</span>
-            <span class="org-stat-label">vacancies</span>
-          </div>
-        </div>
-      </div>
-      <div class="org-kad" style="--kad-color:#6aa87a">
-        <div class="org-kad-num">KAD 4</div>
         <div class="org-kad-name">Telecom Operators<br>(MTN, Airtel, Orange)</div>
         <div class="org-kad-hrbp">HRBP: Bassira Abdou Laouali · Niger</div>
         <div class="org-kad-stats">
@@ -952,6 +939,21 @@ body {
           <div class="org-stat">
             <span class="org-stat-num">1</span>
             <span class="org-stat-label">vacancy</span>
+          </div>
+        </div>
+      </div>
+      <div class="org-kad" style="--kad-color:#6aa87a">
+        <div class="org-kad-num">KAD 4</div>
+        <div class="org-kad-name">Tower Infrastructure<br>(GICL, IHS, ATC)</div>
+        <div class="org-kad-hrbp">HRBP: Adeniyi Oluwadimimu · Nigeria</div>
+        <div class="org-kad-stats">
+          <div class="org-stat">
+            <span class="org-stat-num">20</span>
+            <span class="org-stat-label">people</span>
+          </div>
+          <div class="org-stat">
+            <span class="org-stat-num">4</span>
+            <span class="org-stat-label">vacancies</span>
           </div>
         </div>
       </div>
@@ -1138,7 +1140,7 @@ body {
               <li>Prioritise the 12 vacancies by business urgency and KAD impact</li>
               <li>Define sourcing strategy per vacancy — not all roles recruit the same way</li>
               <li>Introduce structured interview framework before any role is filled</li>
-              <li>KAD 3 (TowerCo) has 4 vacancies — highest risk, prioritise first</li>
+              <li>KAD 4 (TowerCo) has 4 vacancies — highest risk, prioritise first</li>
             </ul>
           </div>
           <div class="workstream">
@@ -1478,21 +1480,21 @@ body {
       </div>
       <div class="hrbp-card">
         <div class="hrbp-name">Adeniyi Oluwadimimu</div>
-        <div class="hrbp-location">Nigeria · KAD 3: TowerCo & Infrastructure · 20 people + 4 vacancies</div>
+        <div class="hrbp-location">Nigeria · KAD 4: TowerCo & Infrastructure · 20 people + 4 vacancies</div>
         <ul class="hrbp-mandate-items">
-          <li>Own all people processes for KAD 3 — predominantly Nigeria-based</li>
+          <li>Own all people processes for KAD 4 — predominantly Nigeria-based</li>
           <li>Primary interface with KAD leader (Chikezie Nwogu, COO)</li>
           <li>Highest vacancy load: 4 open positions including 2 Finance/Procurement critical roles</li>
           <li>Manage a large GICL Fiber team — field-based, QHSE-intensive, higher operational risk</li>
           <li>QHSE integration: people processes must align with QHSE requirements for field teams</li>
-          <li>Priority: fill Finance Manager and Procurement Manager vacancies as KAD 3 cannot operate as a profit centre without them</li>
+          <li>Priority: fill Finance Manager and Procurement Manager vacancies as KAD 4 cannot operate as a profit centre without them</li>
         </ul>
       </div>
       <div class="hrbp-card">
         <div class="hrbp-name">Bassira Abdou Laouali</div>
-        <div class="hrbp-location">Niger · KAD 4: Telecom Operators · 58 people (largest KAD)</div>
+        <div class="hrbp-location">Niger · KAD 3: Telecom Operators · 58 people (largest KAD)</div>
         <ul class="hrbp-mandate-items">
-          <li>Own all people processes for KAD 4 — the largest and most geographically dispersed KAD</li>
+          <li>Own all people processes for KAD 3 — the largest and most geographically dispersed KAD</li>
           <li>Primary interface with KAD leader (Issaka Djibo Abdoul Aziz)</li>
           <li>Manage people across Niger, Cameroon, Mali, Nigeria, and Liberia</li>
           <li>Largest Orange Mali team (field engineers, drivers, project managers) — high-volume operational staff requiring structured performance management</li>
