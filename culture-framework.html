@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Telinno — Culture Framework</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink:#0b0f18; --ink-2:#111620; --ink-3:#181e2c; --ink-4:#1e2535;
+  --border:rgba(255,255,255,0.06); --border-mid:rgba(255,255,255,0.12); --border-hi:rgba(255,255,255,0.18);
+  --text:#e4dfd7; --text-muted:#6b6660; --text-dim:#353230;
+  --gold:#c9ab47; --gold-bg:rgba(201,171,71,0.08); --gold-border:rgba(201,171,71,0.2); --gold-hi:rgba(201,171,71,0.14);
+  --green:#4d9e82; --green-bg:rgba(77,158,130,0.08); --green-border:rgba(77,158,130,0.2);
+  --blue:#4a85c8; --blue-bg:rgba(74,133,200,0.08); --blue-border:rgba(74,133,200,0.2);
+  --red:#e07060; --red-bg:rgba(224,112,96,0.08); --red-border:rgba(224,112,96,0.2);
+  --amber:#c9ab47;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'DM Sans',sans-serif;background:var(--ink);color:var(--text);min-height:100vh;overflow-x:hidden;}
+body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");pointer-events:none;z-index:0;opacity:0.5;}
+.glow{position:fixed;pointer-events:none;z-index:0;border-radius:50%;}
+.g1{top:-200px;left:-100px;width:600px;height:600px;background:radial-gradient(circle,rgba(201,171,71,0.04) 0%,transparent 70%);}
+.g2{bottom:-200px;right:-100px;width:500px;height:500px;background:radial-gradient(circle,rgba(77,158,130,0.04) 0%,transparent 70%);}
+.w{max-width:1000px;margin:0 auto;padding:0 48px;position:relative;z-index:10;}
+
+/* HEADER */
+#hdr{padding:52px 0 56px;}
+.back-link{display:inline-flex;align-items:center;gap:7px;font-family:'DM Mono',monospace;font-size:9px;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-muted);text-decoration:none;margin-bottom:32px;transition:color 0.15s;}
+.back-link:hover{color:var(--gold);}
+.back-link svg{width:12px;height:12px;opacity:0.5;}
+.eyebrow{display:flex;align-items:center;gap:9px;margin-bottom:22px;}
+.wm{font-family:'DM Mono',monospace;font-size:11px;letter-spacing:0.16em;text-transform:uppercase;color:var(--gold);}
+.eyebrow-sep{color:var(--text-dim);}
+.eyebrow-tag{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:0.1em;color:var(--text-muted);}
+h1{font-family:'Playfair Display',serif;font-size:clamp(28px,4vw,50px);font-weight:700;line-height:1.08;letter-spacing:-0.02em;margin-bottom:14px;}
+h1 em{font-style:italic;color:var(--gold);}
+.doc-sub{font-size:13.5px;line-height:1.8;color:var(--text-muted);max-width:600px;margin-bottom:28px;}
+.doc-meta{display:flex;gap:0;width:fit-content;border:1px solid var(--border-mid);border-radius:8px;overflow:hidden;}
+.dm-item{padding:9px 16px;border-right:1px solid var(--border);font-family:'DM Mono',monospace;font-size:9px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);}
+.dm-item:last-child{border-right:none;}
+.dm-item span{color:var(--text);display:block;font-size:11px;margin-top:2px;}
+
+/* PURPOSE BLOCK */
+.purpose-block{background:var(--ink-2);border:1px solid var(--gold-border);border-radius:10px;padding:26px 30px;margin:40px 0;display:flex;gap:20px;align-items:flex-start;}
+.pb-rule{width:3px;min-width:3px;background:var(--gold);border-radius:2px;align-self:stretch;}
+.pb-content{}
+.pb-kicker{font-family:'DM Mono',monospace;font-size:8.5px;letter-spacing:0.12em;text-transform:uppercase;color:var(--gold);margin-bottom:8px;}
+.pb-title{font-family:'Playfair Display',serif;font-size:17px;font-weight:700;margin-bottom:8px;line-height:1.3;}
+.pb-text{font-size:12.5px;line-height:1.8;color:var(--text-muted);}
+
+/* SECTION */
+.section{margin-bottom:56px;}
+.section-kicker{font-family:'DM Mono',monospace;font-size:8.5px;letter-spacing:0.16em;text-transform:uppercase;color:var(--text-dim);margin-bottom:10px;display:flex;align-items:center;gap:10px;}
+.section-kicker::after{content:'';flex:1;height:1px;background:var(--border);}
+.section-title{font-family:'Playfair Display',serif;font-size:clamp(20px,2.8vw,30px);font-weight:700;line-height:1.15;margin-bottom:10px;letter-spacing:-0.01em;}
+.section-title em{font-style:italic;color:var(--gold);}
+.section-desc{font-size:13px;line-height:1.8;color:var(--text-muted);max-width:680px;margin-bottom:28px;}
+
+/* BEHAVIOURAL STANDARDS */
+.std-list{display:flex;flex-direction:column;gap:3px;}
+.std-item{background:var(--ink-2);border:1px solid var(--border);border-radius:8px;overflow:hidden;transition:border-color 0.2s;}
+.std-item:hover{border-color:var(--border-mid);}
+.std-top{display:flex;align-items:stretch;}
+.std-num{width:52px;min-width:52px;display:flex;align-items:center;justify-content:center;border-right:1px solid var(--border);}
+.std-n{font-family:'DM Mono',monospace;font-size:11px;color:var(--text-dim);}
+.std-body{flex:1;padding:18px 22px;}
+.std-name{font-size:14px;font-weight:600;margin-bottom:5px;color:var(--text);}
+.std-desc{font-size:12px;line-height:1.75;color:var(--text-muted);margin-bottom:10px;}
+.std-applies{display:flex;gap:5px;flex-wrap:wrap;}
+.std-tag{font-family:'DM Mono',monospace;font-size:8px;padding:2px 8px;border-radius:2px;background:var(--ink-3);border:1px solid var(--border);color:var(--text-muted);}
+.std-side{width:260px;min-width:260px;padding:18px 20px;border-left:1px solid var(--border);background:var(--ink-3);}
+.std-side-label{font-family:'DM Mono',monospace;font-size:7.5px;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-dim);margin-bottom:8px;}
+.std-in-practice{font-size:11.5px;line-height:1.7;color:var(--text-muted);font-style:italic;}
+
+/* VALUES IN PRACTICE */
+.values-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.value-card{background:var(--ink-2);border:1px solid var(--border);border-radius:9px;overflow:hidden;transition:border-color 0.2s;}
+.value-card:hover{border-color:var(--border-mid);}
+.vc-top{padding:20px 22px 16px;border-bottom:1px solid var(--border);}
+.vc-letter{font-family:'Playfair Display',serif;font-size:36px;font-weight:700;color:var(--gold);opacity:0.25;float:right;line-height:1;margin-left:10px;}
+.vc-name{font-family:'Playfair Display',serif;font-size:16px;font-weight:700;margin-bottom:6px;}
+.vc-def{font-size:12px;line-height:1.7;color:var(--text-muted);}
+.vc-rows{padding:0;}
+.vc-row{display:flex;gap:0;border-bottom:1px solid var(--border);}
+.vc-row:last-child{border-bottom:none;}
+.vc-col{flex:1;padding:12px 14px;}
+.vc-col:first-child{border-right:1px solid var(--border);}
+.vc-col-hd{font-family:'DM Mono',monospace;font-size:7.5px;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:6px;}
+.vc-col-hd.yes{color:var(--green);}
+.vc-col-hd.no{color:var(--red);}
+.vc-col p{font-size:11px;line-height:1.65;color:var(--text-muted);}
+
+/* ACCOUNTABILITY STRUCTURE */
+.acc-chain{display:flex;flex-direction:column;gap:0;}
+.acc-level{display:flex;gap:0;border:1px solid var(--border);border-radius:0;margin-top:-1px;transition:border-color 0.2s;}
+.acc-level:first-child{border-radius:8px 8px 0 0;}
+.acc-level:last-child{border-radius:0 0 8px 8px;}
+.acc-level:hover{border-color:var(--border-mid);z-index:1;position:relative;}
+.acc-who{width:220px;min-width:220px;padding:16px 20px;border-right:1px solid var(--border);background:var(--ink-2);}
+.acc-role{font-size:13px;font-weight:600;margin-bottom:3px;}
+.acc-scope{font-family:'DM Mono',monospace;font-size:8px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-dim);}
+.acc-owns{flex:1;padding:16px 20px;background:var(--ink-2);}
+.acc-owns-label{font-family:'DM Mono',monospace;font-size:7.5px;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-dim);margin-bottom:8px;}
+.acc-owns ul{list-style:none;display:flex;flex-direction:column;gap:5px;}
+.acc-owns li{font-size:12px;color:var(--text-muted);line-height:1.5;padding-left:14px;position:relative;}
+.acc-owns li::before{content:'—';position:absolute;left:0;color:var(--text-dim);}
+.acc-when{width:220px;min-width:220px;padding:16px 20px;border-left:1px solid var(--border);background:var(--ink-3);}
+.acc-when-label{font-family:'DM Mono',monospace;font-size:7.5px;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-dim);margin-bottom:8px;}
+.acc-when-text{font-size:11.5px;line-height:1.65;color:var(--text-muted);}
+
+/* OPERATING NORMS */
+.norms-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.norm-card{background:var(--ink-2);border:1px solid var(--border);border-radius:8px;padding:16px 18px;transition:border-color 0.2s;position:relative;overflow:hidden;}
+.norm-card:hover{border-color:var(--border-mid);}
+.norm-card::before{content:'';position:absolute;top:0;left:0;bottom:0;width:2px;}
+.norm-card.ops::before{background:var(--blue);}
+.norm-card.comm::before{background:var(--green);}
+.norm-card.perf::before{background:var(--gold);}
+.norm-card.comp::before{background:var(--red);}
+.norm-num{font-family:'DM Mono',monospace;font-size:8px;letter-spacing:0.1em;color:var(--text-dim);margin-bottom:6px;}
+.norm-title{font-size:13px;font-weight:600;margin-bottom:5px;}
+.norm-rule{font-size:12px;line-height:1.7;color:var(--text-muted);margin-bottom:9px;}
+.norm-spec{font-size:11px;color:var(--text-muted);font-family:'DM Mono',monospace;background:var(--ink-3);border:1px solid var(--border);border-radius:4px;padding:7px 10px;line-height:1.6;}
+.norm-cat{font-family:'DM Mono',monospace;font-size:7.5px;padding:2px 7px;border-radius:2px;display:inline-block;margin-bottom:6px;}
+.norm-cat.ops{background:var(--blue-bg);color:var(--blue);border:1px solid var(--blue-border);}
+.norm-cat.comm{background:var(--green-bg);color:var(--green);border:1px solid var(--green-border);}
+.norm-cat.perf{background:var(--gold-bg);color:var(--gold);border:1px solid var(--gold-border);}
+.norm-cat.comp{background:var(--red-bg);color:var(--red);border:1px solid var(--red-border);}
+
+/* CONSEQUENCE TABLE */
+.consequence-table{width:100%;border-collapse:collapse;border:1px solid var(--border);border-radius:8px;overflow:hidden;}
+.consequence-table th{background:var(--ink-3);padding:11px 16px;text-align:left;font-family:'DM Mono',monospace;font-size:8px;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-dim);border-bottom:1px solid var(--border);}
+.consequence-table td{padding:13px 16px;font-size:12px;color:var(--text-muted);border-bottom:1px solid var(--border);vertical-align:top;line-height:1.6;}
+.consequence-table tr:last-child td{border-bottom:none;}
+.consequence-table tr:hover td{background:var(--ink-3);}
+.sev{font-family:'DM Mono',monospace;font-size:8px;padding:2px 8px;border-radius:2px;display:inline-block;white-space:nowrap;}
+.sev.h{background:var(--red-bg);color:var(--red);border:1px solid var(--red-border);}
+.sev.m{background:var(--gold-bg);color:var(--gold);border:1px solid var(--gold-border);}
+.sev.l{background:var(--green-bg);color:var(--green);border:1px solid var(--green-border);}
+
+/* READINESS BLOCK */
+.ready-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.ready-item{background:var(--ink-2);border:1px solid var(--border);border-radius:7px;padding:14px 16px;display:flex;gap:10px;align-items:flex-start;transition:border-color 0.2s;}
+.ready-item:hover{border-color:var(--border-mid);}
+.ri-check{width:18px;height:18px;min-width:18px;border-radius:50%;border:1px solid var(--border-mid);display:flex;align-items:center;justify-content:center;margin-top:1px;}
+.ri-inner{width:6px;height:6px;border-radius:50%;background:var(--text-dim);}
+.ri-text{font-size:12px;color:var(--text-muted);line-height:1.65;}
+.ri-text strong{color:var(--text);font-weight:600;display:block;margin-bottom:2px;font-size:12.5px;}
+
+/* FOOTER */
+.doc-footer{border-top:1px solid var(--border);padding:24px 0 40px;margin-top:16px;display:flex;align-items:center;justify-content:space-between;}
+.fr{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:0.08em;color:var(--text-dim);}
+
+@keyframes fu{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+.section{animation:fu 0.4s ease both;}
+.section:nth-child(2){animation-delay:0.05s;}
+.section:nth-child(3){animation-delay:0.1s;}
+.section:nth-child(4){animation-delay:0.15s;}
+.section:nth-child(5){animation-delay:0.2s;}
+.section:nth-child(6){animation-delay:0.25s;}
+</style>
+</head>
+<body>
+<div class="glow g1"></div>
+<div class="glow g2"></div>
+
+<div class="w">
+  <div id="hdr">
+    <a href="index.html" class="back-link">
+      <svg viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M8 2L4 6L8 10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      People Infrastructure Portal
+    </a>
+    <div class="eyebrow">
+      <span class="wm">Telinno Consulting</span>
+      <span class="eyebrow-sep">·</span>
+      <span class="eyebrow-tag">Phase 4c — Culture &amp; Ownership</span>
+    </div>
+    <h1>The <em>Operating Norms</em><br>That Make the System Hold</h1>
+    <div class="doc-sub">This is not a values poster. It is the behavioural operating standard for Telinno — what every person at every level is expected to do, not aspire to. These norms exist because the tools, processes, and structures built in Phases 1–4 only function if the people operating them behave in predictable, accountable ways.</div>
+    <div class="doc-meta">
+      <div class="dm-item">Scope<span>Org-wide · 148 people</span></div>
+      <div class="dm-item">Coverage<span>4 KADs · 6 Countries</span></div>
+      <div class="dm-item">Owner<span>HR Lead + ELT</span></div>
+      <div class="dm-item">Phase<span>4c of 4</span></div>
+    </div>
+  </div>
+
+  <div class="purpose-block">
+    <div class="pb-rule"></div>
+    <div class="pb-content">
+      <div class="pb-kicker">Why This Document Exists</div>
+      <div class="pb-title">Tools don't hold organisations together. People do — when they behave consistently.</div>
+      <div class="pb-text">Telinno has built the infrastructure: a diagnostic, a people audit, a target state, role definitions, and a competency framework. None of it sustains itself. Culture is the maintenance protocol. These norms define how decisions get made, how feedback flows, how accountability is enforced, and what happens when any of this breaks down. Every HRBP is responsible for observing these norms in their KAD. Every KAD lead is responsible for modelling them. Every manager is the primary transmission mechanism. There are no bystanders.</div>
+    </div>
+  </div>
+
+  <!-- SECTION 1: BEHAVIOURAL STANDARDS -->
+  <div class="section">
+    <div class="section-kicker">Section 01</div>
+    <div class="section-title">Three <em>Behavioural Standards</em><br>That Apply to Every Person</div>
+    <div class="section-desc">These are not role-specific. They apply regardless of KAD, country, or seniority. They are the minimum standard of conduct that makes working together possible. Managers are expected to model them explicitly. HRBPs are expected to name it when they are absent.</div>
+    <div class="std-list">
+      <div class="std-item">
+        <div class="std-top">
+          <div class="std-num"><span class="std-n">01</span></div>
+          <div class="std-body">
+            <div class="std-name">Clarity of Mandate</div>
+            <div class="std-desc">Before you act, you know what you are responsible for and what success looks like. Before you give someone else work, you have made the brief clear. Ambiguity is not acceptable as a permanent state — it is a problem to be resolved, not a condition to be tolerated. If your mandate is unclear, you surface it. If someone else's mandate is unclear, you help clarify it.</div>
+            <div class="std-applies">
+              <span class="std-tag">Individual Contributors</span>
+              <span class="std-tag">Managers</span>
+              <span class="std-tag">HRBP</span>
+              <span class="std-tag">KAD Leads</span>
+              <span class="std-tag">ELT</span>
+            </div>
+          </div>
+          <div class="std-side">
+            <div class="std-side-label">In practice at Telinno</div>
+            <div class="std-in-practice">No-one starts a new role, project, or cross-country assignment without a written brief. JSPs are completed before a role is filled. HRBP mandates are agreed in writing with each KAD head and reviewed annually.</div>
+          </div>
+        </div>
+      </div>
+      <div class="std-item">
+        <div class="std-top">
+          <div class="std-num"><span class="std-n">02</span></div>
+          <div class="std-body">
+            <div class="std-name">Honest, Direct Communication</div>
+            <div class="std-desc">Information that another person needs to do their job is not withheld, softened beyond recognition, or delivered after the fact. Feedback is given to the person it concerns, in the room, not about them outside it. Disagreement is surfaced in the meeting, not after it. This applies upward as well as downward — managers are not exempt from receiving honest feedback, and nor is the HR function.</div>
+            <div class="std-applies">
+              <span class="std-tag">Individual Contributors</span>
+              <span class="std-tag">Managers</span>
+              <span class="std-tag">HRBP</span>
+              <span class="std-tag">KAD Leads</span>
+              <span class="std-tag">ELT</span>
+            </div>
+          </div>
+          <div class="std-side">
+            <div class="std-side-label">In practice at Telinno</div>
+            <div class="std-in-practice">Performance concerns are documented at first occurrence and communicated to the person directly. No HRBP raises a performance issue about someone without having first told that person. Mid-cycle conversations are mandatory and logged.</div>
+          </div>
+        </div>
+      </div>
+      <div class="std-item">
+        <div class="std-top">
+          <div class="std-num"><span class="std-n">03</span></div>
+          <div class="std-body">
+            <div class="std-name">Accountability Without Deflection</div>
+            <div class="std-desc">When something goes wrong, the question is what we do next — not who to blame. Accountability means owning the outcome of your work, not just the activity. "I did my part" is not accountability if the outcome failed. Cross-country complexity, team resourcing, and legacy systems are context — they are not excuses. The standard applies equally in Lagos and Niamey.</div>
+            <div class="std-applies">
+              <span class="std-tag">Individual Contributors</span>
+              <span class="std-tag">Managers</span>
+              <span class="std-tag">HRBP</span>
+              <span class="std-tag">KAD Leads</span>
+              <span class="std-tag">ELT</span>
+            </div>
+          </div>
+          <div class="std-side">
+            <div class="std-side-label">In practice at Telinno</div>
+            <div class="std-in-practice">Managers own the performance of their people — HRBPs are a resource and a guardrail, not a substitute for management accountability. Performance issues are raised by the line manager first. HRBP is the escalation path, not the first call.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 2: VALUES IN PRACTICE -->
+  <div class="section">
+    <div class="section-kicker">Section 02</div>
+    <div class="section-title"><em>Values</em> in Practice</div>
+    <div class="section-desc">Values are only meaningful when they describe observable behaviour. Each value below includes what it looks like when it is operating and what it looks like when it is not. The second column is as important as the first — it is what managers and HRBPs are looking for.</div>
+    <div class="values-grid">
+
+      <div class="value-card">
+        <div class="vc-top">
+          <div class="vc-letter">O</div>
+          <div class="vc-name">Ownership</div>
+          <div class="vc-def">You are responsible for outcomes, not activities. The work is done when the result is achieved — not when the task is completed.</div>
+        </div>
+        <div class="vc-rows">
+          <div class="vc-row">
+            <div class="vc-col">
+              <div class="vc-col-hd yes">Looks like this</div>
+              <p>A manager flags a performance issue before it becomes a crisis, without waiting for the HRBP to notice. An IC raises a blocker the same day they identify it, with a proposed workaround.</p>
+            </div>
+            <div class="vc-col">
+              <div class="vc-col-hd no">Not this</div>
+              <p>A manager defers a difficult conversation until the HRBP raises it. An IC completes their tasks but does not flag that the overall deliverable is off track.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="value-card">
+        <div class="vc-top">
+          <div class="vc-letter">D</div>
+          <div class="vc-name">Directness</div>
+          <div class="vc-def">You say what you mean, in the room, to the person it concerns. Clarity is a form of respect.</div>
+        </div>
+        <div class="vc-rows">
+          <div class="vc-row">
+            <div class="vc-col">
+              <div class="vc-col-hd yes">Looks like this</div>
+              <p>A KAD lead tells their HRBP directly that a process is not working, rather than working around it. A manager gives a specific, documented concern rather than a vague "development feedback."</p>
+            </div>
+            <div class="vc-col">
+              <div class="vc-col-hd no">Not this</div>
+              <p>Concerns about a colleague are raised to their manager's manager without being raised to the person first. Feedback in a written review is the first time someone hears a performance concern.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="value-card">
+        <div class="vc-top">
+          <div class="vc-letter">E</div>
+          <div class="vc-name">Excellence</div>
+          <div class="vc-def">The standard is set by what the role requires, not what is easiest to deliver. Excellence at Telinno is not perfection — it is consistent, honest, high-quality execution.</div>
+        </div>
+        <div class="vc-rows">
+          <div class="vc-row">
+            <div class="vc-col">
+              <div class="vc-col-hd yes">Looks like this</div>
+              <p>HR data is accurate and filed within the agreed window. Payslips are issued on time across all six countries without the HR lead chasing. Competency gaps are documented, not guessed.</p>
+            </div>
+            <div class="vc-col">
+              <div class="vc-col-hd no">Not this</div>
+              <p>Compliance documentation is submitted late because the country team is under-resourced. An audit field is filled to close a task rather than to record the truth. Data quality is "good enough."</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="value-card">
+        <div class="vc-top">
+          <div class="vc-letter">R</div>
+          <div class="vc-name">Respect</div>
+          <div class="vc-def">Different countries, languages, and working styles — same standard of conduct and the same expectation of dignity. Seniority does not entitle different treatment.</div>
+        </div>
+        <div class="vc-rows">
+          <div class="vc-row">
+            <div class="vc-col">
+              <div class="vc-col-hd yes">Looks like this</div>
+              <p>A manager in Nigeria applies the same disciplinary process as a manager in Cameroon. An HRBP in Mali has the same access to KAD leadership as the HRBP in Lagos. People data is treated with discretion.</p>
+            </div>
+            <div class="vc-col">
+              <div class="vc-col-hd no">Not this</div>
+              <p>A cross-border employee is given an informal arrangement because "it's easier that way." An HRBP is excluded from a KAD leadership meeting where people decisions are being made. Salary discussions happen in corridors.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- SECTION 3: ACCOUNTABILITY STRUCTURE -->
+  <div class="section">
+    <div class="section-kicker">Section 03</div>
+    <div class="section-title"><em>Accountability</em> Structure</div>
+    <div class="section-desc">Culture requires someone to be responsible for it at every level of the organisation. This is not a shared responsibility that becomes no-one's responsibility. Each level below has a specific, non-delegatable accountability for how these norms are maintained.</div>
+    <div class="acc-chain">
+      <div class="acc-level">
+        <div class="acc-who">
+          <div class="acc-role">Executive Leadership Team</div>
+          <div class="acc-scope">ELT · Org-wide</div>
+        </div>
+        <div class="acc-owns">
+          <div class="acc-owns-label">Culture Accountability</div>
+          <ul>
+            <li>Sets the standard publicly — ELT behaviour defines the ceiling for the organisation</li>
+            <li>Approves and visibly endorses the Culture Framework; does not delegate endorsement</li>
+            <li>Escalates and addresses breaches when they occur at KAD lead level or above</li>
+            <li>Reviews culture health annually through the HRBP leads; receives a written report</li>
+          </ul>
+        </div>
+        <div class="acc-when">
+          <div class="acc-when-label">Escalate When</div>
+          <div class="acc-when-text">A norm breach at KAD lead level is not addressed through normal channels. A pattern of HRBP authority being undermined is documented by more than one HRBP.</div>
+        </div>
+      </div>
+      <div class="acc-level">
+        <div class="acc-who">
+          <div class="acc-role">KAD Leads</div>
+          <div class="acc-scope">Per KAD · 4 units</div>
+        </div>
+        <div class="acc-owns">
+          <div class="acc-owns-label">Culture Accountability</div>
+          <ul>
+            <li>Primary owners of culture within their KAD — HRBP is their partner, not their executor</li>
+            <li>Models the three behavioural standards; makes them explicit to their management layer</li>
+            <li>Ensures their HRBP has the access and authority to operate effectively</li>
+            <li>Addresses manager-level breaches directly; does not expect HR to manage managers</li>
+          </ul>
+        </div>
+        <div class="acc-when">
+          <div class="acc-when-label">Escalate When</div>
+          <div class="acc-when-text">A manager in their KAD is not responding to direct coaching. A cultural pattern is emerging that is outside their control to resolve alone.</div>
+        </div>
+      </div>
+      <div class="acc-level">
+        <div class="acc-who">
+          <div class="acc-role">Managers</div>
+          <div class="acc-scope">All people managers · Org-wide</div>
+        </div>
+        <div class="acc-owns">
+          <div class="acc-owns-label">Culture Accountability</div>
+          <ul>
+            <li>The primary transmission mechanism — culture is what managers model, not what is written down</li>
+            <li>Gives feedback directly and on time; does not store up concerns for annual review</li>
+            <li>Owns their team's performance outcomes, not just their activity</li>
+            <li>Raises people issues to their HRBP — does not attempt informal resolution of formal matters</li>
+          </ul>
+        </div>
+        <div class="acc-when">
+          <div class="acc-when-label">Escalate When</div>
+          <div class="acc-when-text">A performance or conduct issue has not responded to two documented direct conversations. A team member's behaviour is affecting others in the KAD.</div>
+        </div>
+      </div>
+      <div class="acc-level">
+        <div class="acc-who">
+          <div class="acc-role">HRBPs</div>
+          <div class="acc-scope">Per KAD · 4 HRBPs</div>
+        </div>
+        <div class="acc-owns">
+          <div class="acc-owns-label">Culture Accountability</div>
+          <ul>
+            <li>Culture custodians — observe, document, and escalate; not culture police</li>
+            <li>Conducts quarterly culture temperature checks per KAD; reports findings to HR Lead</li>
+            <li>Names norm breaches when they observe them; does not let them pass unremarked</li>
+            <li>Supports managers in having difficult conversations; does not have the conversation for them</li>
+          </ul>
+        </div>
+        <div class="acc-when">
+          <div class="acc-when-label">Escalate When</div>
+          <div class="acc-when-text">A KAD lead is not addressing a manager-level pattern after it has been raised once. The HRBP's own authority to operate is being consistently undermined.</div>
+        </div>
+      </div>
+      <div class="acc-level">
+        <div class="acc-who">
+          <div class="acc-role">Individual Contributors</div>
+          <div class="acc-scope">All employees · 148 people</div>
+        </div>
+        <div class="acc-owns">
+          <div class="acc-owns-label">Culture Accountability</div>
+          <ul>
+            <li>No bystanders — all three behavioural standards apply regardless of seniority or KAD</li>
+            <li>Raises a concern through the correct channel the first time they observe it</li>
+            <li>Does not circumvent HR-mediated processes, even when informal routes seem faster</li>
+            <li>Takes ownership of their own development plan and the goals set against their role</li>
+          </ul>
+        </div>
+        <div class="acc-when">
+          <div class="acc-when-label">Escalate When</div>
+          <div class="acc-when-text">A concern raised to a line manager has not been addressed within two weeks. The conduct they are observing relates to a KAD lead or above.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 4: OPERATING NORMS -->
+  <div class="section">
+    <div class="section-kicker">Section 04</div>
+    <div class="section-title">Ten <em>Operating Norms</em></div>
+    <div class="section-desc">These are the specific, observable rules that make Telinno's people system function. They are not principles — they are behaviours. Each has a practical specification: the minimum standard that constitutes compliance.</div>
+    <div class="norms-grid">
+
+      <div class="norm-card ops">
+        <div class="norm-num">Norm 01</div>
+        <span class="norm-cat ops">Operations</span>
+        <div class="norm-title">Meetings Have Agendas and Decisions</div>
+        <div class="norm-rule">Recurring people meetings — KAD 1:1s, HRBP–KAD Lead syncs, HR team meetings — start on time, have a stated agenda, and produce a written record of decisions made and actions owned.</div>
+        <div class="norm-spec">Minimum spec: Agenda shared 24h before. Decisions logged in a shared record within 24h after. Action owner and deadline named for every action.</div>
+      </div>
+
+      <div class="norm-card comm">
+        <div class="norm-num">Norm 02</div>
+        <span class="norm-cat comm">Communication</span>
+        <div class="norm-title">Feedback Goes to the Person, Not Around Them</div>
+        <div class="norm-rule">If you have a performance or conduct concern about a person, you raise it with them first. Raising it with their manager, their KAD lead, or their HRBP before the person themselves is a process breach.</div>
+        <div class="norm-spec">Exception: Conduct concerns that involve safeguarding, harassment, or cross-level power dynamics go directly to HRBP. All other concerns: person first.</div>
+      </div>
+
+      <div class="norm-card perf">
+        <div class="norm-num">Norm 03</div>
+        <span class="norm-cat perf">Performance</span>
+        <div class="norm-title">Commitments Are Kept or Flagged Early</div>
+        <div class="norm-rule">If you commit to a deadline and cannot meet it, you flag it before the deadline — not after. Last-minute escalation of a known issue is a norm breach. Silence is not an update.</div>
+        <div class="norm-spec">Minimum spec: If a deadline will be missed, the relevant person is notified at least 48h in advance, with a revised date and a reason.</div>
+      </div>
+
+      <div class="norm-card comp">
+        <div class="norm-num">Norm 04</div>
+        <span class="norm-cat comp">Compliance</span>
+        <div class="norm-title">HR Data Is Filed Accurately and on Time</div>
+        <div class="norm-rule">No-one submits HR data — payroll inputs, audit fields, compliance records — that they know to be inaccurate. Estimated data is flagged as estimated. Unknown data is flagged as unknown. Not entered as if it were known.</div>
+        <div class="norm-spec">Minimum spec: People audit fields are completed within the audit window. Payroll inputs submitted by the 20th of each month. Late or corrected submissions flagged to HR Lead.</div>
+      </div>
+
+      <div class="norm-card comm">
+        <div class="norm-num">Norm 05</div>
+        <span class="norm-cat comm">Communication</span>
+        <div class="norm-title">Problems Are Raised With a Proposed Solution</div>
+        <div class="norm-rule">Escalating a problem without a proposed path forward is permitted once per issue. Repeated escalation of the same problem without a proposal is not ownership — it is delegation upward. Bring a problem and a position.</div>
+        <div class="norm-spec">Exception: Novel situations, cross-KAD conflicts, and issues outside the person's authority may be escalated without a solution. This must be explicitly stated.</div>
+      </div>
+
+      <div class="norm-card ops">
+        <div class="norm-num">Norm 06</div>
+        <span class="norm-cat ops">Operations</span>
+        <div class="norm-title">People Moves Are HR-Mediated</div>
+        <div class="norm-rule">Role changes, KAD transfers, promotions, and exits are not agreed informally between managers and employees and then reported to HR. The HRBP is involved before any offer or commitment is made to the employee.</div>
+        <div class="norm-spec">Minimum spec: HRBP is notified of any proposed people move before the manager discusses it with the employee. No verbal offer is made without HRBP sign-off.</div>
+      </div>
+
+      <div class="norm-card comp">
+        <div class="norm-num">Norm 07</div>
+        <span class="norm-cat comp">Compliance</span>
+        <div class="norm-title">Cross-Border Assignments Follow Protocol</div>
+        <div class="norm-rule">Operating across six countries creates complexity. It does not create exceptions. Work permits, secondment documentation, and country-specific compliance requirements are completed before the assignment begins — not retroactively.</div>
+        <div class="norm-spec">Minimum spec: HRBP initiates compliance checklist at point of assignment confirmation. Legal advice is sought proactively for new country combinations. No informal arrangements.</div>
+      </div>
+
+      <div class="norm-card perf">
+        <div class="norm-num">Norm 08</div>
+        <span class="norm-cat perf">Performance</span>
+        <div class="norm-title">Performance Concerns Are Documented at First Instance</div>
+        <div class="norm-rule">The first time a manager identifies a performance concern, they document it — in the performance record, in a written note to their HRBP, or in both. Concerns that exist only in the manager's head cannot be managed, escalated, or evidenced.</div>
+        <div class="norm-spec">Minimum spec: Written record created within 5 working days of the concern being identified. Shared with HRBP. Not necessarily shared with the employee at first instance.</div>
+      </div>
+
+      <div class="norm-card ops">
+        <div class="norm-num">Norm 09</div>
+        <span class="norm-cat ops">Operations</span>
+        <div class="norm-title">Development Spend Traces to a Gap</div>
+        <div class="norm-rule">L&amp;D is not a benefit. It is a business investment in closing a documented capability gap. No training spend is approved without a named gap in the competency matrix and an entry in the individual's T&amp;D plan.</div>
+        <div class="norm-spec">Minimum spec: Training request form names the gap, the JSP competency it maps to, and the expected outcome. HRBP signs off. HR Lead approves spend above agreed threshold.</div>
+      </div>
+
+      <div class="norm-card comm">
+        <div class="norm-num">Norm 10</div>
+        <span class="norm-cat comm">Communication</span>
+        <div class="norm-title">HRBP Access to KAD Leadership Is Non-Negotiable</div>
+        <div class="norm-rule">HRBPs are not administrators. Their mandate includes a seat at KAD leadership meetings where people decisions are discussed. A KAD lead who systematically excludes their HRBP from these meetings is in breach of this norm.</div>
+        <div class="norm-spec">Minimum spec: HRBP attends monthly KAD leadership review. HRBP mandate is reviewed in writing annually with KAD lead. Breaches escalated to HR Lead and ELT within 30 days.</div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- SECTION 5: CONSEQUENCE FRAMEWORK -->
+  <div class="section">
+    <div class="section-kicker">Section 05</div>
+    <div class="section-title">When <em>Norms Are Breached</em></div>
+    <div class="section-desc">Cultural norms without consequence are preferences. The following framework defines what happens when these norms are not followed. The goal is correction and re-alignment, not punishment — but consequence must exist or the norms do not hold.</div>
+    <table class="consequence-table">
+      <thead>
+        <tr>
+          <th>Pattern</th>
+          <th>Severity</th>
+          <th>First Response</th>
+          <th>If Pattern Continues</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Manager gives feedback about a person to their HRBP before telling the person directly</td>
+          <td><span class="sev m">Medium</span></td>
+          <td>HRBP names it in the moment and redirects. Manager has the conversation directly before HRBP engages.</td>
+          <td>Pattern documented. KAD lead conversation. Included in manager's own performance review.</td>
+        </tr>
+        <tr>
+          <td>HR data filed inaccurately or submitted late without advance notice</td>
+          <td><span class="sev m">Medium</span></td>
+          <td>Corrected within 48h. HRBP notes the occurrence in the KAD culture log.</td>
+          <td>Formal written record. Included in the people audit summary for that KAD.</td>
+        </tr>
+        <tr>
+          <td>People move offered to an employee before HRBP is notified</td>
+          <td><span class="sev h">High</span></td>
+          <td>Offer put on hold. HRBP and KAD lead review the case together before proceeding. Manager informed of norm breach in writing.</td>
+          <td>Escalated to ELT. Included in manager's formal performance record.</td>
+        </tr>
+        <tr>
+          <td>HRBP systematically excluded from KAD leadership meetings</td>
+          <td><span class="sev h">High</span></td>
+          <td>HRBP raises directly with KAD lead citing mandate. If unresolved in 2 weeks, escalates to HR Lead.</td>
+          <td>HR Lead escalates to ELT. Mandate review initiated. Documented as a leadership conduct issue.</td>
+        </tr>
+        <tr>
+          <td>Performance concern not documented at first instance; emerges only at formal stage</td>
+          <td><span class="sev m">Medium</span></td>
+          <td>HRBP coaches manager. Retrospective documentation attempted where possible. Noted in HRBP's KAD log.</td>
+          <td>Pattern raised with KAD lead. Included in annual HRBP culture health report.</td>
+        </tr>
+        <tr>
+          <td>Cross-border assignment started without compliance documentation</td>
+          <td><span class="sev h">High</span></td>
+          <td>Assignment paused if documentation is outstanding. HRBP initiates retrospective compliance immediately. Legal notified.</td>
+          <td>Formal record. ELT informed. Risk register updated for that country.</td>
+        </tr>
+        <tr>
+          <td>Training approved without a documented competency gap</td>
+          <td><span class="sev l">Low</span></td>
+          <td>Training request sent back to manager to complete the gap documentation before approval.</td>
+          <td>HRBP adds a standing note to that manager's T&amp;D process review.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- SECTION 6: READINESS GATE -->
+  <div class="section">
+    <div class="section-kicker">Phase Gate</div>
+    <div class="section-title">The Culture Framework Is <em>Embedded</em> When…</div>
+    <div class="section-desc">Do not claim Phase 4c is complete until these conditions are met. Communication of the framework is not embedding. Embedding means it operates without the HR lead needing to enforce it directly.</div>
+    <div class="ready-grid">
+      <div class="ready-item">
+        <div class="ri-check"><div class="ri-inner"></div></div>
+        <div class="ri-text"><strong>All-staff communication done</strong>The Culture Framework has been communicated to all 148 people — not forwarded as a document, but presented and discussed in each KAD by the KAD lead and HRBP together.</div>
+      </div>
+      <div class="ready-item">
+        <div class="ri-check"><div class="ri-inner"></div></div>
+        <div class="ri-text"><strong>HRBP mandates written and signed</strong>Each HRBP's mandate has been agreed in writing with their KAD lead, including explicit confirmation of access to KAD leadership meetings.</div>
+      </div>
+      <div class="ready-item">
+        <div class="ri-check"><div class="ri-inner"></div></div>
+        <div class="ri-text"><strong>Managers have acknowledged the norms</strong>All people managers have received a written briefing on the ten operating norms and confirmed receipt. This is not voluntary.</div>
+      </div>
+      <div class="ready-item">
+        <div class="ri-check"><div class="ri-inner"></div></div>
+        <div class="ri-text"><strong>KAD culture logs are live</strong>Each HRBP has started their KAD culture log — a simple running record of norm observations, positive and negative, updated at least monthly.</div>
+      </div>
+      <div class="ready-item">
+        <div class="ri-check"><div class="ri-inner"></div></div>
+        <div class="ri-text"><strong>First consequence has been applied</strong>At least one norm breach has been handled according to the consequence framework, documented, and resolved. The framework is credible only if it has been used.</div>
+      </div>
+      <div class="ready-item">
+        <div class="ri-check"><div class="ri-inner"></div></div>
+        <div class="ri-text"><strong>ELT has endorsed publicly</strong>At least one ELT member has referenced the Culture Framework in a company-wide or multi-KAD communication. Passive endorsement (signing off a document) is not sufficient.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc-footer">
+    <div class="fr">Telinno Consulting · Culture Framework · Phase 4c · April 2026</div>
+    <div class="fr">4 KADs · 6 Countries · 148 People</div>
+  </div>
+</div>
+</body>
+</html>
