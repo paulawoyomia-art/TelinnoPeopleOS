@@ -1,0 +1,759 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Telinno — SOP Framework · Process Sovereignty</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink:#0b0f18; --ink-2:#111620; --ink-3:#181e2c; --ink-4:#1e2535;
+  --border:rgba(255,255,255,0.06); --border-mid:rgba(255,255,255,0.12); --border-hi:rgba(255,255,255,0.2);
+  --text:#e4dfd7; --text-muted:#6b6660; --text-dim:#353230;
+  --gold:#c9ab47; --gold-bg:rgba(201,171,71,0.08); --gold-border:rgba(201,171,71,0.2);
+  --green:#4d9e82; --green-bg:rgba(77,158,130,0.08); --green-border:rgba(77,158,130,0.2);
+  --blue:#4a85c8; --blue-bg:rgba(74,133,200,0.08); --blue-border:rgba(74,133,200,0.2);
+  --red:#e07060; --red-bg:rgba(224,112,96,0.08); --red-border:rgba(224,112,96,0.2);
+  --purple:#9b7ecb; --purple-bg:rgba(155,126,203,0.08); --purple-border:rgba(155,126,203,0.2);
+  --p5:#9b7ecb;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'DM Sans',sans-serif;background:var(--ink);color:var(--text);min-height:100vh;overflow-x:hidden;}
+body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");pointer-events:none;z-index:0;opacity:0.5;}
+.glow{position:fixed;pointer-events:none;z-index:0;border-radius:50%;}
+.g1{top:-200px;right:-100px;width:600px;height:600px;background:radial-gradient(circle,rgba(155,126,203,0.05) 0%,transparent 70%);}
+.g2{bottom:-180px;left:-80px;width:480px;height:480px;background:radial-gradient(circle,rgba(201,171,71,0.04) 0%,transparent 70%);}
+.w{max-width:1060px;margin:0 auto;padding:0 48px;position:relative;z-index:10;}
+
+/* HEADER */
+#hdr{padding:52px 0 48px;}
+.back-link{display:inline-flex;align-items:center;gap:7px;font-family:'DM Mono',monospace;font-size:9px;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-muted);text-decoration:none;margin-bottom:32px;transition:color 0.15s;}
+.back-link:hover{color:var(--purple);}
+.eyebrow{display:flex;align-items:center;gap:9px;margin-bottom:20px;}
+.wm{font-family:'DM Mono',monospace;font-size:11px;letter-spacing:0.16em;text-transform:uppercase;color:var(--purple);}
+.eyebrow-sep{color:var(--text-dim);}
+.eyebrow-tag{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:0.1em;color:var(--text-muted);}
+h1{font-family:'Playfair Display',serif;font-size:clamp(28px,4vw,50px);font-weight:700;line-height:1.08;letter-spacing:-0.02em;margin-bottom:14px;}
+h1 em{font-style:italic;color:var(--purple);}
+.doc-sub{font-size:13.5px;line-height:1.8;color:var(--text-muted);max-width:640px;margin-bottom:28px;}
+.doc-meta{display:flex;gap:0;width:fit-content;border:1px solid var(--border-mid);border-radius:8px;overflow:hidden;}
+.dm-item{padding:9px 16px;border-right:1px solid var(--border);font-family:'DM Mono',monospace;font-size:9px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);}
+.dm-item:last-child{border-right:none;}
+.dm-item span{color:var(--text);display:block;font-size:11px;margin-top:2px;}
+
+/* ALERT BANNER */
+.alert-banner{background:var(--purple-bg);border:1px solid var(--purple-border);border-radius:9px;padding:18px 22px;margin:36px 0;display:flex;gap:16px;align-items:flex-start;}
+.ab-icon{font-size:18px;flex-shrink:0;margin-top:1px;}
+.ab-body{}
+.ab-title{font-size:14px;font-weight:600;margin-bottom:5px;color:var(--text);}
+.ab-text{font-size:12.5px;line-height:1.75;color:var(--text-muted);}
+
+/* SECTION */
+.section{margin-bottom:52px;}
+.section-kicker{font-family:'DM Mono',monospace;font-size:8.5px;letter-spacing:0.16em;text-transform:uppercase;color:var(--text-dim);margin-bottom:10px;display:flex;align-items:center;gap:10px;}
+.section-kicker::after{content:'';flex:1;height:1px;background:var(--border);}
+.section-title{font-family:'Playfair Display',serif;font-size:clamp(19px,2.6vw,28px);font-weight:700;line-height:1.15;margin-bottom:10px;letter-spacing:-0.01em;}
+.section-title em{font-style:italic;color:var(--purple);}
+.section-desc{font-size:13px;line-height:1.8;color:var(--text-muted);max-width:700px;margin-bottom:24px;}
+
+/* PRINCIPLE CARDS */
+.principle-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;}
+.principle-card{background:var(--ink-2);border:1px solid var(--border);border-radius:9px;padding:18px 20px;position:relative;overflow:hidden;transition:border-color 0.2s;}
+.principle-card:hover{border-color:var(--border-mid);}
+.principle-card::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:var(--purple);opacity:0.4;}
+.pc-num{font-family:'DM Mono',monospace;font-size:10px;color:var(--text-dim);margin-bottom:10px;}
+.pc-title{font-size:13.5px;font-weight:600;margin-bottom:7px;line-height:1.3;}
+.pc-text{font-size:11.5px;line-height:1.7;color:var(--text-muted);}
+
+/* SOP ANATOMY */
+.anatomy-list{display:flex;flex-direction:column;gap:2px;}
+.anatomy-row{display:flex;align-items:stretch;border:1px solid var(--border);border-radius:0;margin-top:-1px;transition:border-color 0.2s;}
+.anatomy-row:first-child{border-radius:8px 8px 0 0;}
+.anatomy-row:last-child{border-radius:0 0 8px 8px;}
+.anatomy-row:hover{border-color:var(--border-mid);z-index:1;position:relative;}
+.ar-num{width:44px;min-width:44px;display:flex;align-items:center;justify-content:center;border-right:1px solid var(--border);background:var(--ink-3);}
+.ar-n{font-family:'DM Mono',monospace;font-size:10px;color:var(--text-dim);}
+.ar-body{flex:1;padding:14px 20px;background:var(--ink-2);}
+.ar-field{font-size:13px;font-weight:600;margin-bottom:4px;}
+.ar-desc{font-size:11.5px;line-height:1.65;color:var(--text-muted);}
+.ar-example{font-family:'DM Mono',monospace;font-size:10px;color:var(--purple);margin-top:6px;line-height:1.5;}
+.ar-req{width:100px;min-width:100px;display:flex;align-items:center;justify-content:center;border-left:1px solid var(--border);background:var(--ink-3);}
+.ar-badge{font-family:'DM Mono',monospace;font-size:7.5px;padding:3px 8px;border-radius:2px;text-align:center;}
+.ar-badge.must{background:var(--red-bg);color:var(--red);border:1px solid var(--red-border);}
+.ar-badge.should{background:var(--gold-bg);color:var(--gold);border:1px solid var(--gold-border);}
+.ar-badge.may{background:var(--green-bg);color:var(--green);border:1px solid var(--green-border);}
+
+/* RISK MATRIX */
+.risk-intro{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px;}
+.risk-card{background:var(--ink-2);border:1px solid var(--border);border-radius:8px;padding:16px 18px;}
+.rc-label{font-family:'DM Mono',monospace;font-size:7.5px;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-dim);margin-bottom:8px;}
+.rc-title{font-size:13px;font-weight:600;margin-bottom:5px;}
+.rc-text{font-size:11.5px;line-height:1.65;color:var(--text-muted);}
+
+/* SOP REGISTER */
+.register-controls{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;align-items:center;}
+.reg-filter{background:var(--ink-2);border:1px solid var(--border-mid);border-radius:5px;padding:7px 10px;font-family:'DM Sans',sans-serif;font-size:11px;color:var(--text);outline:none;cursor:pointer;}
+.reg-filter:focus{border-color:var(--purple-border);}
+.reg-filter option{background:var(--ink-2);}
+.reg-search{background:var(--ink-2);border:1px solid var(--border-mid);border-radius:5px;padding:7px 12px;font-family:'DM Sans',sans-serif;font-size:11px;color:var(--text);outline:none;flex:1;min-width:180px;}
+.reg-search::placeholder{color:var(--text-dim);}
+.reg-search:focus{border-color:var(--purple-border);}
+.reg-summary{margin-left:auto;display:flex;gap:10px;}
+.rs-badge{font-family:'DM Mono',monospace;font-size:9px;padding:5px 10px;border-radius:4px;display:flex;align-items:center;gap:5px;}
+.rs-badge.none{background:var(--red-bg);color:var(--red);border:1px solid var(--red-border);}
+.rs-badge.draft{background:var(--gold-bg);color:var(--gold);border:1px solid var(--gold-border);}
+.rs-badge.active{background:var(--green-bg);color:var(--green);border:1px solid var(--green-border);}
+
+.reg-table{width:100%;border-collapse:collapse;border:1px solid var(--border);border-radius:8px;overflow:hidden;}
+.reg-table th{background:var(--ink-3);padding:10px 14px;text-align:left;font-family:'DM Mono',monospace;font-size:7.5px;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-dim);border-bottom:1px solid var(--border);}
+.reg-table td{padding:11px 14px;font-size:11.5px;color:var(--text-muted);border-bottom:1px solid var(--border);vertical-align:middle;}
+.reg-table tr:last-child td{border-bottom:none;}
+.reg-table tbody tr{transition:background 0.12s;}
+.reg-table tbody tr:hover td{background:var(--ink-3);}
+.reg-table tbody tr.hidden{display:none;}
+
+.role-name{font-size:12.5px;font-weight:600;color:var(--text);}
+.role-func{font-family:'DM Mono',monospace;font-size:9px;color:var(--text-dim);margin-top:2px;}
+
+.kad-tag{font-family:'DM Mono',monospace;font-size:8px;padding:2px 7px;border-radius:2px;white-space:nowrap;}
+.kad-tag.k1{background:rgba(224,112,96,0.08);color:#e07060;border:1px solid rgba(224,112,96,0.2);}
+.kad-tag.k2{background:rgba(201,171,71,0.08);color:#c9ab47;border:1px solid rgba(201,171,71,0.2);}
+.kad-tag.k3{background:rgba(77,158,130,0.08);color:#4d9e82;border:1px solid rgba(77,158,130,0.2);}
+.kad-tag.k4{background:rgba(74,133,200,0.08);color:#4a85c8;border:1px solid rgba(74,133,200,0.2);}
+.kad-tag.ss{background:rgba(155,126,203,0.08);color:#9b7ecb;border:1px solid rgba(155,126,203,0.2);}
+
+.risk-badge{font-family:'DM Mono',monospace;font-size:8px;padding:3px 8px;border-radius:2px;white-space:nowrap;}
+.risk-badge.critical{background:var(--red-bg);color:var(--red);border:1px solid var(--red-border);}
+.risk-badge.high{background:var(--gold-bg);color:var(--gold);border:1px solid var(--gold-border);}
+.risk-badge.medium{background:var(--blue-bg);color:var(--blue);border:1px solid var(--blue-border);}
+.risk-badge.low{background:var(--green-bg);color:var(--green);border:1px solid var(--green-border);}
+
+.status-select{background:var(--ink-3);border:1px solid var(--border);border-radius:4px;padding:5px 8px;font-family:'DM Mono',monospace;font-size:9px;color:var(--text-muted);outline:none;cursor:pointer;width:100%;}
+.status-select:focus{border-color:var(--purple-border);}
+.status-select.s-none{color:var(--red);}
+.status-select.s-draft{color:var(--gold);}
+.status-select.s-active{color:var(--green);}
+.status-select.s-reviewed{color:var(--purple);}
+
+.owner-input{background:var(--ink-3);border:1px solid var(--border);border-radius:4px;padding:5px 8px;font-size:11px;color:var(--text-muted);outline:none;width:100%;font-family:'DM Sans',sans-serif;}
+.owner-input:focus{border-color:var(--purple-border);}
+.owner-input::placeholder{color:var(--text-dim);}
+
+.reg-actions{display:flex;gap:8px;margin-top:12px;}
+.reg-btn{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:0.08em;text-transform:uppercase;padding:8px 14px;border-radius:4px;cursor:pointer;border:1px solid;transition:all 0.15s;}
+.reg-btn.primary{background:var(--purple-bg);border-color:var(--purple-border);color:var(--purple);}
+.reg-btn.primary:hover{background:rgba(155,126,203,0.14);}
+.reg-btn.secondary{background:var(--ink-2);border-color:var(--border-mid);color:var(--text-muted);}
+.reg-btn.secondary:hover{border-color:var(--border-hi);color:var(--text);}
+
+/* HANDOVER PROTOCOL */
+.handover-steps{display:flex;flex-direction:column;gap:0;}
+.hs-row{display:flex;gap:0;border:1px solid var(--border);margin-top:-1px;transition:border-color 0.15s;}
+.hs-row:first-child{border-radius:8px 8px 0 0;}
+.hs-row:last-child{border-radius:0 0 8px 8px;}
+.hs-row:hover{border-color:var(--border-mid);z-index:1;position:relative;}
+.hs-trigger{width:180px;min-width:180px;padding:14px 18px;border-right:1px solid var(--border);background:var(--ink-2);}
+.hs-trig-label{font-family:'DM Mono',monospace;font-size:7.5px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-dim);margin-bottom:5px;}
+.hs-trig-name{font-size:12.5px;font-weight:600;}
+.hs-timeline{width:90px;min-width:90px;padding:14px 16px;border-right:1px solid var(--border);background:var(--ink-3);display:flex;align-items:center;justify-content:center;}
+.hs-time-val{font-family:'DM Mono',monospace;font-size:10px;color:var(--text-muted);text-align:center;line-height:1.4;}
+.hs-actions{flex:1;padding:14px 20px;background:var(--ink-2);}
+.hs-actions ul{list-style:none;display:flex;flex-direction:column;gap:5px;}
+.hs-actions li{font-size:11.5px;color:var(--text-muted);line-height:1.55;padding-left:14px;position:relative;}
+.hs-actions li::before{content:'—';position:absolute;left:0;color:var(--text-dim);}
+.hs-owner{width:140px;min-width:140px;padding:14px 16px;border-left:1px solid var(--border);background:var(--ink-3);display:flex;align-items:center;justify-content:center;}
+.hs-owner-val{font-family:'DM Mono',monospace;font-size:9px;color:var(--text-muted);text-align:center;}
+
+/* REVIEW CADENCE */
+.cadence-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;}
+.cadence-card{background:var(--ink-2);border:1px solid var(--border);border-radius:8px;padding:16px;transition:border-color 0.2s;position:relative;}
+.cadence-card:hover{border-color:var(--border-mid);}
+.cadence-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;border-radius:8px 8px 0 0;}
+.cadence-card.monthly::before{background:var(--red);}
+.cadence-card.quarterly::before{background:var(--gold);}
+.cadence-card.biannual::before{background:var(--blue);}
+.cadence-card.annual::before{background:var(--green);}
+.cc-freq{font-family:'DM Mono',monospace;font-size:8px;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:8px;}
+.cadence-card.monthly .cc-freq{color:var(--red);}
+.cadence-card.quarterly .cc-freq{color:var(--gold);}
+.cadence-card.biannual .cc-freq{color:var(--blue);}
+.cadence-card.annual .cc-freq{color:var(--green);}
+.cc-title{font-size:13px;font-weight:600;margin-bottom:7px;}
+.cc-items{list-style:none;display:flex;flex-direction:column;gap:5px;}
+.cc-items li{font-size:11px;color:var(--text-muted);line-height:1.5;padding-left:11px;position:relative;}
+.cc-items li::before{content:'·';position:absolute;left:0;color:var(--text-dim);}
+
+/* READINESS */
+.ready-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.ready-item{background:var(--ink-2);border:1px solid var(--border);border-radius:7px;padding:14px 16px;display:flex;gap:10px;align-items:flex-start;transition:border-color 0.2s;}
+.ready-item:hover{border-color:var(--border-mid);}
+.ri-dot{width:7px;height:7px;min-width:7px;border-radius:50%;background:var(--text-dim);margin-top:5px;}
+.ri-text{font-size:12px;color:var(--text-muted);line-height:1.65;}
+.ri-text strong{color:var(--text);font-weight:600;display:block;margin-bottom:2px;}
+
+/* FOOTER */
+.doc-footer{border-top:1px solid var(--border);padding:24px 0 40px;margin-top:16px;display:flex;align-items:center;justify-content:space-between;}
+.fr{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:0.08em;color:var(--text-dim);}
+
+/* SAVE INDICATOR */
+.save-ind{font-family:'DM Mono',monospace;font-size:9px;color:var(--green);opacity:0;transition:opacity 0.3s;margin-left:8px;}
+.save-ind.v{opacity:1;}
+
+@keyframes fu{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+.section{animation:fu 0.4s ease both;}
+.section:nth-child(2){animation-delay:0.05s;}
+.section:nth-child(3){animation-delay:0.1s;}
+.section:nth-child(4){animation-delay:0.15s;}
+.section:nth-child(5){animation-delay:0.2s;}
+.section:nth-child(6){animation-delay:0.25s;}
+.section:nth-child(7){animation-delay:0.3s;}
+</style>
+</head>
+<body>
+<div class="glow g1"></div>
+<div class="glow g2"></div>
+
+<div class="w">
+  <div id="hdr">
+    <a href="index.html" class="back-link">
+      <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M8 2L4 6L8 10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      People Infrastructure Portal
+    </a>
+    <div class="eyebrow">
+      <span class="wm">Telinno Consulting</span>
+      <span class="eyebrow-sep">·</span>
+      <span class="eyebrow-tag">Phase 5 — Process Sovereignty</span>
+    </div>
+    <h1>The Organisation Owns<br>the <em>Process.</em> Not the Person.</h1>
+    <div class="doc-sub">Every role has a Job Success Profile that defines what the role is. This phase defines how the work actually runs — the Standard Operating Procedures behind every function. When a person leaves, is sick, or moves KADs, the process continues. No individual holds the company to ransom by being the only one who knows how something works.</div>
+    <div class="doc-meta">
+      <div class="dm-item">Scope<span>All 148 roles</span></div>
+      <div class="dm-item">Coverage<span>4 KADs · 6 Countries</span></div>
+      <div class="dm-item">Owner<span>KAD Leads + HRBP</span></div>
+      <div class="dm-item">Phase<span>5 of 5</span></div>
+      <div class="dm-item">Depends On<span>JSP (Phase 4a)</span></div>
+    </div>
+  </div>
+
+  <div class="alert-banner">
+    <div class="ab-icon">&#x26A0;</div>
+    <div class="ab-body">
+      <div class="ab-title">This phase closes the key-person risk gap</div>
+      <div class="ab-text">A JSP tells you what a role is responsible for. An SOP tells you how the work is done — step by step, system by system, handover by handover. Without SOPs, every person who holds a critical process is also holding the organisation hostage. This phase ensures that when someone leaves, is promoted, or is absent, the work does not stop. The process belongs to Telinno. Not to the individual who currently runs it.</div>
+    </div>
+  </div>
+
+  <!-- SECTION 1: PRINCIPLES -->
+  <div class="section">
+    <div class="section-kicker">Section 01</div>
+    <div class="section-title">Three <em>Principles</em> of Process Sovereignty</div>
+    <div class="section-desc">These define why this phase exists and what it is trying to protect. Every SOP produced under this framework exists in service of one of these three principles.</div>
+    <div class="principle-grid">
+      <div class="principle-card">
+        <div class="pc-num">Principle 01</div>
+        <div class="pc-title">The process belongs to the organisation, not the person</div>
+        <div class="pc-text">Any process that can only be executed by a single named individual is a liability. The moment that person is absent, promoted, or no longer willing, the process fails. SOPs transfer process ownership from individuals to the institution. The person runs the process. They do not own it.</div>
+      </div>
+      <div class="principle-card">
+        <div class="pc-num">Principle 02</div>
+        <div class="pc-title">Documentation is not bureaucracy — it is institutional memory</div>
+        <div class="pc-text">Experienced people leave. New people join. Markets evolve. An organisation that does not document how it works is perpetually starting from scratch. Every SOP produced here is a transfer of knowledge from a person's head into a form the organisation can hold, update, and rely on regardless of who is in the role.</div>
+      </div>
+      <div class="principle-card">
+        <div class="pc-num">Principle 03</div>
+        <div class="pc-title">A role without an SOP is an undocumented risk</div>
+        <div class="pc-text">The risk register for any organisation running critical functions — network operations, financial controls, regulatory compliance — must include undocumented processes. Operating across 6 countries with 4 KADs, Telinno cannot afford for knowledge to be trapped in individual heads. Every undocumented process is a single point of failure.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 2: SOP ANATOMY -->
+  <div class="section">
+    <div class="section-kicker">Section 02</div>
+    <div class="section-title">What Every <em>SOP Must Contain</em></div>
+    <div class="section-desc">These are the minimum required fields for a valid SOP at Telinno. An SOP that omits a MUST field is not complete and does not count toward Phase 5 readiness. SHOULD fields are required for critical and high-risk roles. MAY fields are discretionary.</div>
+    <div class="anatomy-list">
+      <div class="anatomy-row">
+        <div class="ar-num"><span class="ar-n">01</span></div>
+        <div class="ar-body">
+          <div class="ar-field">Process Name &amp; Purpose</div>
+          <div class="ar-desc">The name of the process and one sentence on why it exists — what business outcome it serves and what fails if it is not done.</div>
+          <div class="ar-example">e.g. "Monthly Payroll Submission — ensures all 148 employees receive correct, on-time compensation in line with compensation register and country-specific statutory obligations."</div>
+        </div>
+        <div class="ar-req"><span class="ar-badge must">Must</span></div>
+      </div>
+      <div class="anatomy-row">
+        <div class="ar-num"><span class="ar-n">02</span></div>
+        <div class="ar-body">
+          <div class="ar-field">Process Owner &amp; Backup</div>
+          <div class="ar-desc">The named role (not person) responsible for the process, and the named role that covers it in their absence. Both must be able to execute without reference to the primary owner.</div>
+          <div class="ar-example">e.g. "Owner: HRBP KAD 2. Backup: HRBP KAD 1. Escalation if both unavailable: HR Lead."</div>
+        </div>
+        <div class="ar-req"><span class="ar-badge must">Must</span></div>
+      </div>
+      <div class="anatomy-row">
+        <div class="ar-num"><span class="ar-n">03</span></div>
+        <div class="ar-body">
+          <div class="ar-field">Trigger &amp; Frequency</div>
+          <div class="ar-desc">What starts this process — a date, an event, a request, or a system signal. How often it runs. Whether it is time-bound or event-driven.</div>
+          <div class="ar-example">e.g. "Triggered: 15th of each month. Frequency: Monthly. Also triggered by: new hire confirmation, salary amendment approval."</div>
+        </div>
+        <div class="ar-req"><span class="ar-badge must">Must</span></div>
+      </div>
+      <div class="anatomy-row">
+        <div class="ar-num"><span class="ar-n">04</span></div>
+        <div class="ar-body">
+          <div class="ar-field">Step-by-Step Procedure</div>
+          <div class="ar-desc">Numbered steps a person new to the role could follow and produce the correct output. Each step names the system, tool, or document involved. Decision points are explicitly branched. No assumed knowledge.</div>
+          <div class="ar-example">e.g. "Step 1: Open HR data register in [system]. Step 2: Filter by KAD. Step 3: Verify each name against payroll input form. Step 4: Flag discrepancies to Finance within 24h before submission."</div>
+        </div>
+        <div class="ar-req"><span class="ar-badge must">Must</span></div>
+      </div>
+      <div class="anatomy-row">
+        <div class="ar-num"><span class="ar-n">05</span></div>
+        <div class="ar-body">
+          <div class="ar-field">Systems, Tools &amp; Access Required</div>
+          <div class="ar-desc">Every system, application, shared drive, or external platform the process touches. Login or access level required. Who grants access and how long it takes.</div>
+          <div class="ar-example">e.g. "Requires: HR data register (request access from IT, 2 working days). Payroll system (Finance admin access — request via KAD lead). Country payroll portals: NG, ML, NE, CI, CM."</div>
+        </div>
+        <div class="ar-req"><span class="ar-badge must">Must</span></div>
+      </div>
+      <div class="anatomy-row">
+        <div class="ar-num"><span class="ar-n">06</span></div>
+        <div class="ar-body">
+          <div class="ar-field">Output &amp; Success Criteria</div>
+          <div class="ar-desc">What is produced when the process is complete. What the correct output looks like. What a failed or incomplete output looks like. Who receives the output and by when.</div>
+          <div class="ar-example">e.g. "Output: Payroll submission file submitted to Finance by 20th. Success: Zero payroll errors for the month. Failure signal: Any correction required after submission."</div>
+        </div>
+        <div class="ar-req"><span class="ar-badge must">Must</span></div>
+      </div>
+      <div class="anatomy-row">
+        <div class="ar-num"><span class="ar-n">07</span></div>
+        <div class="ar-body">
+          <div class="ar-field">Failure Modes &amp; Escalation Path</div>
+          <div class="ar-desc">What can go wrong in this process, and what to do when it does. For each failure mode: the signal that it has occurred, the immediate action, and who is notified.</div>
+          <div class="ar-example">e.g. "Failure: System access unavailable. Action: Contact IT immediately. Escalate to Finance if not resolved within 4h of deadline. Manual submission form as fallback."</div>
+        </div>
+        <div class="ar-req"><span class="ar-badge should">Should</span></div>
+      </div>
+      <div class="anatomy-row">
+        <div class="ar-num"><span class="ar-n">08</span></div>
+        <div class="ar-body">
+          <div class="ar-field">Country Variations</div>
+          <div class="ar-desc">Any step that differs by country jurisdiction. Statutory requirements, local portals, different deadlines, or language requirements for submissions in Mali, Niger, Côte d'Ivoire, or Cameroon.</div>
+          <div class="ar-example">e.g. "NE &amp; ML: Government portal submissions require French-language documentation. CM: Statutory deduction rates differ from NG. CI: Separate Caisse de Sécurité Sociale submission required."</div>
+        </div>
+        <div class="ar-req"><span class="ar-badge should">Should</span></div>
+      </div>
+      <div class="anatomy-row">
+        <div class="ar-num"><span class="ar-n">09</span></div>
+        <div class="ar-body">
+          <div class="ar-field">Handover Checklist</div>
+          <div class="ar-desc">A specific checklist for transitioning this process to a new owner. What the outgoing person must transfer, what the incoming person must confirm receipt of, and what a completed handover looks like.</div>
+          <div class="ar-example">e.g. "Handover: [✓] System access transferred [✓] In-flight processes documented [✓] Contact list for country counterparts shared [✓] New owner has run process once with outgoing owner present"</div>
+        </div>
+        <div class="ar-req"><span class="ar-badge should">Should</span></div>
+      </div>
+      <div class="anatomy-row">
+        <div class="ar-num"><span class="ar-n">10</span></div>
+        <div class="ar-body">
+          <div class="ar-field">Version History &amp; Review Date</div>
+          <div class="ar-desc">Date the SOP was created, by whom, and when it was last reviewed. Scheduled next review date. Brief log of what changed and why.</div>
+          <div class="ar-example">e.g. "Created: Jan 2025 by HRBP KAD 2. Last reviewed: Apr 2025. Next review: Oct 2025. Change: Added CM statutory deduction update per Finance instruction."</div>
+        </div>
+        <div class="ar-req"><span class="ar-badge may">May</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 3: SOP REGISTER -->
+  <div class="section">
+    <div class="section-kicker">Section 03</div>
+    <div class="section-title">The <em>SOP Register</em></div>
+    <div class="section-desc">Every role type at Telinno is listed below. For each role: the key-person risk level if this process is undocumented, the SOP status, and the named owner. Update this register as SOPs are drafted and activated. The register is saved in your browser.</div>
+
+    <div class="register-controls">
+      <select class="reg-filter" id="f-kad" onchange="filterRegister()">
+        <option value="">All KADs</option>
+        <option value="k1">KAD 1 — Equipment Vendors</option>
+        <option value="k2">KAD 2 — Huawei &amp; Regulators</option>
+        <option value="k3">KAD 3 — Telecom Operators</option>
+        <option value="k4">KAD 4 — Tower Infrastructure</option>
+        <option value="ss">Shared Services</option>
+      </select>
+      <select class="reg-filter" id="f-risk" onchange="filterRegister()">
+        <option value="">All Risk Levels</option>
+        <option value="critical">Critical</option>
+        <option value="high">High</option>
+        <option value="medium">Medium</option>
+        <option value="low">Low</option>
+      </select>
+      <select class="reg-filter" id="f-status" onchange="filterRegister()">
+        <option value="">All Statuses</option>
+        <option value="none">Not Started</option>
+        <option value="draft">In Draft</option>
+        <option value="active">Active</option>
+        <option value="reviewed">Reviewed</option>
+      </select>
+      <input type="text" class="reg-search" id="reg-search" placeholder="Search role or function…" oninput="filterRegister()">
+      <div class="reg-summary">
+        <span class="rs-badge none" id="cnt-none">— Not Started</span>
+        <span class="rs-badge draft" id="cnt-draft">— Draft</span>
+        <span class="rs-badge active" id="cnt-active">— Active</span>
+      </div>
+    </div>
+
+    <table class="reg-table" id="sop-register">
+      <thead>
+        <tr>
+          <th>Role / Function</th>
+          <th>KAD</th>
+          <th>Key-Person Risk</th>
+          <th>SOP Status</th>
+          <th>Owner (Role)</th>
+        </tr>
+      </thead>
+      <tbody id="register-body">
+      </tbody>
+    </table>
+
+    <div class="reg-actions">
+      <button class="reg-btn primary" onclick="saveRegister()">Save Register &#x2713;<span class="save-ind" id="save-ind">Saved</span></button>
+      <button class="reg-btn secondary" onclick="exportRegister()">Export CSV &#x2193;</button>
+      <button class="reg-btn secondary" onclick="resetRegister()">Reset All</button>
+    </div>
+  </div>
+
+  <!-- SECTION 4: HANDOVER PROTOCOL -->
+  <div class="section">
+    <div class="section-kicker">Section 04</div>
+    <div class="section-title"><em>Handover Protocol</em></div>
+    <div class="section-desc">SOPs only protect the organisation if the handover is executed. This protocol defines what must happen — and when — every time a role changes hands, regardless of whether it is a planned exit, a promotion, or an emergency.</div>
+    <div class="handover-steps">
+      <div class="hs-row">
+        <div class="hs-trigger">
+          <div class="hs-trig-label">Trigger</div>
+          <div class="hs-trig-name">Planned Exit or Promotion</div>
+        </div>
+        <div class="hs-timeline"><div class="hs-time-val">30 days<br>before exit</div></div>
+        <div class="hs-actions">
+          <ul>
+            <li>HRBP confirms SOP register status for all processes owned by the departing role. Any SOP not at "Active" status is escalated immediately.</li>
+            <li>Outgoing person identifies their backup (from SOP register). HRBP confirms backup is current on all critical processes — not just named, but operationally capable.</li>
+            <li>Outgoing person runs each critical process once with their backup present. Backup must be able to execute independently before handover is declared complete.</li>
+            <li>System access list produced. IT notified for access transfer. No access removed until backup confirms transfer is complete.</li>
+            <li>All in-flight processes documented with current status, next action, and deadline — not handed over verbally.</li>
+          </ul>
+        </div>
+        <div class="hs-owner"><div class="hs-owner-val">HRBP initiates.<br>KAD Lead signs off.</div></div>
+      </div>
+      <div class="hs-row">
+        <div class="hs-trigger">
+          <div class="hs-trig-label">Trigger</div>
+          <div class="hs-trig-name">Unplanned Absence</div>
+        </div>
+        <div class="hs-timeline"><div class="hs-time-val">Day 1<br>of absence</div></div>
+        <div class="hs-actions">
+          <ul>
+            <li>HRBP pulls the SOP register and identifies all processes owned by the absent role. Backup owner activates immediately for all Critical and High risk processes.</li>
+            <li>If no backup is named or backup is also unavailable, HRBP escalates to KAD lead within 4 hours. Process does not pause waiting for escalation to resolve — interim owner is assigned on the same day.</li>
+            <li>If the absence extends beyond 5 working days, the interim owner documents any gaps they encounter in the existing SOP. These become updates when the process owner returns.</li>
+          </ul>
+        </div>
+        <div class="hs-owner"><div class="hs-owner-val">HRBP owns.<br>Same-day action.</div></div>
+      </div>
+      <div class="hs-row">
+        <div class="hs-trigger">
+          <div class="hs-trig-label">Trigger</div>
+          <div class="hs-trig-name">New Hire Into Role</div>
+        </div>
+        <div class="hs-timeline"><div class="hs-time-val">Weeks 1–4<br>of onboarding</div></div>
+        <div class="hs-actions">
+          <ul>
+            <li>SOP register for the role is included in the induction pack on Day 1. New hire reviews all SOPs for their role in Week 1. Questions logged and fed back to HRBP for SOP improvement.</li>
+            <li>New hire is walked through each Critical and High risk process by their manager or backup owner — not just given the document. Confirmation of understanding is logged.</li>
+            <li>New hire is observed executing each Critical process at least once before they are considered the active owner. Observation is recorded in their onboarding file.</li>
+            <li>Any SOP gaps identified during onboarding are escalated to HRBP as SOP deficiencies — not treated as "things to figure out on the job."</li>
+          </ul>
+        </div>
+        <div class="hs-owner"><div class="hs-owner-val">Line manager.<br>HRBP tracks.</div></div>
+      </div>
+      <div class="hs-row">
+        <div class="hs-trigger">
+          <div class="hs-trig-label">Trigger</div>
+          <div class="hs-trig-name">KAD Restructure</div>
+        </div>
+        <div class="hs-timeline"><div class="hs-time-val">Before<br>restructure live</div></div>
+        <div class="hs-actions">
+          <ul>
+            <li>HRBP maps all SOPs affected by the restructure before any announcement. A process that has no clear owner in the new structure is a blocker — the restructure does not proceed until all Critical and High processes have a named owner in the new structure.</li>
+            <li>Cross-KAD process transfers require formal SOP handover — the same protocol as a planned exit applies. Verbal agreements do not constitute a transfer.</li>
+            <li>SOP register is updated to reflect new owners before the restructure is live, not after.</li>
+          </ul>
+        </div>
+        <div class="hs-owner"><div class="hs-owner-val">HRBP + KAD Lead.<br>ELT informed.</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 5: REVIEW CADENCE -->
+  <div class="section">
+    <div class="section-kicker">Section 05</div>
+    <div class="section-title">Review &amp; Maintenance <em>Cadence</em></div>
+    <div class="section-desc">An SOP that is not reviewed becomes inaccurate, and an inaccurate SOP is worse than no SOP — it creates false confidence. Every SOP has a mandatory review schedule tied to its risk level.</div>
+    <div class="cadence-grid">
+      <div class="cadence-card monthly">
+        <div class="cc-freq">Monthly</div>
+        <div class="cc-title">Critical Risk Processes</div>
+        <ul class="cc-items">
+          <li>Payroll submission across all 6 countries</li>
+          <li>Network incident escalation procedures</li>
+          <li>Regulatory filing and compliance submissions</li>
+          <li>Any process where a 24h delay has financial or legal consequence</li>
+          <li>Reviewed by: Process owner + HRBP + KAD Lead</li>
+        </ul>
+      </div>
+      <div class="cadence-card quarterly">
+        <div class="cc-freq">Quarterly</div>
+        <div class="cc-title">High Risk Processes</div>
+        <ul class="cc-items">
+          <li>Client billing and contract invoicing</li>
+          <li>HR data audit and people records</li>
+          <li>Procurement and vendor management</li>
+          <li>Cross-border assignment documentation</li>
+          <li>Reviewed by: Process owner + HRBP</li>
+        </ul>
+      </div>
+      <div class="cadence-card biannual">
+        <div class="cc-freq">Bi-Annual</div>
+        <div class="cc-title">Medium Risk Processes</div>
+        <ul class="cc-items">
+          <li>Performance review administration</li>
+          <li>Recruitment and onboarding workflows</li>
+          <li>L&amp;D plan management</li>
+          <li>Leave and absence management</li>
+          <li>Reviewed by: Process owner</li>
+        </ul>
+      </div>
+      <div class="cadence-card annual">
+        <div class="cc-freq">Annual</div>
+        <div class="cc-title">Low Risk Processes</div>
+        <ul class="cc-items">
+          <li>General admin and correspondence</li>
+          <li>Internal reporting formats</li>
+          <li>Archiving and records management</li>
+          <li>Non-time-sensitive team coordination</li>
+          <li>Reviewed by: Process owner</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 6: READINESS GATE -->
+  <div class="section">
+    <div class="section-kicker">Phase Gate</div>
+    <div class="section-title">Phase 5 Is <em>Active</em> When…</div>
+    <div class="section-desc">Process sovereignty is not achieved when the SOPs are written. It is achieved when the organisation can operate without any single person being irreplaceable. These are the criteria.</div>
+    <div class="ready-grid">
+      <div class="ready-item">
+        <div class="ri-dot"></div>
+        <div class="ri-text"><strong>All Critical-risk SOPs are Active</strong>Every process rated Critical in the register has a completed, reviewed SOP — not in draft. A named backup exists and has executed the process at least once.</div>
+      </div>
+      <div class="ready-item">
+        <div class="ri-dot"></div>
+        <div class="ri-text"><strong>No process has only one person who can run it</strong>For every process in the register, a second named role can execute it without reference to the primary owner. This is tested, not assumed.</div>
+      </div>
+      <div class="ready-item">
+        <div class="ri-dot"></div>
+        <div class="ri-text"><strong>SOP register is live in all 4 KADs</strong>Each HRBP maintains an active register for their KAD. Statuses are current — not filled in once and forgotten. The register is reviewed in the monthly HRBP–KAD Lead sync.</div>
+      </div>
+      <div class="ready-item">
+        <div class="ri-dot"></div>
+        <div class="ri-text"><strong>SOPs are included in every induction</strong>A new hire into any role receives the SOPs for that role on Day 1 as part of their induction pack. This is a mandatory induction item, not optional reading.</div>
+      </div>
+      <div class="ready-item">
+        <div class="ri-dot"></div>
+        <div class="ri-text"><strong>Handover protocol has been used at least once</strong>The handover protocol has been executed for at least one role transition — planned or unplanned — and the process was not disrupted. The protocol is credible only if it has been tested.</div>
+      </div>
+      <div class="ready-item">
+        <div class="ri-dot"></div>
+        <div class="ri-text"><strong>Country-specific variations are documented</strong>All SOPs for processes that touch more than one country include documented country-specific variations. No HRBP is informally carrying country-specific process knowledge that is not written down.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc-footer">
+    <div class="fr">Telinno Consulting · SOP Framework · Phase 5 · April 2026</div>
+    <div class="fr">4 KADs · 6 Countries · 148 People</div>
+  </div>
+</div>
+
+<script>
+const ROLES = [
+  // KAD 1 — Equipment Vendors (ZTE, Nokia)
+  {role:'RAN Engineer',func:'RAN — Radio Access Network',kad:'k1',risk:'critical'},
+  {role:'RNO Specialist',func:'RNO — Radio Network Optimisation',kad:'k1',risk:'critical'},
+  {role:'Field Installation Technician',func:'RAN — Radio Access Network',kad:'k1',risk:'high'},
+  {role:'Site Acceptance Engineer',func:'RAN — Radio Access Network',kad:'k1',risk:'high'},
+  {role:'Account Manager (Equipment)',func:'Commercial / Account Management',kad:'k1',risk:'high'},
+  {role:'Project Manager (ZTE/Nokia)',func:'Project Management',kad:'k1',risk:'critical'},
+  {role:'Procurement Officer',func:'Procurement',kad:'k1',risk:'medium'},
+  {role:'QHSE Officer',func:'QHSE',kad:'k1',risk:'high'},
+  // KAD 2 — Huawei, Regulators & Government
+  {role:'RAN Engineer (Huawei)',func:'RAN — Radio Access Network',kad:'k2',risk:'critical'},
+  {role:'Regulatory Affairs Manager',func:'Commercial / Account Management',kad:'k2',risk:'critical'},
+  {role:'Government Relations Officer',func:'Commercial / Account Management',kad:'k2',risk:'critical'},
+  {role:'Project Manager (Huawei)',func:'Project Management',kad:'k2',risk:'critical'},
+  {role:'Compliance Officer',func:'Operations / Admin',kad:'k2',risk:'high'},
+  {role:'Technical Documentation Specialist',func:'Operations / Admin',kad:'k2',risk:'medium'},
+  // KAD 3 — Telecom Operators (MTN, Airtel, Orange)
+  {role:'RAN Optimisation Engineer',func:'RNO — Radio Network Optimisation',kad:'k3',risk:'critical'},
+  {role:'Managed Services Engineer',func:'RAN — Radio Access Network',kad:'k3',risk:'critical'},
+  {role:'Account Manager (Operators)',func:'Commercial / Account Management',kad:'k3',risk:'high'},
+  {role:'SLA & Performance Manager',func:'Operations / Admin',kad:'k3',risk:'high'},
+  {role:'Project Manager (Operators)',func:'Project Management',kad:'k3',risk:'critical'},
+  {role:'Field Operations Supervisor',func:'Infrastructure — Tower, Rural Telephony',kad:'k3',risk:'high'},
+  {role:'Billing & Invoicing Coordinator',func:'Finance',kad:'k3',risk:'high'},
+  // KAD 4 — Tower Infrastructure (GICL, IHS, ATC)
+  {role:'Tower Maintenance Engineer',func:'Infrastructure — Tower, Rural Telephony',kad:'k4',risk:'critical'},
+  {role:'Rural Telephony Specialist',func:'Infrastructure — Tower, Rural Telephony',kad:'k4',risk:'critical'},
+  {role:'Fibre Implementation Engineer',func:'Fiber — Fibre Implementation & Managed Services',kad:'k4',risk:'critical'},
+  {role:'Site Acquisition Officer',func:'Infrastructure — Tower, Rural Telephony',kad:'k4',risk:'high'},
+  {role:'Project Manager (Infrastructure)',func:'Project Management',kad:'k4',risk:'critical'},
+  {role:'QHSE Manager (Field)',func:'QHSE',kad:'k4',risk:'high'},
+  {role:'Logistics & Fleet Coordinator',func:'Operations / Admin',kad:'k4',risk:'medium'},
+  // Shared Services
+  {role:'HR Business Partner (per KAD)',func:'HR / People',kad:'ss',risk:'critical'},
+  {role:'HR Lead',func:'HR / People',kad:'ss',risk:'critical'},
+  {role:'Payroll Administrator',func:'Finance',kad:'ss',risk:'critical'},
+  {role:'Finance Manager',func:'Finance',kad:'ss',risk:'critical'},
+  {role:'Finance Officer (Country)',func:'Finance',kad:'ss',risk:'high'},
+  {role:'IT Systems Administrator',func:'IT / Technology',kad:'ss',risk:'critical'},
+  {role:'Recruitment Coordinator',func:'HR / People',kad:'ss',risk:'medium'},
+  {role:'Office / Admin Manager',func:'Operations / Admin',kad:'ss',risk:'medium'},
+  {role:'L&D Coordinator',func:'HR / People',kad:'ss',risk:'medium'},
+  {role:'Legal / Contracts Officer',func:'Operations / Admin',kad:'ss',risk:'high'},
+];
+
+const KAD_LABELS = {k1:'KAD 1',k2:'KAD 2',k3:'KAD 3',k4:'KAD 4',ss:'Shared Services'};
+const KAD_FULL = {k1:'Equipment Vendors',k2:'Huawei & Regulators',k3:'Telecom Operators',k4:'Tower Infrastructure',ss:'Shared Services'};
+const STORAGE_KEY = 'telinno_sop_register_v1';
+
+function loadData() {
+  try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {}; } catch(e) { return {}; }
+}
+function saveData(data) {
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); } catch(e) {}
+}
+
+function buildRegister() {
+  const saved = loadData();
+  const tbody = document.getElementById('register-body');
+  tbody.innerHTML = '';
+  ROLES.forEach((r, i) => {
+    const key = i;
+    const saved_status = (saved[key] && saved[key].status) || 'none';
+    const saved_owner = (saved[key] && saved[key].owner) || '';
+    const tr = document.createElement('tr');
+    tr.dataset.kad = r.kad;
+    tr.dataset.risk = r.risk;
+    tr.dataset.status = saved_status;
+    tr.dataset.search = (r.role + ' ' + r.func).toLowerCase();
+    tr.innerHTML = `
+      <td><div class="role-name">${r.role}</div><div class="role-func">${r.func}</div></td>
+      <td><span class="kad-tag ${r.kad}">${KAD_LABELS[r.kad]}</span><div style="font-size:9px;color:var(--text-dim);margin-top:3px;">${KAD_FULL[r.kad]}</div></td>
+      <td><span class="risk-badge ${r.risk}">${r.risk.charAt(0).toUpperCase()+r.risk.slice(1)}</span></td>
+      <td>
+        <select class="status-select s-${saved_status}" onchange="updateStatus(this, ${key})">
+          <option value="none" ${saved_status==='none'?'selected':''}>Not Started</option>
+          <option value="draft" ${saved_status==='draft'?'selected':''}>In Draft</option>
+          <option value="active" ${saved_status==='active'?'selected':''}>Active</option>
+          <option value="reviewed" ${saved_status==='reviewed'?'selected':''}>Reviewed</option>
+        </select>
+      </td>
+      <td><input type="text" class="owner-input" placeholder="e.g. HRBP KAD 2" value="${saved_owner}" oninput="updateOwner(this, ${key})"></td>
+    `;
+    tbody.appendChild(tr);
+  });
+  updateCounts();
+}
+
+function updateStatus(el, key) {
+  const val = el.value;
+  el.className = 'status-select s-' + val;
+  el.closest('tr').dataset.status = val;
+  const saved = loadData();
+  if (!saved[key]) saved[key] = {};
+  saved[key].status = val;
+  saveData(saved);
+  updateCounts();
+}
+
+function updateOwner(el, key) {
+  const saved = loadData();
+  if (!saved[key]) saved[key] = {};
+  saved[key].owner = el.value;
+  saveData(saved);
+}
+
+function saveRegister() {
+  const ind = document.getElementById('save-ind');
+  ind.classList.add('v');
+  setTimeout(() => ind.classList.remove('v'), 2000);
+}
+
+function resetRegister() {
+  if (!confirm('Reset all SOP register data? This cannot be undone.')) return;
+  localStorage.removeItem(STORAGE_KEY);
+  buildRegister();
+}
+
+function filterRegister() {
+  const kad = document.getElementById('f-kad').value;
+  const risk = document.getElementById('f-risk').value;
+  const status = document.getElementById('f-status').value;
+  const search = document.getElementById('reg-search').value.toLowerCase();
+  document.querySelectorAll('#register-body tr').forEach(tr => {
+    const show = (!kad || tr.dataset.kad === kad)
+      && (!risk || tr.dataset.risk === risk)
+      && (!status || tr.dataset.status === status)
+      && (!search || tr.dataset.search.includes(search));
+    tr.classList.toggle('hidden', !show);
+  });
+  updateCounts();
+}
+
+function updateCounts() {
+  const rows = document.querySelectorAll('#register-body tr:not(.hidden)');
+  let none=0,draft=0,active=0,reviewed=0;
+  rows.forEach(tr => {
+    const s = tr.dataset.status;
+    if(s==='none') none++;
+    else if(s==='draft') draft++;
+    else if(s==='active') active++;
+    else if(s==='reviewed') reviewed++;
+  });
+  document.getElementById('cnt-none').textContent = none + ' Not Started';
+  document.getElementById('cnt-draft').textContent = draft + ' Draft';
+  document.getElementById('cnt-active').textContent = (active+reviewed) + ' Active';
+}
+
+function exportRegister() {
+  const saved = loadData();
+  const rows = [['Role','Function','KAD','Risk Level','SOP Status','Owner']];
+  ROLES.forEach((r, i) => {
+    const s = (saved[i] && saved[i].status) || 'Not Started';
+    const o = (saved[i] && saved[i].owner) || '';
+    rows.push([r.role, r.func, KAD_FULL[r.kad], r.risk, s, o]);
+  });
+  const csv = rows.map(r => r.map(c => '"'+String(c).replace(/"/g,'""')+'"').join(',')).join('\n');
+  const a = document.createElement('a');
+  a.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv);
+  a.download = 'telinno-sop-register.csv';
+  a.click();
+}
+
+buildRegister();
+</script>
+</body>
+</html>
